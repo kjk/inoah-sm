@@ -34,12 +34,14 @@ HANDLE    g_hConnection = NULL;
 // Can be called multiple times - will do nothing if connection is already established.
 bool FInitConnection()
 {
+#ifdef WIN32_PLATFORM_PSPC
+        return true; // not needed on Pocket PC
+#endif
     if (NULL!=g_hConnection)
         return true;
 
-    CONNMGR_CONNECTIONINFO ccInfo;
-    ZeroMemory(&ccInfo,sizeof(ccInfo));
-    ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
+    CONNMGR_CONNECTIONINFO ccInfo = {0};
+    ccInfo.cbSize      = sizeof(ccInfo);
     ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
     ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
     ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
