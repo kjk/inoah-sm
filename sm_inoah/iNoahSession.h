@@ -39,9 +39,7 @@ public:
 
 private:
     bool    fCookieReceived_;
-    void    storeCookie(String cookie);
     String  loadString(String fileName);
-    void    iNoahSession::storeString(String fileName, String str);
     String  cookie;
     String  content_;
     void    sendRequest(String url, String answer, String& ret);

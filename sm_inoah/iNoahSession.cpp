@@ -2,7 +2,7 @@
 #include "Transmission.h"
 #include "sm_inoah.h"
 #include <aygshell.h>
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
 #include <winuserm.h>
 #endif
@@ -10,7 +10,7 @@
 #include <winbase.h>
 #include <sms.h>
 
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
     #define STORE_FOLDER CSIDL_APPDATA
 #else
     #define STORE_FOLDER CSIDL_PROGRAMS
@@ -47,6 +47,51 @@ const String recentRequest   = TEXT("recent_lookups=");
 const String iNoahFolder     = TEXT ("\\iNoah");
 const String cookieFile      = TEXT ("\\Cookie");
 const String regCodeFile     = TEXT ("\\RegCode");
+
+static void SaveStringToFile(const String& fileName, const String& str)
+{
+    TCHAR szPath[MAX_PATH];
+    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    if (!fOk)
+        return;
+
+    String fullPath = szPath + iNoahFolder;
+    fOk = CreateDirectory (fullPath.c_str(), NULL);  
+    if (!fOk)
+        return;
+    fullPath += fileName;
+
+    HANDLE handle = CreateFile(fullPath.c_str(), 
+        GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL, NULL); 
+    
+    if (INVALID_HANDLE_VALUE==handle)
+        return;
+
+    DWORD written;
+    WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
+    CloseHandle(handle);
+}
+
+
+
+// this class does parsing of the response returned by iNoah server
+// and a high-level interface for accessing various parts of this response.
+class ServerResponseParser
+{
+public:
+    ServerResponseParser(String &content);
+
+private:
+    String _content;
+    bool   _fParsed;
+};
+
+ServerResponseParser::ServerResponseParser(String &content)
+{
+    _content = content;
+    _fParsed = false;
+}
 
 iNoahSession::iNoahSession()
  : fCookieReceived_(false),
@@ -100,9 +145,16 @@ void iNoahSession::getRandomWord(String& ret)
         sep.length()+clientVersion.length()+sep.length()+
         cookieParam.length()+cookie.length()+sep.length()+
         randomRequest.length()); 
-    tmp+=script;tmp+=protocolVersion;tmp+=sep; tmp+=clientVersion;
-    tmp+=sep; tmp+=cookieParam; tmp+=cookie;
-    tmp+=sep; tmp+=randomRequest;
+    tmp += script;
+    tmp += protocolVersion;
+    tmp += sep;
+    tmp += clientVersion;
+    tmp += sep;
+    tmp += cookieParam;
+    tmp += cookie;
+    tmp += sep;
+    tmp += randomRequest;
+
     sendRequest(tmp,definitionStr,ret);
 }
 
@@ -120,16 +172,23 @@ void iNoahSession::registerNoah(String registerCode, String& ret)
         cookieParam.length()+cookie.length()+sep.length()+
         registerParam.length()+registerCode.length());
     
-    tmp+=script; tmp+=protocolVersion; tmp+=sep;
-    tmp+=clientVersion;tmp+=sep; tmp+=cookieParam;
-    tmp+=cookie;tmp+=sep;tmp+=registerParam;tmp+=registerCode;
-    
+    tmp += script;
+    tmp += protocolVersion; 
+    tmp += sep;
+    tmp += clientVersion;
+    tmp += sep;
+    tmp += cookieParam;
+    tmp += cookie;
+    tmp += sep;
+    tmp += registerParam;
+    tmp += registerCode;
+
     sendRequest(tmp,registrationStr,ret);
     if(ret.compare(TEXT("OK\n"))==0)
     {
         ret.assign(TEXT("Registration successful."));
         responseCode = serverMessage;
-        storeString(regCodeFile,registerCode);
+        SaveStringToFile(regCodeFile,registerCode);
     }
     else
     {
@@ -186,9 +245,16 @@ void iNoahSession::getWordList(String& ret )
         clientVersion.length()+sep.length()+cookieParam.length()+
         cookie.length()+sep.length()+recentRequest.length());
     
-    tmp+=script;tmp+=protocolVersion;tmp+=sep;tmp+=clientVersion;
-    tmp+=sep; tmp+=cookieParam; tmp+=cookie;
-    tmp+=sep;tmp+=recentRequest;
+    tmp += script;
+    tmp += protocolVersion;
+    tmp += sep;
+    tmp += clientVersion;
+    tmp += sep;
+    tmp += cookieParam;
+    tmp += cookie;
+    tmp += sep;
+    tmp += recentRequest;
+
     sendRequest(tmp,wordListStr,ret);
 }
 
@@ -248,18 +314,13 @@ bool iNoahSession::getCookie()
     {
         cookie.assign(tmp2,cookieStr.length()+1,-1);
         fCookieReceived_ = true;
-        storeCookie(cookie);
+        SaveStringToFile(cookieFile,cookie);
         return false;
     }
     
     content_ = TEXT("Bad answer received.");
     responseCode = error;
     return true;
-}
-
-void iNoahSession::storeCookie(String cookie)
-{
-    storeString(cookieFile,cookie);
 }
 
 String iNoahSession::loadString(String fileName)
@@ -297,26 +358,6 @@ String iNoahSession::loadString(String fileName)
     return ret;
 }
 
-void iNoahSession::storeString(String fileName, String str)
-{
-    TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-
-    String fullPath = szPath + iNoahFolder;
-    CreateDirectory (fullPath.c_str(), NULL);    
-    fullPath += fileName;
-
-    HANDLE handle = CreateFile(fullPath.c_str(), 
-        GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL, NULL); 
-    
-    if (INVALID_HANDLE_VALUE==handle)
-        return;
-
-    DWORD written;
-    WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
-    CloseHandle(handle);
-}
 
 TCHAR numToHex(TCHAR num)
 {    
@@ -362,7 +403,7 @@ String iNoahSession::getDeviceInfo()
     TCHAR            buffer[INFO_BUF_SIZE];
 
     memset(&address,0,sizeof(SMS_ADDRESS));
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
     HRESULT res = SmsGetPhoneNumber(&address); 
     if (SUCCEEDED(res))
     {

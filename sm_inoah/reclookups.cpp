@@ -50,7 +50,7 @@ BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
                     TCHAR *buf = new TCHAR[len+1];
                     SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
-                    recentWord.assign(buf);
+                    g_recentWord.assign(buf);
                     delete buf;
                     EndDialog(hDlg, 1);
                     break;

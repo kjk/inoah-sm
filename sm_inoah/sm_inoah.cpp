@@ -20,7 +20,7 @@
 #include <connmgr.h>
 
 #include <windows.h>
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
 #endif
 #include <wingdi.h>
@@ -41,11 +41,10 @@ TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
 
 Definition *g_definition = NULL;
-
-bool rec=false;
+bool        g_fRec=false;
 
 ArsLexis::String g_wordList;
-ArsLexis::String recentWord;
+ArsLexis::String g_recentWord;
 ArsLexis::String g_text = TEXT("");
 iNoahSession     g_session;
 
@@ -138,7 +137,8 @@ static RenderingPreferences& renderingPrefs(void)
 static void setDefinition(ArsLexis::String& defs, HWND hwnd)
 {
     iNoahSession::ResponseCode code=g_session.getLastResponseCode();
-    switch(code)
+
+    switch (code)
     {
         case iNoahSession::serverMessage:
         {
@@ -162,14 +162,14 @@ static void setDefinition(ArsLexis::String& defs, HWND hwnd)
             iNoahParser parser;
             g_definition=parser.parse(defs);
             ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-            rec=true;
+            g_fRec = true;
             InvalidateRect(hwnd,NULL,TRUE);
         }
     }
 }
 
 #define MAX_WORD_LEN 64
-static void doLookup(HWND hwnd)
+static void DoLookup(HWND hwnd)
 {
     TCHAR buf[MAX_WORD_LEN+1];
     int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
@@ -189,7 +189,7 @@ static void doLookup(HWND hwnd)
     setDefinition(g_text,hwnd);
 }
 
-static void doRandom(HWND hwnd)
+static void DoRandom(HWND hwnd)
 {
     if (!fInitConnection())
         return;
@@ -204,7 +204,7 @@ static void doRandom(HWND hwnd)
     setDefinition(word,hwnd);
 }
 
-static void doCompact(HWND hwnd)
+static void DoCompact(HWND hwnd)
 {
     static bool fCompactView = false;
 
@@ -231,11 +231,11 @@ static void doCompact(HWND hwnd)
     }
 
     g_forceLayoutRecalculation = true;
-    rec = true;
+    g_fRec = true;
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
-static void doRecent(HWND hwnd)
+static void DoRecent(HWND hwnd)
 {
     if (!fInitConnection())
         return;
@@ -271,7 +271,7 @@ static void doRecent(HWND hwnd)
             if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
             {                        
                 drawProgressInfo(hwnd, TEXT("definition..."));
-                g_session.getWord(recentWord,g_text);
+                g_session.getWord(g_recentWord,g_text);
                 setDefinition(g_text,hwnd);
             }
             break;
@@ -279,7 +279,7 @@ static void doRecent(HWND hwnd)
     }
 }
 
-static void onCreate(HWND hwnd)
+static void OnCreate(HWND hwnd)
 {
     SHMENUBARINFO mbi;
     ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
@@ -329,7 +329,7 @@ static void onCreate(HWND hwnd)
     SetFocus(g_hwndEdit);
 }
 
-void static onHotKey(WPARAM wp, LPARAM lp)
+void static OnHotKey(WPARAM wp, LPARAM lp)
 {
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
 
@@ -340,7 +340,7 @@ void static onHotKey(WPARAM wp, LPARAM lp)
     switch(HIWORD(lp))
     {
         case VK_TBACK:
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
             if (0 != (MOD_KEYUP & LOWORD(lp)))
                 SHSendBackToFocusWindow(WM_HOTKEY, wp, lp);
 #endif
@@ -365,12 +365,12 @@ static bool GotoURL(LPCTSTR lpszUrl)
     sei.lpFile  = lpszUrl;
     sei.nShow   = SW_SHOWMAXIMIZED;
 
-	if (ShellExecuteEx(&sei))
-		return true;
-	return false;
+    if (ShellExecuteEx(&sei))
+        return true;
+    return false;
 }
 
-static LRESULT onCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT result = TRUE;
 
@@ -381,7 +381,7 @@ static LRESULT onCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_COMPACT:
-            doCompact(hwnd);
+            DoCompact(hwnd);
             break;
 
         case IDM_FNT_LARGE:
@@ -397,16 +397,16 @@ static LRESULT onCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case ID_LOOKUP:
-            doLookup(hwnd);
+            DoLookup(hwnd);
             InvalidateRect(hwnd,NULL,TRUE);
             break;
 
         case IDM_MENU_RANDOM:
-            doRandom(hwnd);
+            DoRandom(hwnd);
             break;
 
         case IDM_MENU_RECENT:
-            doRecent(hwnd);
+            DoRecent(hwnd);
             break;
 
         case IDM_MENU_REGISTER:
@@ -452,7 +452,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg)
     {
         case WM_CREATE:
-            onCreate(hwnd);
+            OnCreate(hwnd);
             break;
 
         case WM_SIZE:
@@ -465,11 +465,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case WM_COMMAND:
-            onCommand(hwnd, msg, wp, lp);
+            OnCommand(hwnd, msg, wp, lp);
             break;
 
         case WM_HOTKEY:
-            onHotKey(wp,lp);
+            OnHotKey(wp,lp);
             break;
 
         case WM_PAINT:
@@ -493,8 +493,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return lResult;
 }
 
-BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
-{    
+bool InitInstance (HINSTANCE hInstance, int CmdShow )
+{
     g_hInst = hInstance;
 
     g_hwndMain = CreateWindow(szAppName,
@@ -507,27 +507,27 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
         NULL, NULL, hInstance, NULL );
 
     if (!g_hwndMain)
-        return FALSE;
+        return false;
 
     ShowWindow(g_hwndMain, CmdShow );
     UpdateWindow(g_hwndMain);
     TAPIDevice::initInstance();    
-    return TRUE;
+    return true;
 }
 
 BOOL InitApplication ( HINSTANCE hInstance )
 {
     WNDCLASS wc;
     
-    wc.style = CS_HREDRAW | CS_VREDRAW ;
-    wc.lpfnWndProc = (WNDPROC)WndProc;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hIcon = NULL;
-    wc.hInstance = hInstance;
-    wc.hCursor = NULL;
+    wc.style         = CS_HREDRAW | CS_VREDRAW ;
+    wc.lpfnWndProc   = (WNDPROC)WndProc;
+    wc.cbClsExtra    = 0;
+    wc.cbWndExtra    = 0;
+    wc.hIcon         = NULL;
+    wc.hInstance     = hInstance;
+    wc.hCursor       = NULL;
     wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
-    wc.lpszMenuName = NULL;
+    wc.lpszMenuName  = NULL;
     wc.lpszClassName = szAppName;
 
     BOOL f = RegisterClass(&wc);
@@ -570,6 +570,61 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return msg.wParam;
 }
 
+static void PaintAbout(HDC hdc, RECT& rect)
+{
+    LOGFONT logfnt;
+    HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfHeight+=1;
+    int fontDy = logfnt.lfHeight;
+    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+    SelectObject(hdc, fnt2);
+    
+    RECT tmpRect=rect;
+    DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    tmpRect.top += 46;
+    DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    tmpRect.top += 18;
+    DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    tmpRect.top += 18;
+    DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    SelectObject(hdc,fnt);
+    DeleteObject(fnt2);
+}
+
+static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
+{
+    ArsLexis::Graphics gr(hdc, hwnd);
+    RECT b;
+    GetClientRect(hwnd, &b);
+    ArsLexis::Rectangle bounds=b;
+    ArsLexis::Rectangle defRect=rect;
+    bool doubleBuffer=true;
+    HDC offscreenDc=::CreateCompatibleDC(hdc);
+    if (offscreenDc) {
+        HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+        if (bitmap) {
+            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+            {
+                ArsLexis::Graphics offscreen(offscreenDc, NULL);
+                g_definition->render(offscreen, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+                offscreen.copyArea(defRect, gr, defRect.topLeft);
+            }
+            ::SelectObject(offscreenDc, oldBitmap);
+            ::DeleteObject(bitmap);
+        }
+        else
+            doubleBuffer=false;
+        ::DeleteDC(offscreenDc);
+    }
+    else
+        doubleBuffer=false;
+    
+    if (!doubleBuffer)
+        g_definition->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+    g_forceLayoutRecalculation=false;
+}
+
 void paint(HWND hwnd, HDC hdc)
 {
     RECT  rect;
@@ -582,63 +637,14 @@ void paint(HWND hwnd, HDC hdc)
     rect.bottom -= 2;
 
     if (NULL==g_definition)
-    {
-        LOGFONT logfnt;
-        HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-        GetObject(fnt, sizeof(logfnt), &logfnt);
-        logfnt.lfHeight+=1;
-        int fontDy = logfnt.lfHeight;
-        HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-        SelectObject(hdc, fnt2);
-
-        RECT tmpRect=rect;
-        DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += 46;
-        DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += 18;
-        DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += 18;
-        DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        SelectObject(hdc,fnt);
-        DeleteObject(fnt2);
-    }
+        PaintAbout(hdc,rect);
     else
-    {
-        ArsLexis::Graphics gr(hdc, hwnd);
-        RECT b;
-        GetClientRect(hwnd, &b);
-        ArsLexis::Rectangle bounds=b;
-        ArsLexis::Rectangle defRect=rect;
-        bool doubleBuffer=true;
-        HDC offscreenDc=::CreateCompatibleDC(hdc);
-        if (offscreenDc) {
-            HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-            if (bitmap) {
-                HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-                {
-                    ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                    g_definition->render(offscreen, defRect, renderingPrefs(), g_forceLayoutRecalculation);
-                    offscreen.copyArea(defRect, gr, defRect.topLeft);
-                }
-                ::SelectObject(offscreenDc, oldBitmap);
-                ::DeleteObject(bitmap);
-            }
-            else
-                doubleBuffer=false;
-            ::DeleteDC(offscreenDc);
-        }
-        else
-            doubleBuffer=false;
+        PaintDefinition(hwnd, hdc, rect);
 
-        if (!doubleBuffer)
-            g_definition->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
-        g_forceLayoutRecalculation=false;
-    }
-
-    if (rec)
+    if (g_fRec)
     {
         setScrollBar(g_definition);
-        rec=false;
+        g_fRec = false;
     }
 }
 
@@ -651,7 +657,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
             if (VK_TACTION==wp)
             {
-                doLookup(GetParent(hwnd));
+                DoLookup(GetParent(hwnd));
                 return 0;
             }
 
