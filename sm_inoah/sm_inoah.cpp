@@ -72,7 +72,7 @@ static RenderingPreferences& renderingPrefs(void)
 
 static void SetDefinition(ArsLexis::String& defTxt)
 {
-    Definition * newDef = parseDefinition(defTxt);
+    Definition * newDef = ParseAndFormatDefinition(defTxt);
 
     if (NULL==newDef)
         return;

@@ -43,7 +43,6 @@ private:
         
     };
     Definition::Elements_t elements_;
-    static const ArsLexis::String arabNums[];
     static const pOfSpeechCnt;
     static const int abbrev;
     static const int fullForm;
@@ -60,6 +59,6 @@ private:
 };
 
 Definition *parseDefinitionOld(ArsLexis::String& def);
-Definition *parseDefinition(const ArsLexis::String& def);
+Definition *ParseAndFormatDefinition(const ArsLexis::String& def);
 
 #endif

@@ -11,14 +11,20 @@
 
 using namespace ArsLexis;
 
-const String iNoahParser::arabNums[] = 
+const char_t *romanNumbers[] = 
 { 
-    TEXT("I"), 
-    TEXT("II"), 
-    TEXT("III"), 
-    TEXT("IV"), 
-    TEXT("V")
+    _T("I"), _T("II"), _T("III"), _T("IV"), _T("V"),
+    _T("VI"), _T("VII"), _T("VIII"), _T("IX"), _T("X")
 };
+
+String GetRomanNumber(int i)
+{
+    assert(i!=0);
+    --i;
+    if (i>(sizeof(romanNumbers)/sizeof(romanNumbers[0])))
+        return _T("UNKNOWN");
+    return romanNumbers[i];
+}
 
 const iNoahParser::pOfSpeechCnt = 5;
 const int iNoahParser::abbrev = 0;
@@ -38,21 +44,53 @@ const String iNoahParser::pOfSpeach[2][5] =
     }
 };
 
+#define POS_VERB _T("v")
+#define POS_NOUN _T("n")
+#define POS_ADJ  _T("a")
+#define POS_ADV  _T("r")
+
+bool isPosVerb(const String& pos)
+{
+    if (POS_VERB==pos)
+        return true;
+    return false;
+}
+
+bool isPosAdj(const String& pos)
+{
+    if (POS_ADJ==pos)
+        return true;
+    if (_T("s")==pos)
+        return true;
+    return false;
+}
+
+bool isPosAdv(const String& pos)
+{
+    if (POS_ADV==pos)
+        return true;
+    return false;
+}
+
+bool isPosNoun(const String& pos)
+{
+    if (POS_NOUN==pos)
+        return true;
+    return false;
+}
+
 String getFullPosFromAbbrev(const String& posAbbrev)
 {
-    if (_T("v")==posAbbrev)
+    if (isPosVerb(posAbbrev))
         return String(_T("verb "));
 
-    if (_T("a")==posAbbrev)
+    if (isPosAdj(posAbbrev))
         return String(_T("adj. "));
 
-    if (_T("s")==posAbbrev)
-        return String(_T("adj. "));
-
-    if (_T("n")==posAbbrev)
+    if (isPosNoun(posAbbrev))
         return String(_T("noun "));
 
-    if (_T("r")==posAbbrev)
+    if (isPosAdv(posAbbrev))
         return String(_T("adv. "));
 
     return String(_T("unknown "));
@@ -145,7 +183,7 @@ Definition* iNoahParser::parse(const String& text)
         int cntMeaning=1;
         if (sorted[i].size() > 0)
         {   
-            DynamicNewLineElement *pofsl=new DynamicNewLineElement(arabNums[cntPOS] + TEXT(" "));
+            /*DynamicNewLineElement *pofsl=new DynamicNewLineElement(arabNums[cntPOS] + TEXT(" "));
             DynamicNewLineElement *pofs=new DynamicNewLineElement(pOfSpeach[fullForm][i]);
             appendElement(parent=new ParagraphElement());
             appendElement(pofsl);
@@ -153,7 +191,7 @@ Definition* iNoahParser::parse(const String& text)
             pofsl->setStyle(stylePOfSpeechList);
             pofs->setStyle(stylePOfSpeech);
             pofs->setParent(parent);
-            pofsl->setParent(parent);
+            pofsl->setParent(parent);*/
             cntPOS++;
             char_t buffer[20];
             int j=1;
@@ -414,7 +452,7 @@ static bool FIsExample(const String& str)
 const char_t *pronTxt    = _T("PRON");
 const char_t *reqLeftTxt = _T("REQUESTS_LEFT");
 
-static bool FIsPron(const String& str)
+static bool FIsPronunciation(const String& str)
 {
     if ( 0==str.find(pronTxt) )
         return true;
@@ -429,109 +467,79 @@ static bool FIsReqLeft(const String& str)
 }
 
 typedef std::vector<String> StringVector_t;
+typedef struct SynsetDef {
+    String         definition;
+    StringVector_t examples;
+    StringVector_t synonyms;
+    void clear()
+    {
+        definition.clear();
+        examples.clear();
+        synonyms.clear();
+    }
+} SynsetDef_t;
 
-void formatSynset(Definition::Elements_t& elements,
-                  const String& posAbbrev, const String& synsetDef,
-                  const StringVector_t& synonyms,
-                  const StringVector_t& examples,
-                  int synsetNo)
+typedef std::vector<SynsetDef_t> SynsetDefVector_t;
+
+typedef struct AllSynsetDefs {
+    SynsetDefVector_t verb;
+    SynsetDefVector_t noun;
+    SynsetDefVector_t adj;
+    SynsetDefVector_t adv;
+} AllSynsetDefs_t;    
+
+bool FAddDynamicLine(const String& txt, ElementStyle style, ParagraphElement *parent, Definition::Elements_t& elements)
 {
-    assert( synsetNo>=1 );
-
-    DynamicNewLineElement *dnlEl;
-
-    ParagraphElement* synParagraph = new ParagraphElement();
-    if (NULL == synParagraph)
-        return;
-    elements.push_back(synParagraph);
-
-
-    /* ParagraphElement* posParagraph = new ParagraphElement();
-    if (NULL == posParagraph)
-        return;
-    elements.push_back(posParagraph); */
-
-    String posFull = getFullPosFromAbbrev(posAbbrev);
-    dnlEl = new DynamicNewLineElement(posFull);
+    DynamicNewLineElement* dnlEl = new DynamicNewLineElement(txt);
     if (NULL == dnlEl)
-        return;
-    dnlEl->setStyle(stylePOfSpeech);
-    //dnlEl->setParent(posParagraph);
-    dnlEl->setParent(synParagraph);
+        return false;
+    dnlEl->setStyle(style);
+    dnlEl->setParent(parent);
     elements.push_back(dnlEl);
+    return true;
+}
 
-/*    ParagraphElement* defParagraph = new ParagraphElement();
-    if (NULL == defParagraph)
-        return;
-    elements.push_back(defParagraph);*/
-    String synsetDefNew(synsetDef);
-    synsetDefNew.append(_T(" "));
-    dnlEl = new DynamicNewLineElement(synsetDefNew);
-    if (NULL == dnlEl)
-        return;
-    dnlEl->setStyle(styleDefinition);
-    //dnlEl->setParent(defParagraph);
-    dnlEl->setParent(synParagraph);
-    elements.push_back(dnlEl);
+static void FormatSynsetDef(const SynsetDef_t& synsetDef, int synsetNo, ParagraphElement *parent, Definition::Elements_t& elements)
+{
+    char_t numberBuf[20];
+    _itow(synsetNo, numberBuf, 10 );
+    ArsLexis::String synsetNoTxt(numberBuf);
+    synsetNoTxt.append(_T(") "));
+    FAddDynamicLine(synsetNoTxt,styleDefinitionList,parent,elements);
 
-    uint_t synCount = synonyms.size();
+    String synsetDefNew(synsetDef.definition);
+    FAddDynamicLine(synsetDefNew,styleDefinition,parent,elements);
+
+    uint_t synCount = synsetDef.synonyms.size();
     if (synCount>0)
     {
-        /*ParagraphElement* synListParagraph = new ParagraphElement();
-        if (NULL == synListParagraph)
-            return;
-        elements.push_back(synListParagraph);*/
-        dnlEl = new DynamicNewLineElement(_T("Synonyms: "));
-        if (NULL == dnlEl)
-            return;
-        dnlEl->setStyle(styleSynonymsList);
-        //dnlEl->setParent(synListParagraph);
-        dnlEl->setParent(synParagraph);
-        elements.push_back(dnlEl);
+        FAddDynamicLine(_T("Synonyms: "),styleSynonymsList,parent,elements);
 
         String syn;
         String synLine;
         for (uint_t i=0; i<synCount; i++)
         {
-            syn = synonyms[i];
+            syn = synsetDef.synonyms[i];
             synLine.append(syn);
             if (i!=synCount-1)
             {
                 // not the last synonym
                 synLine.append(_T(", "));
             }
-            else
-            {
-                synLine.append(_T(" "));
-            }
         }
-
-        /* ParagraphElement* synParagraph = new ParagraphElement();
-        if (NULL == synParagraph)
-            return;
-        elements.push_back(synParagraph); */
-        
-        dnlEl = new DynamicNewLineElement(synLine);
-        if (NULL == dnlEl)
-            return;
-        dnlEl->setStyle(styleSynonyms);
-        dnlEl->setParent(synParagraph);
-        //dnlEl->setParent(synListParagraph);
-        elements.push_back(dnlEl);
+        FAddDynamicLine(synLine,styleSynonyms,parent,elements);
     }
 
-    uint_t examplesCount = examples.size();
+    uint_t examplesCount = synsetDef.examples.size();
     if (examplesCount>0)
     {
-        dnlEl = new DynamicNewLineElement(String(TEXT("Examples: ")));
-        dnlEl->setStyle(styleExampleList);
-        elements.push_back(dnlEl);
+        FAddDynamicLine(_T("Examples: "),styleExampleList,parent,elements);
 
         String example;
         String exampleLine;
         for (uint_t i=0; i<examplesCount; i++)
         {
-            example = examples[i];
+            example = synsetDef.examples[i];
             exampleLine.append(_T("\""));
             exampleLine.append(example);
             exampleLine.append(_T("\""));
@@ -540,33 +548,98 @@ void formatSynset(Definition::Elements_t& elements,
                 exampleLine.append(_T(", "));
             }
         }
-
-        /*ParagraphElement* exParagraph = new ParagraphElement();
-        if (NULL == exParagraph)
-            return;
-        elements.push_back(exParagraph);*/
-        dnlEl = new DynamicNewLineElement(exampleLine);
-        if (NULL == dnlEl)
-            return;
-        dnlEl->setStyle(styleExample);
-        //dnlEl->setParent(exParagraph);
-        dnlEl->setParent(synParagraph);
-        elements.push_back(dnlEl);
+        FAddDynamicLine(exampleLine,styleExample,parent,elements);
     }
 }
 
-Definition *parseDefinition(const ArsLexis::String& defTxt)
+void FormatSynsetVector(const SynsetDefVector_t& synsetDefVector, int posNo, const String& posAbbrev, Definition::Elements_t& elements)
 {
-    StringVector_t curExamples;
-    StringVector_t curSynonyms;
-    String         curSynsetDef;
-    String         curPosAbbrev;
-    int            curSynsetNo = 1;
+    ParagraphElement *parent = new ParagraphElement();
+    elements.push_back(parent);
 
-    Definition::Elements_t elements;
+    String posNumber = GetRomanNumber(posNo);
+    posNumber.append(_T(" "));
+    FAddDynamicLine(posNumber,stylePOfSpeechList,parent,elements);
 
-    String syn;
-    String example;
+    String posFull = getFullPosFromAbbrev(posAbbrev);
+    FAddDynamicLine(posFull,stylePOfSpeech,parent,elements);
+
+    assert(synsetDefVector.size()>0);
+
+    for (size_t i=0; i<synsetDefVector.size(); i++)
+    {
+        FormatSynsetDef(synsetDefVector[i], i+1, parent, elements);
+    }
+}
+
+// TODO: there will be mem leaks if run out of memory in the middle
+void FormatSynsets(const String& word, AllSynsetDefs_t allSynsets, Definition::Elements_t& elements)
+{
+    int synsetNo = 1;
+
+    ParagraphElement* wordParagraph = new ParagraphElement();
+    if (NULL == wordParagraph)
+        return;
+    elements.push_back(wordParagraph);
+
+    FAddDynamicLine(word,styleWord,wordParagraph,elements);
+
+    if (allSynsets.verb.size()>0)
+    {
+        FormatSynsetVector(allSynsets.verb, synsetNo, POS_VERB, elements);
+        ++synsetNo;
+    }
+
+    if (allSynsets.noun.size()>0)
+    {
+        FormatSynsetVector(allSynsets.noun, synsetNo, POS_NOUN, elements);
+        ++synsetNo;
+    }
+
+    if (allSynsets.adj.size()>0)
+    {
+        FormatSynsetVector(allSynsets.adj, synsetNo, POS_ADJ, elements);
+        ++synsetNo;
+    }
+
+    if (allSynsets.adv.size()>0)
+    {
+        FormatSynsetVector(allSynsets.adv, synsetNo, POS_ADV, elements);
+        ++synsetNo;
+    }
+}
+
+void AddSynsetDef(AllSynsetDefs_t& allSynsets, const String& posAbbrev, const SynsetDef_t& synset)
+{
+    if (isPosVerb(posAbbrev))
+    {
+        allSynsets.verb.push_back(synset);
+    }
+    else if (isPosNoun(posAbbrev))
+    {
+        allSynsets.noun.push_back(synset);
+    }
+    else if (isPosAdj(posAbbrev))
+    {
+        allSynsets.adj.push_back(synset);
+    }
+    else if (isPosAdv(posAbbrev))
+    {
+        allSynsets.adv.push_back(synset);
+    }
+#ifdef DEBUG
+    else
+        assert(false);
+#endif
+}
+
+// how we work: first we collect all synsets grouped by part of speech i.e.:
+// for each pos we have a list of: definition text, list of examples, list of synonyms
+Definition *ParseAndFormatDefinition(const ArsLexis::String& defTxt)
+{
+    String          curPosAbbrev;
+    SynsetDef_t     curSynset;
+    AllSynsetDefs_t allSynsets;
 
     bool    fNeedToAddSynset = false;
     bool    fEnd;
@@ -580,32 +653,20 @@ Definition *parseDefinition(const ArsLexis::String& defTxt)
 
     String word = line;
 
-    // currently not shown
-    String pron;
+    // currently we don't show pronunciation or requestsLeft
+    String pronunciation;
     String requestsLeft;
 
-    ParagraphElement* wordParagraph = new ParagraphElement();
-    if (NULL == wordParagraph)
-        return NULL;
-    elements.push_back(wordParagraph);
-
-    DynamicNewLineElement *dnlEl = new DynamicNewLineElement(word);
-    if (NULL == dnlEl)
-        return NULL;
-    dnlEl->setStyle(styleWord);
-    dnlEl->setParent(wordParagraph);
-    elements.push_back(dnlEl);
-
-    bool fAfterSynonyms = false;
+    bool fAfterPos = false;
     while (true)
     {
         line = GetNextLine(defTxt,curPos,fEnd);
         if (fEnd)
             break;
 
-        if (FIsPron(line))
+        if (FIsPronunciation(line))
         {
-            pron = line.substr(tstrlen(pronTxt)+1,-1);
+            pronunciation = line.substr(tstrlen(pronTxt)+1,-1);
         }
         else if (FIsReqLeft(line))
         {
@@ -613,53 +674,48 @@ Definition *parseDefinition(const ArsLexis::String& defTxt)
         }
         else if (FIsPartOfSpeech(line))
         {
-            fAfterSynonyms = true;
+            fAfterPos = true;
             assert(2==line.len());
             curPosAbbrev = line.substr(1,1);
         }
         else if (FIsSynonim(line))
         {
-            if (fAfterSynonyms)
+            if (fAfterPos)
             {
-                formatSynset(elements, curPosAbbrev, curSynsetDef,
-                    curSynonyms, curExamples, curSynsetNo);
-                curPosAbbrev.clear();
-                curSynsetDef.clear();
-                curSynonyms.clear();
-                curExamples.clear();
-                ++curSynsetNo;
-
-                fAfterSynonyms = false;
+                AddSynsetDef(allSynsets, curPosAbbrev, curSynset);
+                curSynset.clear();
+                fAfterPos = false;
             }
-            syn = line.substr(1,line.length()-1);
+            String syn = line.substr(1,line.length()-1);
             if (0!=syn.compare(word))
             {
-                curSynonyms.push_back(syn);
+                curSynset.synonyms.push_back(syn);
             }
         }
         else if (FIsDef(line))
         {
-            fAfterSynonyms = true;
-            curSynsetDef = line.substr(1,line.length()-1);
+            fAfterPos = true;
+            curSynset.definition = line.substr(1,line.length()-1);
         }
         else if (FIsExample(line))
         {
-            fAfterSynonyms = true;
-            example = line.substr(1,line.length()-1);
-            curExamples.push_back(example);
+            fAfterPos = true;
+            String example = line.substr(1,line.length()-1);
+            curSynset.examples.push_back(example);
         }            
     }
 
-    if (fAfterSynonyms)
+    if (fAfterPos)
     {
-        formatSynset(elements, curPosAbbrev, curSynsetDef,
-            curSynonyms, curExamples, curSynsetNo);
+        AddSynsetDef(allSynsets, curPosAbbrev, curSynset);
     }
+
+    Definition::Elements_t elements;
+    FormatSynsets(word, allSynsets, elements);
 
     Definition* def=new Definition();
     if (NULL==def)
         return NULL;
-
     def->replaceElements(elements);
     return def;
 }
