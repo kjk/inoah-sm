@@ -195,6 +195,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             rect.right-=2;
             rect.bottom-=2;
 			DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);
+            RenderingPreferences* prefs=0;
+            ArsLexis::Graphics gr=ArsLexis::Graphics(hdc);
+            definition_.render(gr, rect, *prefs, true);
 			EndPaint (hwnd, &ps);
 		}		
 		break;

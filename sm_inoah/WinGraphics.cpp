@@ -4,11 +4,12 @@
 
 namespace ArsLexis
 {
-    Graphics::Graphics():
+    /*Graphics::Graphics():
         handle_(GetDC(hwndMain))
     {
         
-    }
+    }*/
+
     Graphics::Graphics(const NativeGraphicsHandle_t& handle):
         handle_(handle)
     {
@@ -62,7 +63,7 @@ namespace ArsLexis
         //(handle_, topLeft.x , topLeft.y, text, length);
     }
     
-    inline void Graphics::erase(const Rectangle& rect)
+    void Graphics::erase(const ArsLexis::Rectangle& rect)
     {
         NativeRectangle_t nr=toNative(rect);
         //TODO: Not effective at all
@@ -71,7 +72,7 @@ namespace ArsLexis
         DeleteObject(hbr);
     }
     
-    inline void Graphics::copyArea(const Rectangle& sourceArea, Graphics& targetSystem, const Point& targetTopLeft)
+    void Graphics::copyArea(const Rectangle& sourceArea, Graphics& targetSystem, const Point& targetTopLeft)
     {
         NativeRectangle_t nr=toNative(sourceArea);
         BitBlt(handle_, targetTopLeft.x, targetTopLeft.y, 
@@ -79,7 +80,7 @@ namespace ArsLexis
             nr.left, nr.top, PATCOPY);
     }
     
-    inline void Graphics::drawLine(Coord_t x0, Coord_t y0, Coord_t x1, Coord_t y1)
+    void Graphics::drawLine(Coord_t x0, Coord_t y0, Coord_t x1, Coord_t y1)
     {
         POINT p[2];
         p[0].x=x0;
@@ -92,7 +93,7 @@ namespace ArsLexis
         // WinDrawLine(x0, y0, x1, y1);        
     }
 
-    inline NativeColor_t Graphics::setForegroundColor(NativeColor_t color)
+    NativeColor_t Graphics::setForegroundColor(NativeColor_t color)
     {
         LOGPEN pen;
         NativeColor_t old;
@@ -107,18 +108,18 @@ namespace ArsLexis
         return old;
     }
     
-    inline NativeColor_t Graphics::setBackgroundColor(NativeColor_t color)
+    NativeColor_t Graphics::setBackgroundColor(NativeColor_t color)
     {
         return SetBkColor(handle_,color);
     }
     
-    inline NativeColor_t Graphics::setTextColor(NativeColor_t color)
+    NativeColor_t Graphics::setTextColor(NativeColor_t color)
     {
         return SetTextColor(handle_,color ); 
     }
     
     
-    inline uint_t Graphics::fontHeight() const
+    uint_t Graphics::fontHeight() const
     {
         LOGFONT fnt;
         HGDIOBJ font=GetCurrentObject(handle_, OBJ_FONT);
@@ -130,7 +131,7 @@ namespace ArsLexis
         return fnt.lfHeight;
     }
    
-    inline uint_t Graphics::fontBaseline() const
+    uint_t Graphics::fontBaseline() const
     {
         //uint_t baseline=FntBaseLine();
         //if (support_.font.effects().superscript())
@@ -140,7 +141,7 @@ namespace ArsLexis
         return ptm.tmDescent;
     }
 
-    inline uint_t Graphics::wordWrap(const char_t* text, uint_t width)
+    uint_t Graphics::wordWrap(const char_t* text, uint_t width)
     {
         //return FntWordWrap(text, width);
         int len;
@@ -156,7 +157,7 @@ namespace ArsLexis
         return _tcslen(text);
     }
 
-    inline uint_t Graphics::textWidth(const char_t* text, uint_t length)
+    uint_t Graphics::textWidth(const char_t* text, uint_t length)
     {
         //return FntCharsWidth(text, length);
         SIZE size;
@@ -164,7 +165,7 @@ namespace ArsLexis
         return size.cx;
     }
     
-    inline void Graphics::charsInWidth(const char_t* text, uint_t& length, uint_t& width)
+    void Graphics::charsInWidth(const char_t* text, uint_t& length, uint_t& width)
     {
         int len;
         SIZE size;
@@ -176,9 +177,9 @@ namespace ArsLexis
         width = size.cx;
     }
 
-    inline Graphics::Font_t& Graphics::font()
+    Graphics::Font_t& Graphics::font()
     {return support_.font;}
     
-    inline const Graphics::Font_t& Graphics::font() const
+    const Graphics::Font_t& Graphics::font() const
     {return support_.font;}
 }

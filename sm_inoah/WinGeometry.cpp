@@ -40,6 +40,4 @@ namespace ArsLexis
         nativeRect.right=nativeRect.left+width();
         nativeRect.bottom=nativeRect.top+height();
     }
-    
-
 }
