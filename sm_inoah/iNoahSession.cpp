@@ -57,7 +57,7 @@ bool iNoahSession::checkErrors(Transmission &tr, String &ret)
 	{
 		//TODO: Better error handling
 		responseCode = error;
-		content = TEXT("Trsnsmission error.");
+		content = TEXT("Transmission error.");
 		return true;
 	}
 	

@@ -14,7 +14,7 @@ HINTERNET Transmission::hInternet = NULL;
 
 // TODO: Here port should be added
 Transmission::Transmission(
-	const ArsLexis::String& host, 
+	const ArsLexis::String& host,
 	const ArsLexis::String& localInfo)
 {
 	if (!hInternet)
@@ -28,7 +28,7 @@ Transmission::Transmission(
 DWORD Transmission::openInternet()
 {
 	hInternet = InternetOpen(TEXT("inoah-client"),
-            INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0); 
+            INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	//INTERNET_FLAG_ASYNC in case of callback
     //InternetSetStatusCallback(hInternet, dispatchCallback); 
 	return GetLastError();
@@ -53,8 +53,7 @@ DWORD Transmission::sendRequest()
 		hIConnect, NULL , localInfo.c_str(),
         NULL, NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION, 0);
 	DWORD dwordLen=sizeof(DWORD);
-	/*DWORD status;
-	
+	/*DWORD status;	
 	HttpQueryInfo(hIRequest ,HTTP_QUERY_FLAG_NUMBER |
 			HTTP_QUERY_STATUS_CODE , &status, &dwordLen, 0);
 	DWORD size;

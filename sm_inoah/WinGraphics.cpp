@@ -75,9 +75,9 @@ namespace ArsLexis
     void Graphics::copyArea(const Rectangle& sourceArea, Graphics& targetSystem, const Point& targetTopLeft)
     {
         NativeRectangle_t nr=toNative(sourceArea);
-        BitBlt(handle_, targetTopLeft.x, targetTopLeft.y,
+        BitBlt(targetSystem.handle_, targetTopLeft.x, targetTopLeft.y,
             sourceArea.width(), sourceArea.height(), 
-            targetSystem.handle_,
+            handle_,
             nr.left, nr.top, SRCCOPY);
     }
     

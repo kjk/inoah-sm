@@ -11,9 +11,11 @@
 #include "ParagraphElement.hpp"
 #include "HorizontalLineElement.hpp"
 #include "Definition.hpp"
+#include <connmgr.h>
 #include <windows.h>
 #include <tpcshell.h>
 #include <wingdi.h>
+#include <FontEffects.hpp>
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -22,6 +24,7 @@ WNDPROC oldEditWndProc;
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 HWND hwndScroll;
+static bool g_forceLayoutRecalculation=false;
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
@@ -30,6 +33,49 @@ Definition *definition_ = NULL;
 RenderingPreferences* prefs= new RenderingPreferences();
 iNoahSession session;
 bool rec=false;
+
+
+bool initializeConnection()
+{
+    // Establish a synchronous connection
+    HANDLE hConnection = NULL;
+    DWORD dwStatus = 0;
+    DWORD dwTimeout = 5000;
+    
+    // Get the network information where we want to establish a
+    // connection
+    TCHAR tchRemoteUrl[256] = TEXT("\0");
+    wsprintf(tchRemoteUrl,
+        TEXT("http://arslex.no-ip.info"));
+    GUID guidNetworkObject;
+    DWORD dwIndex = 0;
+    
+    if(ConnMgrMapURL(tchRemoteUrl, &guidNetworkObject, &dwIndex)
+        == E_FAIL) 
+        /*MessageBox(
+            NULL,
+            TEXT("Could not map the request to a network identifier."),
+            TEXT("Error"),
+            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);*/
+        return false;
+    
+    // Now that we've got the network address, set up the
+    // connection structure
+    CONNMGR_CONNECTIONINFO ccInfo;
+    
+    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
+    ccInfo.cbSize = sizeof(CONNMGR_CONNECTIONINFO);
+    ccInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
+    ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
+    ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
+    ccInfo.guidDestNet = guidNetworkObject;
+    
+    // Make the connection request (timeout in 5 seconds)
+    if(ConnMgrEstablishConnectionSync(&ccInfo, &hConnection,
+        dwTimeout, &dwStatus) == E_FAIL) 
+        return false;
+    return true;
+}
 
 void setScrollBar(Definition* definition_)
 {
@@ -91,6 +137,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 		case WM_CREATE:
 		{
+            //if (
+            if (!initializeConnection())
+            {
+                MessageBox(
+                    hwnd,
+                    TEXT("Can't establish connection."),
+                    TEXT("Error"),
+                    MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
+                );
+                //SetFocus(hwndEdit);
+				//PostQuitMessage(0);
+                //break;
+            }
+            //)break;
 			//initialize();
             // create the menu bar
 			SHMENUBARINFO mbi;
@@ -103,9 +163,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			//if (tr.sendRequest()==NO_ERROR);
 			//	tr.getResponse();
 			
-			if (!SHCreateMenuBar(&mbi)) {
+			if (!SHCreateMenuBar(&mbi)) 
+            {
 				PostQuitMessage(0);
+                break;
 			}
+            
             hwndEdit = CreateWindow(
                 TEXT("edit"),
                 NULL,
@@ -132,9 +195,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
 		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
                 );
-            RegisterHotKey(hwndEdit, 0x0100, MOD_WIN, VK_THOME);
+/*            RegisterHotKey(hwndEdit, 0x0100, MOD_WIN, VK_THOME);
             RegisterHotKey(hwndEdit, 0x0101, MOD_WIN, VK_TUP);
-            RegisterHotKey(hwndEdit, 0x0102, MOD_WIN, VK_TDOWN);
+            RegisterHotKey(hwndEdit, 0x0102, MOD_WIN, VK_TDOWN);*/
 
             /*RegisterHotKey(hwndMain, 1, MOD_KEYUP, VK_UP);
             RegisterHotKey(hwndMain, 2, MOD_KEYUP, VK_NEXT);
@@ -203,6 +266,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             prefs->setClassicView();
 
                        }
+					   g_forceLayoutRecalculation=true;
                        rec=true;
                        InvalidateRect(hwnd,NULL,TRUE);
                     }
@@ -271,7 +335,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             else
             {
                 ArsLexis::Graphics gr(hdc);
-                definition_->render(gr, rect, *prefs, true);
+				RECT b;
+				GetClientRect(hwnd, &b);
+				ArsLexis::Rectangle bounds=b;
+				ArsLexis::Rectangle defRect=rect;
+				bool doubleBuffer=true;
+				HDC offscreenDc=::CreateCompatibleDC(hdc);
+				if (offscreenDc) {
+					HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+					if (bitmap) {
+						HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+						{
+							ArsLexis::Graphics offscreen(offscreenDc);
+							definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+							offscreen.copyArea(defRect, gr, defRect.topLeft);
+						}
+						::SelectObject(offscreenDc, oldBitmap);
+						::DeleteObject(bitmap);
+					}
+					else
+						doubleBuffer=false;
+					::DeleteDC(offscreenDc);
+				}
+				else
+					doubleBuffer=false;
+				if (!doubleBuffer)
+					definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+				g_forceLayoutRecalculation=false;
             }
             if(rec)
             {
@@ -404,25 +494,55 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	switch(msg)
 	{
         case WM_KEYDOWN:
-        {
-            int page=0;
             if(definition_)
-                page=definition_->shownLinesCount();
-            ArsLexis::Graphics gr(GetDC(hwndMain));
-            if(definition_)
-            switch(wp)
-            {
-                case VK_DOWN:
-                    definition_->scroll(gr,*prefs,page);
-                    setScrollBar(definition_);
-                    return 0;
-                case VK_UP:
-                    definition_->scroll(gr,*prefs,-page);
-                    setScrollBar(definition_);
-                    return 0;
-            }
+			{
+				int page=0;
+				switch (wp) 
+				{
+					case VK_DOWN:
+						page=definition_->shownLinesCount();
+						break;
+					case VK_UP:
+						page=-static_cast<int>(definition_->shownLinesCount());
+						break;
+				}
+				if (0!=page)
+				{
+					RECT b;
+					GetClientRect (hwndMain, &b);
+					ArsLexis::Rectangle bounds=b;
+					ArsLexis::Rectangle defRect=bounds;
+					defRect.explode(2, 22, -9, -24);
+					ArsLexis::Graphics gr(GetDC(hwndMain));
+					bool doubleBuffer=true;
+
+					HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+					if (offscreenDc) {
+						HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
+						if (bitmap) {
+							HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+							{
+								ArsLexis::Graphics offscreen(offscreenDc);
+								definition_->scroll(offscreen,*prefs, page);
+								offscreen.copyArea(defRect, gr, defRect.topLeft);
+							}
+							::SelectObject(offscreenDc, oldBitmap);
+							::DeleteObject(bitmap);
+						}
+						else
+							doubleBuffer=false;
+						::DeleteDC(offscreenDc);
+					}
+					else
+						doubleBuffer=false;
+					if (!doubleBuffer)
+						definition_->scroll(gr,*prefs, page);
+
+					setScrollBar(definition_);
+					return 0;
+				}
+			}
             break;
-        }
     }
     return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
 }
