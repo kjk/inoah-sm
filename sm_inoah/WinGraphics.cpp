@@ -122,6 +122,7 @@ namespace ArsLexis
     
     uint_t Graphics::fontHeight() const
     {
+/*
         LOGFONT fnt;
         HGDIOBJ font=GetCurrentObject(handle_, OBJ_FONT);
         GetObject(font, sizeof(fnt), &fnt); 
@@ -130,6 +131,10 @@ namespace ArsLexis
         //if (fx.superscript() || fx.subscript())
         //    height*=1.333;
         return -fnt.lfHeight;
+*/
+        TEXTMETRIC ptm;
+        GetTextMetrics(handle_, &ptm);
+		return ptm.tmHeight;
     }
    
     uint_t Graphics::fontBaseline() const
