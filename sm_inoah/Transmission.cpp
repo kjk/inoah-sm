@@ -80,8 +80,11 @@ Transmission::Transmission(
 HINTERNET Transmission::openInternet()
 {
     HINTERNET handle;
-    handle = InternetOpen(TEXT("inoah-client"),
-        INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+#ifdef WIN32_PLATFORM_WFSP
+    handle = InternetOpen(_T("inoah-sm-client"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+#else
+    handle = InternetOpen(_T("inoah-ppc-client"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+#endif
     //INTERNET_FLAG_ASYNC in case of callback
     //InternetSetStatusCallback(g_hInternet, dispatchCallback); 
 
