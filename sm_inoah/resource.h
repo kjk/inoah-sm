@@ -41,6 +41,8 @@
 #define IDS_REGISTER                    129
 #define IDD_REGISTER                    130
 #define IDR_REGISTER_MENUBAR            131
+#define IDM_PHONEINFO                   132
+
 #define IDC_LIST_RECENT                 1000
 #define IDC_EDIT_REGCODE                1001
 

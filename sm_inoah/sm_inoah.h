@@ -7,9 +7,16 @@
 #endif // _MSC_VER > 1000
 
 #include "resource.h"
+#include "iNoahSession.h"
+#include "BaseTypes.hpp"
 
 extern HINSTANCE g_hInst;  // Local copy of hInstance
 extern HWND hwndMain;    // Handle to Main window returned from CreateWindow
+
+extern ArsLexis::String recentWord;
+extern ArsLexis::String wordList;
+extern ArsLexis::String regCode;
+extern iNoahSession session;
 
 TCHAR szAppName[];
 TCHAR szTitle[];

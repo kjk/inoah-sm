@@ -5,32 +5,28 @@
 #include "iNoahSession.h"
 #include "iNoahParser.h"
 #include "TAPIDevice.h"
-#include <BaseTypes.hpp>
+#include "reclookups.h"
+#include "registration.h"
+
+#include "BaseTypes.hpp"
 #include "GenericTextElement.hpp"
 #include "BulletElement.hpp"
 #include "ParagraphElement.hpp"
 #include "HorizontalLineElement.hpp"
 #include "Definition.hpp"
+
 #include <connmgr.h>
 #include <windows.h>
 #include <tpcshell.h>
 #include <wingdi.h>
 #include <fonteffects.hpp>
+#include <sms.h>
+#include <uniqueid.h>
 
-LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
-LRESULT CALLBACK ListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
-BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-void drawProgressInfo(HWND hwnd, TCHAR* text);
-void setFontSize(int diff,HWND hwnd);
-void paint(HWND hwnd, HDC hdc);
-WNDPROC oldEditWndProc;
-WNDPROC oldListWndProc;
-
-HWND hRecentLookupaDlg=NULL;
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 HWND hwndScroll;
+
 static bool g_forceLayoutRecalculation=false;
 
 TCHAR szAppName[] = TEXT("iNoah");
@@ -38,115 +34,23 @@ TCHAR szTitle[]   = TEXT("iNoah");
 Definition *definition_ = NULL;
 
 RenderingPreferences* prefs= new RenderingPreferences();
-iNoahSession session;
-bool rec=false;
 
-BOOL InitRecentLookups(HWND hDlg);
-BOOL InitRegistrationDlg(HWND hDlg);
+bool rec=false;
 
 ArsLexis::String wordList;
 ArsLexis::String recentWord;
 ArsLexis::String regCode;
+iNoahSession session;
 
-bool initializeConnection()
-{
-    // Establish a synchronous connection
-    HANDLE hConnection = NULL;
-    DWORD dwStatus = 0;
-    DWORD dwTimeout = 5000;
-    
-    // Get the network information where we want to establish a
-    // connection
-    TCHAR tchRemoteUrl[256] = TEXT("\0");
-    wsprintf(tchRemoteUrl,
-        TEXT("http://arslex.no-ip.info"));
-    GUID guidNetworkObject;
-    DWORD dwIndex = 0;
-    
-    if(ConnMgrMapURL(tchRemoteUrl, &guidNetworkObject, &dwIndex)
-        == E_FAIL) 
-        /*MessageBox(
-        NULL,
-        TEXT("Could not map the request to a network identifier."),
-        TEXT("Error"),
-        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);*/
-        return false;
-    
-    // Now that we've got the network address, set up the
-    // connection structure
-    CONNMGR_CONNECTIONINFO ccInfo;
-    
-    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
-    ccInfo.cbSize = sizeof(CONNMGR_CONNECTIONINFO);
-    ccInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
-    ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
-    ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
-    ccInfo.guidDestNet = guidNetworkObject;
-    
-    // Make the connection request (timeout in 5 seconds)
-    if(ConnMgrEstablishConnectionSync(&ccInfo, &hConnection,
-        dwTimeout, &dwStatus) == E_FAIL) 
-        return false;
-    return true;
-}
-
-void setScrollBar(Definition* definition_)
-{
-    int frst=0;
-    int total=0;
-    int shown=0;
-    if(definition_)
-    {
-        frst=definition_->firstShownLine();
-        total=definition_->totalLinesCount();
-        shown=definition_->shownLinesCount();
-    }
-    
-    SetScrollPos(
-        hwndScroll, 
-        SB_CTL,
-        frst,
-        TRUE);
-    
-    SetScrollRange(
-        hwndScroll,
-        SB_CTL,
-        0,
-        total-shown,
-        TRUE);
-}
-
-void setDefinition(ArsLexis::String& defs, HWND hwnd)
-{
-    iNoahSession::ResponseCode code=session.getLastResponseCode();
-    switch(code)
-    {
-        case iNoahSession::srvmessage:
-        {
-            MessageBox(hwnd,defs.c_str(),TEXT("Information"), 
-            MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
-            return;
-        }
-        case iNoahSession::srverror:
-        case iNoahSession::error:
-        {
-            MessageBox(hwnd,defs.c_str(),TEXT("Error"), 
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-            return;
-        }
-        default:
-        {
-            delete definition_;
-            ParagraphElement* parent=0;
-            int start=0;
-            iNoahParser parser;
-            definition_=parser.parse(defs);
-            ArsLexis::Graphics gr(GetDC(hwndMain));
-            rec=true;
-            InvalidateRect(hwnd,NULL,TRUE);
-        }
-    }
-}
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+WNDPROC oldEditWndProc;
+void drawProgressInfo(HWND hwnd, TCHAR* text);
+void setFontSize(int diff,HWND hwnd);
+void paint(HWND hwnd, HDC hdc);
+void displayPhoneInfo();
+bool initConnection();
+void setScrollBar(Definition* definition_);
+void setDefinition(ArsLexis::String& defs, HWND hwnd);
 
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
@@ -173,7 +77,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_CREATE:
         {
             //if (
-            if (!initializeConnection())
+            if (!initConnection())
             {
                 MessageBox(
                     hwnd,
@@ -328,13 +232,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
                 case IDM_MENU_REGISTER:
                 {
-                    if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
-                    {
-                        session.registerNoah(regCode,text);
-                        setDefinition(text,hwnd);
-                    }
+                    DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc);
                     break;
                 }
+                case IDM_PHONEINFO:
+                    displayPhoneInfo();
+                    break;
+
                 default:
                     return DefWindowProc(hwnd, msg, wp, lp);
             }
@@ -361,7 +265,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }    
-        
         case WM_PAINT:
         {
             hdc = BeginPaint (hwnd, &ps);
@@ -487,22 +390,64 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return (msg.wParam);
 }
 
-LRESULT CALLBACK ListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+void paint(HWND hwnd, HDC hdc)
 {
-    switch(msg)
+    RECT rect;
+    GetClientRect (hwnd, &rect);
+    FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+    rect.top+=22;
+    rect.left+=2;
+    rect.right-=7;
+    rect.bottom-=2;
+    if (!definition_)
     {
-        //What the hell is constatnt - I have no idea VK_F24 ??
-        case 0x87: 
-        {
-            switch(wp)
-            {
-                case 0x32:
-                    SendMessage(hRecentLookupaDlg, WM_COMMAND, ID_SELECT, 0);
-                    break;
-            }
-        }
+        LOGFONT logfnt;
+        
+        HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+        GetObject(fnt, sizeof(logfnt), &logfnt);
+        logfnt.lfHeight+=1;
+        HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+        SelectObject(hdc, fnt2);
+        DrawText (hdc, TEXT("Enter word and press \"Lookup\""), -1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
+        SelectObject(hdc,fnt);
+        DeleteObject(fnt2);
     }
-    return CallWindowProc(oldListWndProc, hwnd, msg, wp, lp);
+    else
+    {
+        ArsLexis::Graphics gr(hdc);
+        RECT b;
+        GetClientRect(hwnd, &b);
+        ArsLexis::Rectangle bounds=b;
+        ArsLexis::Rectangle defRect=rect;
+        bool doubleBuffer=true;
+        HDC offscreenDc=::CreateCompatibleDC(hdc);
+        if (offscreenDc) {
+            HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+            if (bitmap) {
+                HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+                {
+                    ArsLexis::Graphics offscreen(offscreenDc);
+                    definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                    offscreen.copyArea(defRect, gr, defRect.topLeft);
+                }
+                ::SelectObject(offscreenDc, oldBitmap);
+                ::DeleteObject(bitmap);
+            }
+            else
+                doubleBuffer=false;
+            ::DeleteDC(offscreenDc);
+        }
+        else
+            doubleBuffer=false;
+        if (!doubleBuffer)
+            definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+        g_forceLayoutRecalculation=false;
+    }
+    if(rec)
+    {
+        setScrollBar(definition_);
+        rec=false;
+    }
 }
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -563,155 +508,6 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
        }
     }
     return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
-}
-
-BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch(msg)
-    {
-        case WM_INITDIALOG:
-            return InitRegistrationDlg(hDlg);
-        case WM_COMMAND:
-        {
-            switch (wp)
-            {
-                case ID_CANCEL:
-                    EndDialog(hDlg, 0);
-                    break;
-                case IDM_REGISTER:
-                {
-                    HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
-                    int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
-                    TCHAR *buf=new TCHAR[len+1];
-                    len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-                    SendMessage(hwndEdit, EM_SETSEL, 0,len);
-                    regCode.assign(buf);
-                    delete buf;
-                    EndDialog(hDlg, 1);
-                    break;
-
-                }
-            }
-        }
-    }
-    return FALSE;
-}
-
-BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch(msg)
-    {
-        case WM_INITDIALOG:
-            return InitRecentLookups(hDlg);
-        case WM_COMMAND:
-        {
-            switch (wp)
-            {
-                case ID_CANCEL:
-                    EndDialog(hDlg, 0);
-                    break;
-                case ID_SELECT:
-                {
-                    HWND ctrl = GetDlgItem(hDlg, IDC_LIST_RECENT);
-                    int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
-                    int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
-                    TCHAR *buf = new TCHAR[len+1];
-                    SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
-                    recentWord.assign(buf);
-                    delete buf;
-                    EndDialog(hDlg, 1);
-                    break;
-                }
-            }
-        }
-    }
-    return FALSE;
-}
-BOOL InitRegistrationDlg(HWND hDlg)
-{
-    SHINITDLGINFO shidi;
-    ZeroMemory(&shidi, sizeof(shidi));
-    shidi.dwMask = SHIDIM_FLAGS;
-    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
-    shidi.hDlg = hDlg;
-
-    // Set up the menu bar
-    SHMENUBARINFO shmbi;
-    ZeroMemory(&shmbi, sizeof(shmbi));
-    shmbi.cbSize = sizeof(shmbi);
-    shmbi.hwndParent = hDlg;
-    shmbi.nToolBarId = IDR_REGISTER_MENUBAR;
-    shmbi.hInstRes = g_hInst;
-
-    if (!SHInitDialog(&shidi))
-        return FALSE;
-    
-    if (!SHCreateMenuBar(&shmbi))
-        return FALSE;
-
-    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-
-    SetFocus(GetDlgItem(hDlg,IDC_EDIT_REGCODE));
-
-}
-
-BOOL InitRecentLookups(HWND hDlg)
-{
-    // Specify that the dialog box should stretch full screen
-    SHINITDLGINFO shidi;
-    ZeroMemory(&shidi, sizeof(shidi));
-    shidi.dwMask = SHIDIM_FLAGS;
-    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
-    shidi.hDlg = hDlg;
-    
-    // Set up the menu bar
-    SHMENUBARINFO shmbi;
-    ZeroMemory(&shmbi, sizeof(shmbi));
-    shmbi.cbSize = sizeof(shmbi);
-    shmbi.hwndParent = hDlg;
-    shmbi.nToolBarId = IDR_RECENT_MENUBAR ;
-    shmbi.hInstRes = g_hInst;
-    
-    // If we could not initialize the dialog box, return an error
-    if (!SHInitDialog(&shidi))
-        return FALSE;
-    
-    if (!SHCreateMenuBar(&shmbi))
-        return FALSE;
-    
-    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-    
-    hRecentLookupaDlg=hDlg;
-
-    HWND ctrl=GetDlgItem(hDlg, IDC_LIST_RECENT);
-    oldListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ListWndProc);
-    RegisterHotKey( ctrl, 50, 0, VK_TACTION);
-
-    int last=wordList.find_first_of(TCHAR('\n'));
-    int first=0;
-    while((last!=-1)&&(last!=wordList.length()))
-    {
-        ArsLexis::String tmp=wordList.substr(first,last-first);
-        if (tmp.compare(TEXT(""))!=0)
-        {
-            TCHAR *str  =new TCHAR [tmp.length()+1];
-            wcscpy(str,tmp.c_str());
-            SendMessage(
-                ctrl,
-                LB_ADDSTRING,
-                0,
-                (LPARAM)str);
-        }
-        first=last+1;
-        last=wordList.find_first_of(TCHAR('\n'),first);
-    }
-    SendMessage (ctrl, LB_SETCURSEL, 0, 0);
-    //UpdateWindow(ctrl);
-    return TRUE;
 }
 
 void drawProgressInfo(HWND hwnd, TCHAR* text)
@@ -794,63 +590,150 @@ void setFontSize(int diff, HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
-void paint(HWND hwnd, HDC hdc)
+
+void displayPhoneInfo()
 {
-    RECT rect;
-    GetClientRect (hwnd, &rect);
-    FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
-    rect.top+=22;
-    rect.left+=2;
-    rect.right-=7;
-    rect.bottom-=2;
-    if (!definition_)
+    SMS_ADDRESS address;
+    ArsLexis::String text;
+    text.assign(TEXT("Phone number "));
+    memset(&address,0,sizeof(SMS_ADDRESS)); 
+    HRESULT res = SmsGetPhoneNumber(&address); 
+    TCHAR buffer[1000];
+    if(SUCCEEDED(res))
     {
-        LOGFONT logfnt;
-        
-        HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-        GetObject(fnt, sizeof(logfnt), &logfnt);
-        logfnt.lfHeight+=1;
-        HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-        SelectObject(hdc, fnt2);
-        DrawText (hdc, TEXT("Enter word and press \"Lookup\""), -1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
-        SelectObject(hdc,fnt);
-        DeleteObject(fnt2);
+        text+=address.ptsAddress;
     }
     else
     {
-        ArsLexis::Graphics gr(hdc);
-        RECT b;
-        GetClientRect(hwnd, &b);
-        ArsLexis::Rectangle bounds=b;
-        ArsLexis::Rectangle defRect=rect;
-        bool doubleBuffer=true;
-        HDC offscreenDc=::CreateCompatibleDC(hdc);
-        if (offscreenDc) {
-            HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-            if (bitmap) {
-                HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-                {
-                    ArsLexis::Graphics offscreen(offscreenDc);
-                    definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
-                    offscreen.copyArea(defRect, gr, defRect.topLeft);
-                }
-                ::SelectObject(offscreenDc, oldBitmap);
-                ::DeleteObject(bitmap);
-            }
-            else
-                doubleBuffer=false;
-            ::DeleteDC(offscreenDc);
-        }
-        else
-            doubleBuffer=false;
-        if (!doubleBuffer)
-            definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
-        g_forceLayoutRecalculation=false;
+        _itow( res, buffer, 16 );
+        text+=TEXT("can't be retrived (error code: 0x");
+        text+=buffer;
+        text+=TEXT(")");
     }
-    if(rec)
+    SystemParametersInfo(SPI_GETOEMINFO, 1000, buffer, 0);
+    text+=TEXT(", OEM info: ");
+    text+=buffer;
+    SystemParametersInfo(SPI_GETPLATFORMTYPE, 1000, buffer, 0);
+    text+=TEXT(", Platform type: ");
+    text+=buffer;
+    DWORD dwOutBytes;
+    text+=TEXT(", Unique device ID ");
+    if (KernelIoControl(IOCTL_HAL_GET_DEVICEID, 0, 0, buffer, 1000, &dwOutBytes))
     {
-        setScrollBar(definition_);
-        rec=false;
+        text+=TEXT("succesfully obtained");
+        //DEVICE_ID *devID=(PDEVICE_ID)buffer;
+    }
+    else
+    {
+        text+=TEXT("can't be obtained (error code: 0x");
+        DWORD errCode=GetLastError();
+        _itow( errCode, buffer, 16 );
+        text+=buffer;
+        text+=TEXT(")");
+    }
+        
+
+    MessageBox(hwndMain,text.c_str(),TEXT("Information"), 
+        MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
+}
+
+bool initConnection()
+{
+    // Establish a synchronous connection
+    HANDLE hConnection = NULL;
+    DWORD dwStatus = 0;
+    DWORD dwTimeout = 5000;
+    
+    // Get the network information where we want to establish a
+    // connection
+    TCHAR tchRemoteUrl[256] = TEXT("\0");
+    wsprintf(tchRemoteUrl,
+        TEXT("http://arslex.no-ip.info"));
+    GUID guidNetworkObject;
+    DWORD dwIndex = 0;
+    
+    if(ConnMgrMapURL(tchRemoteUrl, &guidNetworkObject, &dwIndex)
+        == E_FAIL) 
+        /*MessageBox(
+        NULL,
+        TEXT("Could not map the request to a network identifier."),
+        TEXT("Error"),
+        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);*/
+        return false;
+    
+    // Now that we've got the network address, set up the
+    // connection structure
+    CONNMGR_CONNECTIONINFO ccInfo;
+    
+    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
+    ccInfo.cbSize = sizeof(CONNMGR_CONNECTIONINFO);
+    ccInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
+    ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
+    ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
+    ccInfo.guidDestNet = guidNetworkObject;
+    
+    // Make the connection request (timeout in 5 seconds)
+    if(ConnMgrEstablishConnectionSync(&ccInfo, &hConnection,
+        dwTimeout, &dwStatus) == E_FAIL) 
+        return false;
+    return true;
+}
+
+void setScrollBar(Definition* definition_)
+{
+    int frst=0;
+    int total=0;
+    int shown=0;
+    if(definition_)
+    {
+        frst=definition_->firstShownLine();
+        total=definition_->totalLinesCount();
+        shown=definition_->shownLinesCount();
+    }
+    
+    SetScrollPos(
+        hwndScroll, 
+        SB_CTL,
+        frst,
+        TRUE);
+    
+    SetScrollRange(
+        hwndScroll,
+        SB_CTL,
+        0,
+        total-shown,
+        TRUE);
+}
+void setDefinition(ArsLexis::String& defs, HWND hwnd)
+{
+    iNoahSession::ResponseCode code=session.getLastResponseCode();
+    switch(code)
+    {
+        case iNoahSession::srvmessage:
+        {
+            MessageBox(hwnd,defs.c_str(),TEXT("Information"), 
+            MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
+            return;
+        }
+        case iNoahSession::srverror:
+        case iNoahSession::error:
+        {
+            MessageBox(hwnd,defs.c_str(),TEXT("Error"), 
+            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
+            return;
+        }
+        default:
+        {
+            delete definition_;
+            ParagraphElement* parent=0;
+            int start=0;
+            iNoahParser parser;
+            definition_=parser.parse(defs);
+            ArsLexis::Graphics gr(GetDC(hwndMain));
+            rec=true;
+            InvalidateRect(hwnd,NULL,TRUE);
+        }
     }
 }
+
 // end sm_inoah.cpp

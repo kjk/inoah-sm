@@ -71,6 +71,7 @@ BEGIN
 		MENUITEM "Standard",            IDM_FNT_STANDARD
 		MENUITEM "Small",            	IDM_FNT_SMALL
 	END
+        MENUITEM "Phone info",                  IDM_PHONEINFO
         MENUITEM "Quit",                        IDOK
     END
 END
