@@ -100,7 +100,13 @@ public:
     {return bulletIndentation_;}
 
     ArsLexis::Graphics::Color_t backgroundColor() const
-    {return RGB(255,255,255);}
+    {
+#ifdef DEBUG
+    return RGB(12,255,12);
+#else
+        return RGB(255,255,255);
+#endif
+    }
     
     void setCompactView();
     void setClassicView();

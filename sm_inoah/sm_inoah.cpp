@@ -249,57 +249,6 @@ enum ScrollUnit
     scrollPosition
 };
 
-static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
-{
-    RECT b;
-    GetClientRect (g_hwndMain, &b);
-    ArsLexis::Rectangle bounds=b;
-    ArsLexis::Rectangle defRect=bounds;
-    defRect.explode(2, 22, -9, -24);
-    ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-
-    switch (unit)
-    {
-        case scrollPage:
-            units = units * GetDefinition()->shownLinesCount();
-            break;
-        case scrollEnd:
-            units = GetDefinition()->totalLinesCount();
-            break;
-        case scrollHome:
-            units = -(int)GetDefinition()->totalLinesCount();
-            break;
-        case scrollPosition:
-            units = units - GetDefinition()->firstShownLine();
-            break;
-    }
-
-    bool fCouldDoubleBuffer = false;
-    HDC  offscreenDc=::CreateCompatibleDC(gr.handle());
-    if (offscreenDc)
-    {
-        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
-        if (bitmap)
-        {
-            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            {
-                ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                GetDefinition()->scroll(offscreen, renderingPrefs(), units);
-                offscreen.copyArea(defRect, gr, defRect.topLeft);
-            }
-            ::SelectObject(offscreenDc, oldBitmap);
-            ::DeleteObject(bitmap);
-            fCouldDoubleBuffer = true;
-        }
-        ::DeleteDC(offscreenDc);
-    }
-
-    if (!fCouldDoubleBuffer)
-        GetDefinition()->scroll(gr, renderingPrefs(), units);
-
-    SetScrollBar(GetDefinition());
-}
-
 static void DrawFancyRectangle(HDC hdc, RECT *rect)
 {
     int startX = rect->left;
@@ -506,42 +455,73 @@ static void PaintAbout(HDC hdc, RECT& rect)
     SelectObject(hdc,fnt);
 }
 
-static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
+static void RepaintDefinition(int scrollDelta)
 {
-    ArsLexis::Graphics gr(hdc, hwnd);
     RECT clientRect;
-    GetClientRect(hwnd, &clientRect);
+    GetClientRect(g_hwndMain, &clientRect);
     ArsLexis::Rectangle bounds = clientRect;
 
-    clientRect.top    += 22;
-    clientRect.left   += 2;
-    clientRect.right  -= 2 + GetScrollBarDx();
-    clientRect.bottom -= 2 + GetMenuDy();
     ArsLexis::Rectangle defRect = clientRect;
+    defRect.top    += 24;
+    defRect.left   += 2;
+    defRect.right  -= 2 + GetScrollBarDx();
+    clientRect.bottom -= 2 + GetMenuDy();
 
-    bool fCouldDoubleBuffer = false;
-    HDC  offscreenDc = ::CreateCompatibleDC(hdc);
+    Graphics gr(GetDC(g_hwndMain), g_hwndMain);
+
+    bool fDidDoubleBuffer = false;
+    HDC  offscreenDc = ::CreateCompatibleDC(gr.handle());
     if (offscreenDc) 
     {
-        HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
         if (bitmap) 
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            {
-                ArsLexis::Graphics offscreen(offscreenDc, NULL);
+            ArsLexis::Graphics offscreen(offscreenDc, NULL);
+            if (0 != scrollDelta)
+                GetDefinition()->scroll(offscreen, renderingPrefs(), scrollDelta);
+            else
                 GetDefinition()->render(offscreen, defRect, renderingPrefs(), g_forceLayoutRecalculation);
-                offscreen.copyArea(defRect, gr, defRect.topLeft);
-            }
+
+            offscreen.copyArea(defRect, gr, defRect.topLeft);
             ::SelectObject(offscreenDc, oldBitmap);
             ::DeleteObject(bitmap);
-            fCouldDoubleBuffer = true;
+            fDidDoubleBuffer = true;
         }
         ::DeleteDC(offscreenDc);
     }
 
-    if (!fCouldDoubleBuffer)
-        GetDefinition()->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+    if (!fDidDoubleBuffer)
+    {
+        if (0 != scrollDelta)
+            GetDefinition()->scroll(gr, renderingPrefs(), scrollDelta);
+        else
+            GetDefinition()->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+    }
     g_forceLayoutRecalculation=false;
+}
+
+static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
+{
+    switch (unit)
+    {
+        case scrollPage:
+            units = units * GetDefinition()->shownLinesCount();
+            break;
+        case scrollEnd:
+            units = GetDefinition()->totalLinesCount();
+            break;
+        case scrollHome:
+            units = -(int)GetDefinition()->totalLinesCount();
+            break;
+        case scrollPosition:
+            units = units - GetDefinition()->firstShownLine();
+            break;
+    }
+
+    RepintDefinition(units);
+
+    SetScrollBar(GetDefinition());
 }
 
 static void Paint(HWND hwnd, HDC hdc)
@@ -561,7 +541,7 @@ static void Paint(HWND hwnd, HDC hdc)
         //DrawProgressInfo(hwnd, _T("Hello"));
     }
     else
-        PaintDefinition(hwnd, hdc, rect);
+        RepaintDefinition(0);
 
     if (g_fUpdateScrollbars)
     {
@@ -906,15 +886,25 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return result;
 }
 
+bool g_fNotFirstOnSize = false;
+extern int g_menuDy;
+
 static void OnSize(HWND hwnd, LPARAM lp)
 {
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
 
-    int menuDy = 0;
-#ifdef WIN32_PLATFORM_PSPC
-    menuDy = GetMenuDy();
-#endif
+    // total hack for ppc
+    if (g_fNotFirstOnSize)
+    {
+        g_menuDy = 0;
+    }
+    else
+    {
+        g_fNotFirstOnSize = true;
+    }
+
+    int menuDy = GetMenuDy();
 
     int scrollStartY = 24;
     int scrollDy = dy - menuDy - scrollStartY - 2;
