@@ -154,7 +154,8 @@ namespace ArsLexis
             width, &len, NULL, &size);
         //length = len;
         width = size.cx;
-        if(_tcslen(text)==len)
+		int textLen = (int)_tcslen(text);
+        if(textLen==len)
             return len;
 
         for(int i=len;i>0;i--)
@@ -165,7 +166,7 @@ namespace ArsLexis
                ) 
                 return i+1;
         }
-        return _tcslen(text);
+        return textLen;
     }
 
     uint_t Graphics::textWidth(const char_t* text, uint_t length)
