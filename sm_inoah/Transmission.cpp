@@ -13,7 +13,9 @@
 HINTERNET Transmission::hInternet = NULL;
 
 // TODO: Here port should be added
-Transmission::Transmission(ArsLexis::String host, ArsLexis::String localInfo)
+Transmission::Transmission(
+	const ArsLexis::String host, 
+	const ArsLexis::String localInfo)
 {
 	if (!hInternet)
 		lastError = openInternet();
@@ -62,7 +64,7 @@ DWORD Transmission::sendRequest()
 	BOOL succ = FALSE;
 	DWORD buffSize=2048;
 	succ = InternetSetOption(hIRequest, 
-		INTERNET_OPTION_READ_BUFFER_SIZE , &buffSize, dwordLen);	
+		INTERNET_OPTION_READ_BUFFER_SIZE , &buffSize, dwordLen);
     /*std::wstring fullURL(server+url+TEXT(" HTTP/1.0"));
     hIRequest = InternetOpenUrl(
 		hInternet,
@@ -78,7 +80,7 @@ DWORD Transmission::sendRequest()
 	CHAR sbcsbuffer[255]; 
 	TCHAR wcsbuffer[255];
 	DWORD dwRead;
-	content=TEXT("");
+	content.clear();
 	while( InternetReadFile( hIRequest, sbcsbuffer, 255, &dwRead )&& dwRead)
 	{
 		sbcsbuffer[dwRead] = 0;

@@ -106,7 +106,7 @@ ArsLexis::String iNoahSession::sendRequest(ArsLexis::String url,
 	if(checkErrors(tr,tmp)) 
 		return content;
 	
-	if (tmp.find_first_of(answer.c_str(), 0, answer.length()) == 0 )
+	if (tmp.find(answer.c_str(), 0, answer.length()) == 0 )
 	{
 		content = tmp.substr(errorStr.length());
 		return content;
@@ -122,7 +122,7 @@ bool iNoahSession::getCookie()
 	ArsLexis::String tmp;
 	if(checkErrors(tr,tmp)) return true;
 
-	if (tmp.find_first_of(cookieStr.c_str(), 0, cookieStr.length()) == 0 )
+	if (tmp.find(cookieStr.c_str(), 0, cookieStr.length()) == 0 )
 	{
 		cookie = tmp.substr(errorStr.length()+1);
 		cookieReceived = true;

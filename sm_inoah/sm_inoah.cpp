@@ -2,6 +2,7 @@
 //
 
 #include <windows.h>
+#include <winuser.h>
 #include <aygshell.h>
 #include "resource.h"
 #include "iNoahSession.h"
@@ -33,7 +34,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	HDC			hdc;
 	PAINTSTRUCT	ps;
 	RECT		rect;
-
+    
 	switch(msg)
 	{
 		case WM_CREATE:
@@ -57,21 +58,48 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			break;
 		}
 		case WM_COMMAND:
+        {
+
 			switch (wp)
 			{
-			case IDOK:
-				SendMessage(hwnd,WM_CLOSE,0,0);
-				break;
-			default:
-				return DefWindowProc(hwnd, msg, wp, lp);
+			    case IDOK:
+    				SendMessage(hwnd,WM_CLOSE,0,0);
+	    			break;
+                case IDM_MENU_REGULAR:
+                {
+				    HWND hwndMB = SHFindMenuBar (hwnd);
+                    if (hwndMB) 
+                    {
+                       HMENU hMenu;
+                       hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+    				   CheckMenuItem(hMenu, IDM_MENU_REGULAR, MF_CHECKED | MF_BYCOMMAND);
+                       CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
+                    }
+				    break;
+                }
+                case IDM_MENU_COMPACT:
+                {
+				    HWND hwndMB = SHFindMenuBar (hwnd);
+                    if (hwndMB) 
+                    {
+                       HMENU hMenu;
+                       hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+    				   CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
+                       CheckMenuItem(hMenu, IDM_MENU_REGULAR, MF_UNCHECKED | MF_BYCOMMAND);
+                    }
+				    break;
+                }
+			    default:
+				    return DefWindowProc(hwnd, msg, wp, lp);
 			}
 			break;
+        }
 		case WM_PAINT:
 		{
 			hdc = BeginPaint (hwnd, &ps);
 			GetClientRect (hwnd, &rect);
-
-			DrawText (hdc, szMessage, -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+			DrawText (hdc, szMessage, -1, &rect, 
+                DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 			EndPaint (hwnd, &ps);
 		}		
 		break;
