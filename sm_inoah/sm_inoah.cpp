@@ -461,7 +461,7 @@ static void SetFontSize(int fontSize, HWND hwnd)
             break;
         case FONT_SIZE_BIG:
             menuItemId = IDM_FNT_LARGE;
-            delta = -2;
+            delta = 2;
            break;
         default:
             assert(false);
