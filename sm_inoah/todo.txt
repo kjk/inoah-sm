@@ -1,6 +1,7 @@
 TODO:
 23. change the menu on ppc
-25. add Ctrl-Q as "quit" shortcut
+25. add "lookup" button like in iPedia
+26. add Ctrl-Q as "quit" shortcut
 
 For future versions:
 8.  add compact mode (need spaces to separate) (version 1.1)

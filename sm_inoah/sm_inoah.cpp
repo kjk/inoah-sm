@@ -464,10 +464,9 @@ static void RepaintDefinition(int scrollDelta)
     ArsLexis::Rectangle bounds = clientRect;
 
     RECT defRectTmp = clientRect;
-    defRectTmp.top    += 24;
+    defRectTmp.top    += 24;  // TODO: should it depend on the size of edit window?
     defRectTmp.left   += 2;
     defRectTmp.right  -= 2 + GetScrollBarDx();
-    /* defRectTmp.bottom -= 2 + GetMenuDy(); */
     defRectTmp.bottom -= 2;
 
     ArsLexis::Rectangle defRect = defRectTmp;
@@ -983,39 +982,17 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return result;
 }
 
-bool g_fNotFirstOnSize = false;
-extern int g_menuDy;
-
 static void OnSize(HWND hwnd, LPARAM lp)
 {
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
 
-    // total hack for ppc
-/*    if (g_fNotFirstOnSize)
-    {
-        g_menuDy = 0;
-    }
-    else
-    {
-        g_fNotFirstOnSize = true;
-    }
-
-    int menuDy = GetMenuDy();*/
-    int menuDy = 0;
-
+    // should that depend on the size of edit window?
     int scrollStartY = 24;
-    int scrollDy = dy - menuDy - scrollStartY + 1;
+    int scrollDy = dy - scrollStartY - 2;
 
-#ifdef WIN32_PLATFORM_PSPC
-    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
-    // scrollDy-3 is a magic number - I don't really know why I have to substract 3
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy-3, FALSE);
-#else
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
     MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
-#endif
-
 }
 
 static void OnScroll(WPARAM wp)
