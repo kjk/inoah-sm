@@ -1,19 +1,3 @@
-#include "resource.h"
-#include "sm_inoah.h"
-#include "iNoahSession.h"
-#include "iNoahParser.h"
-#include "TAPIDevice.h"
-#include "reclookups.h"
-#include "registration.h"
-
-#include "BaseTypes.hpp"
-#include "GenericTextElement.hpp"
-#include "BulletElement.hpp"
-#include "ParagraphElement.hpp"
-#include "HorizontalLineElement.hpp"
-#include "Definition.hpp"
-#include <Debug.hpp>
-
 #include <windows.h>
 #ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
@@ -22,6 +6,33 @@
 #include <fonteffects.hpp>
 #include <sms.h>
 #include <uniqueid.h>
+
+#include <BaseTypes.hpp>
+#include <Debug.hpp>
+#include <GenericTextElement.hpp>
+#include <BulletElement.hpp>
+#include <ParagraphElement.hpp>
+#include <HorizontalLineElement.hpp>
+#include <Definition.hpp>
+
+#include "sm_inoah.h"
+#include "resource.h"
+#include "Transmission.h"
+#include "iNoahSession.h"
+#include "iNoahParser.h"
+#include "TAPIDevice.h"
+#include "reclookups.h"
+#include "registration.h"
+
+#ifndef WIN32_PLATFORM_PSPC
+  #define STORE_FOLDER CSIDL_APPDATA
+#else
+  #define STORE_FOLDER CSIDL_PROGRAMS
+#endif
+
+const String iNoahFolder  = _T("\\iNoah");
+const String cookieFile   = _T("\\Cookie");
+const String regCodeFile  = _T("\\RegCode");
 
 HINSTANCE g_hInst      = NULL;  // Local copy of hInstance
 HWND      g_hwndMain   = NULL;    // Handle to Main window returned from CreateWindow
@@ -44,10 +55,10 @@ ArsLexis::String g_recentWord;
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 
-void    drawProgressInfo(HWND hwnd, TCHAR* text);
-void    setFontSize(int diff,HWND hwnd);
-void    paint(HWND hwnd, HDC hdc);
-void    setScrollBar(Definition* definition);
+void    DrawProgressInfo(HWND hwnd, TCHAR* text);
+void    SetFontSize(int diff,HWND hwnd);
+void    Paint(HWND hwnd, HDC hdc);
+void    SetScrollBar(Definition* definition);
 
 RenderingPreferences* g_renderingPrefs = NULL;
 
@@ -67,7 +78,7 @@ static RenderingPreferences& renderingPrefs(void)
     return *g_renderingPrefs;
 }
 
-static void setDefinition2(ArsLexis::String& defTxt)
+static void SetDefinition(ArsLexis::String& defTxt)
 {
     Definition * newDef = parseDefinition(defTxt);
 
@@ -80,6 +91,135 @@ static void setDefinition2(ArsLexis::String& defTxt)
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     g_fRec = true;
     InvalidateRect(g_hwndMain,NULL,TRUE);
+}
+
+void DeleteFile(const String& fileName)
+{
+    TCHAR szPath[MAX_PATH];
+    // TODO: do we need to pass g_hwndMain? docs are unclear
+    BOOL  fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    if (!fOk)
+        return;
+    String fullPath = szPath + iNoahFolder + fileName;
+    DeleteFile(fullPath.c_str());
+}
+
+static void SaveStringToFile(const String& fileName, const String& str)
+{
+    TCHAR szPath[MAX_PATH];
+
+    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    if (!fOk)
+        return;
+
+    String fullPath = szPath + iNoahFolder;
+    fOk = CreateDirectory (fullPath.c_str(), NULL);  
+    if (!fOk)
+        return;
+    fullPath += fileName;
+
+    HANDLE handle = CreateFile(fullPath.c_str(), 
+        GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL, NULL); 
+    
+    if (INVALID_HANDLE_VALUE==handle)
+        return;
+
+    DWORD written;
+    WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
+    CloseHandle(handle);
+}
+
+static String LoadStringFromFile(String fileName)
+{
+    TCHAR szPath[MAX_PATH];
+    // It doesn't help to have a path longer than MAX_PATH
+    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    // Append directory separator character as needed
+    if (!fOk)
+        return _T("");
+    
+    String fullPath = szPath +  iNoahFolder + fileName;
+    
+    HANDLE handle = CreateFile(fullPath.c_str(), 
+        GENERIC_READ, FILE_SHARE_READ, NULL, 
+        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
+        NULL); 
+
+    if (INVALID_HANDLE_VALUE==handle)
+        return TEXT("");
+    
+    TCHAR  buf[254];
+    DWORD  bytesRead;
+    String ret;
+
+    while (TRUE)
+    {
+        fOk = ReadFile(handle, &buf, sizeof(buf), &bytesRead, NULL);
+
+        if (!fOk || (0==bytesRead))
+            break;
+        ret.append(buf, bytesRead/sizeof(TCHAR));
+    }
+
+    CloseHandle(handle);
+    return ret;
+}
+
+String g_regCode;
+
+String GetRegCode()
+{
+    static bool fTriedFile = false;
+    if (!g_regCode.empty())
+        return g_regCode;
+
+    if (fTriedFile)
+        return g_regCode;
+
+    g_regCode = LoadStringFromFile(regCodeFile);
+    fTriedFile = true;
+    return g_regCode;
+}
+
+static void DeleteRegCode()
+{
+    DeleteFile(regCodeFile);
+    g_regCode.clear();
+}
+
+String g_cookie;
+
+String GetCookie()
+{
+    static bool fTriedFile = false;
+    if (!g_cookie.empty())
+        return g_cookie;
+
+    if (fTriedFile)
+        return g_cookie;
+
+    g_cookie = LoadStringFromFile(cookieFile);
+    fTriedFile = true;
+    return g_cookie;
+}
+
+void SetCookie(const String& cookie)
+{    
+    g_cookie = cookie;
+    SaveStringToFile(cookieFile,cookie);
+}
+
+static void DeleteCookie()
+{
+    DeleteFile(cookieFile);
+    g_cookie.clear();
+}
+
+static void ClearCache()
+{
+    DeleteCookie();
+    DeleteRegCode();
 }
 
 #define MAX_WORD_LEN 64
@@ -95,27 +235,27 @@ static void DoLookup(HWND hwnd)
     SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
 
     ArsLexis::String word(buf); 
-    drawProgressInfo(hwnd, _T("definition..."));
+    DrawProgressInfo(hwnd, _T("definition..."));
 
     String def;
     bool fOk = FGetWord(word,def);
     if (!fOk)
         return;
-    setDefinition2(def);
+    SetDefinition(def);
 }
 
 static void DoRandom(HWND hwnd)
 {
     HDC hdc = GetDC(hwnd);
-    paint(hwnd, hdc);
+    Paint(hwnd, hdc);
     ReleaseDC(hwnd, hdc);
-    drawProgressInfo(hwnd, TEXT("random definition..."));
+    DrawProgressInfo(hwnd, TEXT("random definition..."));
 
     String def;
     bool fOk = FGetRandomDef(def);
     if (!fOk)
         return;
-    setDefinition2(def);
+    SetDefinition(def);
 }
 
 static void DoCompact(HWND hwnd)
@@ -152,9 +292,9 @@ static void DoCompact(HWND hwnd)
 static void DoRecentLookups(HWND hwnd)
 {
     HDC hdc = GetDC(hwnd);
-    paint(hwnd, hdc);
+    Paint(hwnd, hdc);
     ReleaseDC(hwnd, hdc);
-    drawProgressInfo(hwnd, TEXT("recent lookups list..."));
+    DrawProgressInfo(hwnd, TEXT("recent lookups list..."));
 
     bool fOk = FGetWordList(g_wordList);
     if (!fOk)
@@ -171,12 +311,12 @@ static void DoRecentLookups(HWND hwnd)
         if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd, RecentLookupsDlgProc))
         {
             ArsLexis::String word(g_recentWord); 
-            drawProgressInfo(hwnd, _T("definition..."));                
+            DrawProgressInfo(hwnd, _T("definition..."));                
             String def;
             bool fOk = FGetWord(word,def);
             if (!fOk)
                 return;
-            setDefinition2(def);
+            SetDefinition(def);
         }
     }
 }
@@ -217,7 +357,7 @@ static void OnCreate(HWND hwnd)
         g_hInst,
         NULL);
 
-    setScrollBar(g_definition);
+    SetScrollBar(g_definition);
 
     // In order to make Back work properly, it's necessary to 
     // override it and then call the appropriate SH API
@@ -227,7 +367,7 @@ static void OnCreate(HWND hwnd)
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
         );
     
-    setFontSize(IDM_FNT_STANDARD, hwnd);
+    SetFontSize(IDM_FNT_STANDARD, hwnd);
     SetFocus(g_hwndEdit);
 }
 
@@ -251,7 +391,7 @@ void static OnHotKey(WPARAM wp, LPARAM lp)
             if(NULL!=g_definition)
                 g_definition->scroll(gr, renderingPrefs(), page);
 
-            setScrollBar(g_definition);
+            SetScrollBar(g_definition);
             break;
     }
 }
@@ -272,6 +412,47 @@ static bool GotoURL(LPCTSTR lpszUrl)
     return false;
 }
 
+static void OnRegister(HWND hwnd)
+{
+DoItAgain:
+    String newRegCode;
+    bool fOk = FGetRegCodeFromUser(g_regCode, newRegCode);
+    if (!fOk)
+        return;
+
+    bool fRegCodeOk = false;
+    if (!FCheckRegCode(newRegCode, fRegCodeOk))
+    {
+        assert( false == fRegCodeOk );
+        return;
+    }
+
+    if (fRegCodeOk)
+    {
+        SaveStringToFile(regCodeFile,g_regCode);
+        g_regCode = newRegCode;
+        MessageBox(g_hwndMain, 
+            _T("Thank you for registering iNoah."), 
+            _T("Registration successful"), 
+            MB_OK | MB_ICONINFORMATION);
+    }
+    else
+    {
+        if ( IDNO == MessageBox(g_hwndMain, 
+            _T("Incorrect registration code. Contact support@arslexis.com in case of problems. Do you want to re-enter the code ?"), 
+            _T("Wrong registration code"), MB_YESNO | MB_ICONERROR) )
+        {
+            // this is "Ok" button. Clear-out registration code (since it was invalid)
+            g_regCode.clear();
+            // TODO: delete regCode file            
+        }
+        else
+        {
+            goto DoItAgain;
+        }
+    }
+}
+
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT result = TRUE;
@@ -287,15 +468,15 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_FNT_LARGE:
-            setFontSize(IDM_FNT_LARGE, hwnd);
+            SetFontSize(IDM_FNT_LARGE, hwnd);
             break;
 
         case IDM_FNT_STANDARD:
-            setFontSize(IDM_FNT_STANDARD, hwnd);
+            SetFontSize(IDM_FNT_STANDARD, hwnd);
             break;
 
         case IDM_FNT_SMALL:
-            setFontSize(IDM_FNT_SMALL, hwnd);
+            SetFontSize(IDM_FNT_SMALL, hwnd);
             break;
 
         case ID_LOOKUP:
@@ -312,7 +493,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_REGISTER:
-            DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd, RegistrationDlgProc);
+            OnRegister(hwnd);
             break;
 
         case IDM_CACHE:
@@ -376,7 +557,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case WM_PAINT:
             hdc = BeginPaint (hwnd, &ps);
-            paint(hwnd, hdc);
+            Paint(hwnd, hdc);
             EndPaint (hwnd, &ps);
             break;
 
@@ -530,7 +711,7 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
     g_forceLayoutRecalculation=false;
 }
 
-void paint(HWND hwnd, HDC hdc)
+void Paint(HWND hwnd, HDC hdc)
 {
     RECT  rect;
     GetClientRect(hwnd, &rect);
@@ -548,7 +729,7 @@ void paint(HWND hwnd, HDC hdc)
 
     if (g_fRec)
     {
-        setScrollBar(g_definition);
+        SetScrollBar(g_definition);
         g_fRec = false;
     }
 }
@@ -612,7 +793,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     if (!doubleBuffer)
                         g_definition->scroll(gr, renderingPrefs(), page);
                     
-                    setScrollBar(g_definition);
+                    SetScrollBar(g_definition);
                     return 0;
                 }
             }
@@ -623,7 +804,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
 }
 
-void drawProgressInfo(HWND hwnd, TCHAR* text)
+void DrawProgressInfo(HWND hwnd, TCHAR* text)
 {
     RECT rect;
     HDC hdc=GetDC(hwnd);
@@ -672,7 +853,7 @@ void drawProgressInfo(HWND hwnd, TCHAR* text)
     ReleaseDC(hwnd,hdc);
 }
 
-void setFontSize(int diff, HWND hwnd)
+void SetFontSize(int diff, HWND hwnd)
 {
     int delta=0;
     HWND hwndMB = SHFindMenuBar (hwnd);
@@ -703,7 +884,7 @@ void setFontSize(int diff, HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
-void setScrollBar(Definition* definition)
+void SetScrollBar(Definition* definition)
 {
     int frst=0;
     int total=0;

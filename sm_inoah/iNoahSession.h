@@ -1,8 +1,7 @@
-#if !defined(_INOAH_SESSION_H_)
+#ifndef _INOAH_SESSION_H_
 #define _INOAH_SESSION_H_
 
 #include "BaseTypes.hpp"
-#include "Transmission.h"
 
 using ArsLexis::String;
 
@@ -11,9 +10,6 @@ bool    FGetRandomDef(String& defOut);
 bool    FGetWord(const String& word, String& defOut);
 bool    FGetWordList(String& wordListOut);
 bool    FCheckRegCode(const String& regCode, bool& fRegCodeValid);
-void    ClearCache();
-void    SaveRegCode(const String& regCode);
-void    SaveCookie(const String& cookie);
 
 // those are ids representing all fields that a server can possibly send
 // must start with 0 and increase by 1 because we're using them as indexes

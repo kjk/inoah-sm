@@ -1,13 +1,4 @@
-//Microsoft Developer Studio generated resource script.
-//
-//
 #include "resource.h"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Data
-//
 
 ID_ICON ICON "inoah.ico"
 

@@ -1,4 +1,4 @@
-#if !defined(_TRANSMISSION_H_)
+#ifndef _TRANSMISSION_H_
 #define _TRANSMISSION_H_
 
 #include "BaseTypes.hpp"

@@ -1,6 +1,3 @@
-#include "iNoahSession.h"
-#include "Transmission.h"
-#include "sm_inoah.h"
 #include <aygshell.h>
 #ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
@@ -12,17 +9,13 @@
 
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
+#include <Text.hpp>
 
-#ifndef WIN32_PLATFORM_PSPC
-    #define STORE_FOLDER CSIDL_APPDATA
-#else
-    #define STORE_FOLDER CSIDL_PROGRAMS
-#endif
+#include "sm_inoah.h"
+#include "Transmission.h"
+#include "iNoahSession.h"
 
-extern String GetNextLine(const ArsLexis::String& str, String::size_type& curPos, bool& fEnd);
-
-using ArsLexis::String;
-using ArsLexis::char_t;
+using namespace ArsLexis;
 
 const char_t * errorStr        = _T("ERROR");
 const char_t * messageStr      = _T("MESSAGE");
@@ -53,10 +46,6 @@ const String getWordParam    = _T("get_word=");
 
 const String randomRequest   = _T("get_random_word=");
 const String recentRequest   = _T("recent_lookups=");
-
-const String iNoahFolder     = _T("\\iNoah");
-const String cookieFile      = _T("\\Cookie");
-const String regCodeFile     = _T("\\RegCode");
 
 enum eFieldType {
     fieldNoValue,     // field has no value e.g. "REGISTRATION_OK\n"
@@ -100,78 +89,6 @@ static bool fFieldHasValue(eFieldId fieldId)
         default:
             return true;
     }
-}
-
-static void SaveStringToFile(const String& fileName, const String& str)
-{
-    TCHAR szPath[MAX_PATH];
-
-    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-    if (!fOk)
-        return;
-
-    String fullPath = szPath + iNoahFolder;
-    fOk = CreateDirectory (fullPath.c_str(), NULL);  
-    if (!fOk)
-        return;
-    fullPath += fileName;
-
-    HANDLE handle = CreateFile(fullPath.c_str(), 
-        GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL, NULL); 
-    
-    if (INVALID_HANDLE_VALUE==handle)
-        return;
-
-    DWORD written;
-    WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
-    CloseHandle(handle);
-}
-
-void SaveCookie(const String& cookie)
-{
-    SaveStringToFile(cookieFile,cookie);
-}
-
-void SaveRegCode(const String& regCode)
-{
-    SaveStringToFile(regCodeFile,regCode);
-}
-
-static String LoadStringFromFile(String fileName)
-{
-    TCHAR szPath[MAX_PATH];
-    // It doesn't help to have a path longer than MAX_PATH
-    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-    // Append directory separator character as needed
-    if (!fOk)
-        return _T("");
-    
-    String fullPath = szPath +  iNoahFolder + fileName;
-    
-    HANDLE handle = CreateFile(fullPath.c_str(), 
-        GENERIC_READ, FILE_SHARE_READ, NULL, 
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
-        NULL); 
-
-    if (INVALID_HANDLE_VALUE==handle)
-        return TEXT("");
-    
-    TCHAR  buf[254];
-    DWORD  bytesRead;
-    String ret;
-
-    while (TRUE)
-    {
-        fOk = ReadFile(handle, &buf, sizeof(buf), &bytesRead, NULL);
-
-        if (!fOk || (0==bytesRead))
-            break;
-        ret.append(buf, bytesRead/sizeof(TCHAR));
-    }
-
-    CloseHandle(handle);
-    return ret;
 }
 
 ServerResponseParser::ServerResponseParser(String &content)
@@ -346,6 +263,24 @@ bool ServerResponseParser::fMalformed()
     return _fMalformed;
 }
 
+#define SIZE_FOR_REST_OF_URL 64
+static String BuildCommonWithCookie(const String& cookie, const String& optionalOne=_T(""), const String& optionalTwo=_T(""))
+{
+    String url;
+    url.reserve(urlCommonLen +
+                cookieParam.length() + cookie.length() +
+                sep.length() +
+                optionalOne.length() +
+                optionalTwo.length() +
+                SIZE_FOR_REST_OF_URL);
+
+    url.assign(urlCommon);
+    url.append(cookieParam);
+    url.append(cookie);
+    url.append(sep);
+	return url;
+}
+
 static String BuildGetCookieUrl()
 {
     String deviceInfo = getDeviceInfo();
@@ -357,7 +292,6 @@ static String BuildGetCookieUrl()
                 deviceInfo.length());
 
     url.assign(urlCommon);
-
     url.append(cookieRequest);
     url.append(sep); 
     url.append(deviceInfoParam);
@@ -367,18 +301,7 @@ static String BuildGetCookieUrl()
 
 static String BuildGetRandomUrl(const String& cookie)
 {    
-    String url;
-    url.reserve(urlCommonLen +
-                cookieParam.length() +
-                cookie.length() +
-                sep.length() + 
-                randomRequest.length());
-
-    url.assign(urlCommon);
-    url.append(cookieParam);
-    url.append(cookie);
-    url.append(sep);
-    url.append(randomRequest);
+    String url = BuildCommonWithCookie(cookie,randomRequest);
     return url;
 }
 
@@ -399,32 +322,15 @@ static String BuildGetWordListUrl(const String& cookie)
     return url;
 }
 
-String g_regCode;
-
-static String GetRegCode()
-{
-    if (!g_regCode.empty())
-        return g_regCode;
-    // TODO: this will always try to reg code from file if we don't
-    // have reg code. Could avoid that by using additional flag
-    g_regCode = LoadStringFromFile(regCodeFile);
-    return g_regCode;
-}
-
 static String BuildGetWordUrl(const String& cookie, const String& word)
 {
-    String regCode = GetRegCode();
-    if ( !regCode.empty() )
-        regCode = sep+regCodeParam+regCode;
-
     String url;
     url.reserve(urlCommonLen +
                 cookieParam.length() +
                 cookie.length() +
                 sep.length() + 
                 getWordParam.length() +
-                word.length() +
-                regCode.length()                
+                word.length()
                 );
 
     url.assign(urlCommon);
@@ -433,7 +339,15 @@ static String BuildGetWordUrl(const String& cookie, const String& word)
     url.append(sep);
     url.append(getWordParam);
     url.append(word);
-    url.append(regCode);
+
+    String regCode = GetRegCode();
+    if (!regCode.empty())
+    {
+        url.append(sep);
+        url.append(regCodeParam);
+        url.append(regCode);
+    }
+
     return url;
 }
 
@@ -456,7 +370,6 @@ static String BuildRegisterUrl(const String& cookie, const String& regCode)
     url.append(regCode);
     return url;
 }
-
 
 static void HandleConnectionError(DWORD errorCode)
 {
@@ -538,25 +451,16 @@ bool FHandleParsedResponse(ServerResponseParser& responseParser)
     return true;
 }
 
-String g_cookie;
-
 // Returns a cookie in cookieOut. If cookie is not present, it'll get it from
 // the server. If there's a problem retrieving the cookie, it'll display
 // appropriate error messages to the client and return false.
 // Return true if cookie was succesfully obtained.
 bool FGetCookie(String& cookieOut)
 {
-    if (!g_cookie.empty())
-    {
-        cookieOut = g_cookie;
-        return true;
-    }
 
-    String storedCookie = LoadStringFromFile(cookieFile);
-    if (!storedCookie.empty())
+    cookieOut = GetCookie();
+    if (!cookieOut.empty())
     {
-        g_cookie = storedCookie;
-        cookieOut = g_cookie;
         return true;
     }
 
@@ -582,8 +486,7 @@ bool FGetCookie(String& cookieOut)
     }
 
     responseParser.GetFieldValue(cookieField,cookieOut);
-    g_cookie = cookieOut;
-    SaveCookie(cookieOut);
+    SetCookie(cookieOut);
     return true;
 }
 
@@ -725,9 +628,6 @@ bool FCheckRegCode(const String& regCode, bool& fRegCodeValid)
     return true;
 }
 
-
-
-
 TCHAR numToHex(TCHAR num)
 {    
     if (num>=0 && num<=9)
@@ -745,19 +645,6 @@ void stringAppendHexified(String& str, const String& toHexify)
         str += numToHex((toHexify[i] & 0xF0) >> 4);
         str += numToHex(toHexify[i] & 0x0F);
     }
-}
-
-void ClearCache()
-{
-    TCHAR szPath[MAX_PATH];
-    BOOL  fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-    String fullPath = szPath + iNoahFolder;
-    fullPath += cookieFile;
-    fOk = DeleteFile(fullPath.c_str());
-    fullPath = szPath + iNoahFolder + regCodeFile;
-    fOk = DeleteFile(fullPath.c_str());
-    g_cookie.clear();
-    g_regCode.clear();
 }
 
 // According to this msdn info:

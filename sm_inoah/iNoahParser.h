@@ -1,11 +1,11 @@
-#ifndef INOAH_PARSER_H
-#define INOAH_PARSER_H
+#ifndef _INOAH_PARSER_H_
+#define _INOAH_PARSER_H_
 
-#include "BaseTypes.hpp"
-#include <DefinitionElement.hpp>
-#include "DynamicNewLineElement.h"
 #include <list>
 #include <algorithm>
+#include <BaseTypes.hpp>
+#include <DefinitionElement.hpp>
+#include "DynamicNewLineElement.h"
 
 class iNoahParser
 {
@@ -42,7 +42,6 @@ private:
         
         
     };
-    //ArsLexis::String definition;
     Definition::Elements_t elements_;
     static const ArsLexis::String arabNums[];
     static const pOfSpeechCnt;

@@ -1,15 +1,20 @@
 #ifndef _SM_INOAH_H__
 #define _SM_INOAH_H__
 
+#include <BaseTypes.hpp>
 #include "resource.h"
-#include "iNoahSession.h"
-#include "BaseTypes.hpp"
+
+using ArsLexis::String;
 
 extern HINSTANCE g_hInst;       // Local copy of hInstance
 extern HWND      g_hwndMain;    // Handle to Main window returned from CreateWindow
 
-extern ArsLexis::String g_recentWord;
-extern ArsLexis::String g_wordList;
+extern String g_recentWord;
+extern String g_wordList;
+
+String GetRegCode();
+String GetCookie();
+void SetCookie(const String& cookie);
 
 TCHAR szAppName[];
 TCHAR szTitle[];

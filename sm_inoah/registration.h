@@ -1,5 +1,10 @@
-#include "resource.h"
-#include <windows.h>
+#ifndef _REGISTRATION_H_
+#define _REGISTRATION_H_
 
-BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-BOOL InitRegistrationDlg(HWND hDlg);
+#include <BaseTypes.hpp>
+
+using ArsLexis::String;
+
+bool FGetRegCodeFromUser(const String& currentRegCode, String& newRegCode);
+
+#endif

@@ -3,73 +3,37 @@
 #include "sm_inoah.h"
 #include "iNoahSession.h"
 
-// Given a handle of text edit window, return text of that window
-static void GetEditWinText(HWND hwndEdit, ArsLexis::String &txtOut)
+#define REGISTER_PRESSED 1
+#define LATER_PRESSED    2
+
+static void GetEditWinText(HWND hwnd, ArsLexis::String &txtOut)
 {
-    int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+    // 128 should be enough for anybody
+    TCHAR buf[128];
 
-    TCHAR *buf=new TCHAR[len+1];
-    len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-    txtOut.assign(buf);
-    delete [] buf;
-}
+	memset(&buf,0,sizeof(buf));
 
-extern String g_regCode;
+    int len = SendMessage(hwnd, EM_LINELENGTH, 0,0)+1;
 
-static void OnRegister(HWND hDlg)
-{
-    static ArsLexis::String regCode;
-
-    ArsLexis::String text;
-
-    HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
-    GetEditWinText(hwndEdit, regCode);
-
-    bool fRegCodeOk = false;
-    if (!FCheckRegCode(regCode, fRegCodeOk))
+    if (len < sizeof(buf)/sizeof(buf[0]) )
     {
-        assert( false == fRegCodeOk );
-        return;
-    }
-
-    // TODO: display "thank you for registering iNoah" dialog or
-    // "regCode invalid - do you want to re-enter it". "Yes" "Later"
-
-    if (fRegCodeOk)
-    {
-        SaveRegCode(regCode);
-        g_regCode = regCode;
-    }
-    else
-    {
-
-
+        len = SendMessage(hwnd, WM_GETTEXT, len, (LPARAM)buf);
+        txtOut.assign(buf);
     }
 }
 
-BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+static void SetEditWinText(HWND hwnd, String& txt)
 {
-    switch(msg)
+    if (!txt.empty())
     {
-        case WM_INITDIALOG:
-            return InitRegistrationDlg(hDlg);
-        case WM_COMMAND:
-        {
-            switch (wp)
-            {
-                case ID_CANCEL:
-                    EndDialog(hDlg, 0);
-                    break;
-                case IDM_REGISTER:
-                    OnRegister(hDlg);
-                    break;
-            }
-        }
+        SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)txt.c_str());
     }
-    return FALSE;
 }
 
-BOOL InitRegistrationDlg(HWND hDlg)
+static String g_oldRegCode;
+static String g_newRegCode;
+
+static BOOL OnInitDialog(HWND hDlg)
 {
     SHINITDLGINFO shidi;
     ZeroMemory(&shidi, sizeof(shidi));
@@ -97,10 +61,52 @@ BOOL InitRegistrationDlg(HWND hDlg)
 
     HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
 
-    //TODO: set existing reg code
-    //SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)newRegCode_.c_str());
+    SetEditWinText(hwndEdit, g_oldRegCode);
     SendMessage(hwndEdit, EM_SETINPUTMODE, 0, EIM_NUMBERS);
 
     SetFocus(hwndEdit);
     return TRUE;
 }
+
+static BOOL CALLBACK RegCodeDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+    if (WM_INITDIALOG==msg)
+    {
+        return OnInitDialog(hDlg);
+    }
+
+    if (WM_COMMAND==msg)
+    {
+        assert( (ID_CANCEL==wp) || (IDM_REGISTER==wp));
+
+        if (ID_CANCEL==wp)
+        {
+            EndDialog(hDlg, LATER_PRESSED);
+            return TRUE;
+        }
+        else if (IDM_REGISTER==wp)
+        {
+            HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
+            GetEditWinText(hwndEdit, g_newRegCode);
+            EndDialog(hDlg, REGISTER_PRESSED);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+bool FGetRegCodeFromUser(const String& currentRegCode, String& newRegCode)
+{
+    g_oldRegCode.assign(currentRegCode);
+
+    int result = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), g_hwndMain, RegCodeDlgProc);
+
+    if (REGISTER_PRESSED==result)
+    {
+        newRegCode.assign(g_newRegCode);
+        return true;
+    }
+    else
+        return false;
+}
+
