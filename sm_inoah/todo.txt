@@ -1,6 +1,4 @@
 TODO:
-23. change the menu on ppc
-25. add "lookup" button like in iPedia
 26. add Ctrl-Q as "quit" shortcut
 
 For future versions:
@@ -9,8 +7,14 @@ For future versions:
 17. wildcard support (on the server)
 19. spell-checking support (also on the server - if not found, server
     sends a list of spell-checking matches)
+20. add audio. we would have to use audio files from some other websites.
+we would have to do one-time spidering to find links to *.wav files on other
+websites. server would send a link to *.wav file, we would download it from
+the device and play it.
 
 DONE:
+25. add "lookup" button like in iPedia (2004-08-20)
+23. change the menu on ppc (2004-08-20)
 5.  pocket pc/pocket pc phone edition version (2004-08-20)
 24. handle sip on ppc (2004-08-20)
 13. do ConnMgr* calls dynamically via LoadLibrary() so that it works on PPC

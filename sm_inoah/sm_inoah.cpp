@@ -1140,13 +1140,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    
 {
     // if we're already running, then just bring our window to front
-    HWND hwndPrev = FindWindow(APP_NAME, WINDOW_TITLE);
-    if (hwndPrev) 
+    HWND hwndExisting = FindWindow(APP_NAME, NULL);
+    if (hwndExisting) 
     {
-        SetForegroundWindow(hwndPrev);    
+        // without | 0x01 we would block if MessageBox was displayed
+        // I haven't seen it documented anywhere but official MSDN examples do that:
+        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/win_ce/html/pwc_ASmartphoneApplication.asp
+        SetForegroundWindow ((HWND)(((DWORD)hwndExisting) | 0x01));    
         return 0;
     }
-    
+   
     if (!hPrevInstance)
     {
         if (!InitApplication(hInstance))
