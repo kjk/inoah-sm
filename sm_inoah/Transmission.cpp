@@ -102,7 +102,6 @@ DWORD Transmission::sendRequest()
         fullURL.c_str(),
     NULL,0,0, context=transContextCnt++);*/
 
-    /* todo: is it a bug? should we check succ instead? */
     if(!succ)
         return setError();
     //InternetSetStatusCallback(hIRequest, dispatchCallback);
