@@ -80,7 +80,6 @@ static void SetDefinition(ArsLexis::String& defTxt)
 {
     String word;
     Definition * newDef = ParseAndFormatDefinition(defTxt, word);
-
     if (NULL==newDef)
         return;
 
@@ -89,8 +88,6 @@ static void SetDefinition(ArsLexis::String& defTxt)
 
     SetEditWinText(g_hwndEdit, word);
     SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
-
-    ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     g_fUpdateScrollbars = true;
     InvalidateRect(g_hwndMain,NULL,TRUE);
 }
@@ -379,7 +376,7 @@ static void Paint(HWND hwnd, HDC hdc)
     else
         PaintDefinition(hwnd, hdc, rect);
 
-    if (g_fUpdateScrollbars && (NULL!=GetDefinition()))
+    if (g_fUpdateScrollbars)
     {
         SetScrollBar(GetDefinition());
         g_fUpdateScrollbars = false;
@@ -703,15 +700,15 @@ DoItAgain:
         MessageBox(g_hwndMain, 
             _T("Thank you for registering iNoah."), 
             _T("Registration successful"), 
-            MB_OK | MB_ICONINFORMATION);
+            MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
         // so that we change "Unregistered" to "Registered" in "About" screen
         InvalidateRect(hwnd, NULL, TRUE);
     }
     else
     {
         if ( IDNO == MessageBox(g_hwndMain, 
-            _T("Wrong registration code. Please contact support@arslexis.com.\n\nRe-enter the code?"),
-            _T("Wrong reg code"), MB_YESNO) )
+            _T("Wrong registration code. Please contact support@arslexis.com if problem persists.\n\nRe-enter the code?"),
+            _T("Wrong reg code"), MB_YESNO | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND ) )
         {
             // this is "Ok" button. Clear-out registration code (since it was invalid)
             SetRegCode(_T(""));
@@ -795,6 +792,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDM_MENU_ABOUT:
             DeleteDefinition();
             g_currentWord.clear();
+            g_fUpdateScrollbars = true;
             InvalidateRect(hwnd,NULL,TRUE);
             break;
 

@@ -95,8 +95,15 @@ IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
 STYLE WS_POPUP | WS_VISIBLE
 FONT 8, "System"
 BEGIN
-    CTEXT "Enter registration code:",IDC_STATIC, 0, 25, 100, 10
+    CTEXT "Enter registration code:", IDC_STATIC, 0, 25, 100, 10
     EDITTEXT IDC_EDIT_REGCODE, 2, 25+12, 96, 10,
         ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
+
+#ifdef HANDANGO
+    CTEXT "Purchase registration code at http://handango.com/products. Product ID: 34344",IDC_STATIC, 0, 25+12+14, 100, 20
+#else
+	CTEXT "Purchase registration code at http:/www.arslexis.com",IDC_STATIC, 0, 25+12+14, 100, 20
+#endif
+
 END
 

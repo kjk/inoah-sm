@@ -22,6 +22,8 @@ CFG=sm_inoah - Win32 (WCE ARM) Debug
 !MESSAGE "sm_inoah - Win32 (WCE ARM) Debug" (based on "Win32 (WCE ARM) Application")
 !MESSAGE "sm_inoah - Win32 (WCE x86) Release" (based on "Win32 (WCE x86) Application")
 !MESSAGE "sm_inoah - Win32 (WCE x86) Debug" (based on "Win32 (WCE x86) Application")
+!MESSAGE "sm_inoah - Win32 (WCE ARM) Release Handango" (based on "Win32 (WCE ARM) Application")
+!MESSAGE "sm_inoah - Win32 (WCE x86) Release Handango" (based on "Win32 (WCE x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -127,7 +129,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /out:"X86Rel/inoah_sm_rel.exe" /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /out:"X86Rel/inoah_sm_rel.exe" /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -163,6 +165,74 @@ LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 # ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /out:"X86Dbg/inoah_sm_dbg.exe" /subsystem:$(CESubsystem) /MACHINE:IX86
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "ARMRelease Handango"
+# PROP BASE Intermediate_Dir "ARMRelease Handango"
+# PROP BASE CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ARMRelease Handango"
+# PROP Intermediate_Dir "ARMRelease Handango"
+# PROP CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/inoah_sm_arm_rel.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/inoah_sm_arm_rel.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "X86Release Handango"
+# PROP BASE Intermediate_Dir "X86Release Handango"
+# PROP BASE CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "X86Release"
+# PROP Intermediate_Dir "X86Release"
+# PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
+# ADD CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /D "HANDANGO" /YX /Gs8192 /GF /Oxs /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /out:"X86Rel/inoah_sm_rel.exe" /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /out:"X86Rel/inoah_sm_rel_hand.exe" /subsystem:$(CESubsystem) /MACHINE:IX86
+
 !ENDIF 
 
 # Begin Target
@@ -171,6 +241,8 @@ LINK32=link.exe
 # Name "sm_inoah - Win32 (WCE ARM) Debug"
 # Name "sm_inoah - Win32 (WCE x86) Release"
 # Name "sm_inoah - Win32 (WCE x86) Debug"
+# Name "sm_inoah - Win32 (WCE ARM) Release Handango"
+# Name "sm_inoah - Win32 (WCE x86) Release Handango"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -243,9 +315,6 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_BULLE=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -267,6 +336,26 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_BULLE=\
+	"..\ars_framework\Src\BulletElement.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_BULLE=\
+	"..\ars_framework\Src\BulletElement.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -303,6 +392,10 @@ DEP_CPP_COMMO=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
 
 !ENDIF 
 
@@ -375,6 +468,10 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
 !ENDIF 
 
 # End Source File
@@ -444,9 +541,6 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_DEFIN=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -467,6 +561,24 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_DEFIN=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_DEFIN=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -535,9 +647,6 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_DEFINI=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -557,6 +666,22 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_DEFINI=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_DEFINI=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -729,13 +854,51 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\cctype"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\DefinitionParser.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
-	
-NODEP_CPP_DEFINIT=\
-	".\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -806,6 +969,18 @@ DEP_CPP_DEFINIT=\
 	".\DefinitionParser.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_DEFINIT=\
+	".\DefinitionParser.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_DEFINIT=\
+	".\DefinitionParser.hpp"\
 	
 
 !ENDIF 
@@ -883,9 +1058,6 @@ DEP_CPP_DYNAM=\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_DYNAM=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -910,6 +1082,32 @@ DEP_CPP_DYNAM=\
 	".\RenderingPreferences.hpp"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_DYNAM=\
+	".\DynamicNewLineElement.h"\
+	".\RenderingPreferences.hpp"\
+	
+NODEP_CPP_DYNAM=\
+	".\BaseTypes.hpp"\
+	".\Debug.hpp"\
+	".\Graphics.hpp"\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_DYNAM=\
+	".\DynamicNewLineElement.h"\
+	".\RenderingPreferences.hpp"\
+	
+NODEP_CPP_DYNAM=\
+	".\BaseTypes.hpp"\
+	".\Debug.hpp"\
+	".\Graphics.hpp"\
+	".\WinFont.h"\
+	
+
 !ENDIF 
 
 # End Source File
@@ -925,9 +1123,11 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -953,11 +1153,9 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_ENTER=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -968,9 +1166,33 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_ENTER=\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_ENTER=\
+	"..\ars_framework\Src\WindowsCE\resource.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_ENTER=\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_ENTER=\
+	"..\ars_framework\Src\WindowsCE\resource.h"\
 	
 
 !ENDIF 
@@ -1019,6 +1241,10 @@ DEP_CPP_FONTE=\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
 
 !ENDIF 
 
@@ -1092,9 +1318,6 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_FORMA=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -1116,6 +1339,28 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_FORMA=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_FORMA=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -1272,11 +1517,49 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\cctype"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\RenderingPreferences.hpp"\
-	
-NODEP_CPP_GENER=\
-	".\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -1341,6 +1624,24 @@ DEP_CPP_GENER=\
 	"..\STLport\stlport\stl\_site_config.h"\
 	"..\STLport\stlport\stl_user_config.h"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_GENER=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_GENER=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -1412,9 +1713,6 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_HORIZ=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -1435,6 +1733,24 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_HORIZ=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_HORIZ=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -1506,9 +1822,6 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_LINEB=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -1529,6 +1842,26 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_LINEB=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_LINEB=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -1581,6 +1914,10 @@ DEP_CPP_LOGGI=\
 	"..\ars_framework\Src\Logging.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
 
 !ENDIF 
 
@@ -1654,9 +1991,6 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	
-NODEP_CPP_PARAG=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -1678,6 +2012,26 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_PARAG=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_PARAG=\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -1755,6 +2109,18 @@ DEP_CPP_RENDE=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_RENDE=\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_RENDE=\
+	"..\ars_framework\Src\Rendering.hpp"\
+	
+
 !ENDIF 
 
 # End Source File
@@ -1815,9 +2181,6 @@ DEP_CPP_RENDER=\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	
-NODEP_CPP_RENDER=\
-	".\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
@@ -1835,6 +2198,32 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_RENDER=\
+	".\RenderingPreferences.hpp"\
+	".\sm_inoah.h"\
+	
+NODEP_CPP_RENDER=\
+	".\BaseTypes.hpp"\
+	".\Debug.hpp"\
+	".\Graphics.hpp"\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_RENDER=\
+	".\RenderingPreferences.hpp"\
+	".\sm_inoah.h"\
+	
+NODEP_CPP_RENDER=\
+	".\BaseTypes.hpp"\
+	".\Debug.hpp"\
+	".\Graphics.hpp"\
+	".\WinFont.h"\
 	
 
 !ENDIF 
@@ -1955,7 +2344,48 @@ DEP_CPP_SERVE=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	".\cctype"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\ServerResponseParser.hpp"\
 	
 
@@ -2009,6 +2439,24 @@ DEP_CPP_SERVE=\
 	"..\STLport\stlport\stl\_site_config.h"\
 	"..\STLport\stlport\stl_user_config.h"\
 	".\ServerResponseParser.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_SERVE=\
+	".\ServerResponseParser.hpp"\
+	
+NODEP_CPP_SERVE=\
+	".\BaseTypes.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_SERVE=\
+	".\ServerResponseParser.hpp"\
+	
+NODEP_CPP_SERVE=\
+	".\BaseTypes.hpp"\
 	
 
 !ENDIF 
@@ -2088,7 +2536,9 @@ DEP_CPP_SM_IN=\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"tpcshell.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\pcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2113,13 +2563,13 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\DefinitionParser.hpp"\
-	".\reclookups.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
 	
 NODEP_CPP_SM_IN=\
 	".\pcshell.h"\
+	".\reclookups.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -2138,19 +2588,61 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\DefinitionParser.hpp"\
-	".\reclookups.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_SM_IN=\
-	".\pcshell.h"\
-	".\WinFont.h"\
+	{$(INCLUDE)}"tpcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -2219,11 +2711,39 @@ DEP_CPP_SM_IN=\
 	"..\STLport\stlport\stl\_site_config.h"\
 	"..\STLport\stlport\stl_user_config.h"\
 	".\DefinitionParser.hpp"\
-	".\reclookups.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\pcshell.h"\
+	".\reclookups.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_SM_IN=\
+	".\DefinitionParser.hpp"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
 	{$(INCLUDE)}"tpcshell.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\BaseTypes.hpp"\
+	".\StringListDialog.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_SM_IN=\
+	".\DefinitionParser.hpp"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\BaseTypes.hpp"\
+	".\StringListDialog.hpp"\
 	
 
 !ENDIF 
@@ -2241,9 +2761,11 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_STRIN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2254,9 +2776,11 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_STRIN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -2280,9 +2804,35 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	
+NODEP_CPP_STRIN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_STRIN=\
+	"..\ars_framework\Src\WindowsCE\resource.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_STRIN=\
+	"..\ars_framework\Src\WindowsCE\resource.h"\
 	
 
 !ENDIF 
@@ -2401,7 +2951,48 @@ DEP_CPP_TEXT_=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	".\cctype"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -2455,6 +3046,10 @@ DEP_CPP_TEXT_=\
 	"..\STLport\stlport\stl_user_config.h"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
 !ENDIF 
 
 # End Source File
@@ -2471,7 +3066,9 @@ DEP_CPP_TRANS=\
 	".\ServerResponseParser.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"connmgr.h"\
+	
+NODEP_CPP_TRANS=\
+	".\onnmgr.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2497,9 +3094,7 @@ DEP_CPP_TRANS=\
 	".\ServerResponseParser.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_TRANS=\
-	".\onnmgr.h"\
+	{$(INCLUDE)}"connmgr.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -2511,7 +3106,33 @@ DEP_CPP_TRANS=\
 	".\ServerResponseParser.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
+	
+NODEP_CPP_TRANS=\
+	".\onnmgr.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_TRANS=\
+	".\ServerResponseParser.hpp"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
 	{$(INCLUDE)}"connmgr.h"\
+	
+NODEP_CPP_TRANS=\
+	".\BaseTypes.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_TRANS=\
+	".\ServerResponseParser.hpp"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	
+NODEP_CPP_TRANS=\
+	".\BaseTypes.hpp"\
 	
 
 !ENDIF 
@@ -2571,8 +3192,10 @@ DEP_CPP_WINDE=\
 	"..\STLport\stlport\stl\_prolog.h"\
 	"..\STLport\stlport\stl\_site_config.h"\
 	"..\STLport\stlport\stl_user_config.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2639,11 +3262,50 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	".\cctype"\
-	
-NODEP_CPP_WINDE=\
-	".\ms.h"\
-	".\niqueid.h"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -2696,6 +3358,22 @@ DEP_CPP_WINDE=\
 	"..\STLport\stlport\stl\_prolog.h"\
 	"..\STLport\stlport\stl\_site_config.h"\
 	"..\STLport\stlport\stl_user_config.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ms.h"\
+	".\niqueid.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_WINDE=\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_WINDE=\
 	{$(INCLUDE)}"sms.h"\
 	{$(INCLUDE)}"uniqueid.h"\
 	
@@ -2747,6 +3425,24 @@ DEP_CPP_WINFO=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_WINFO=\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	
+NODEP_CPP_WINFO=\
+	"..\ars_framework\Src\WindowsCE\FontEffects.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_WINFO=\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	
+NODEP_CPP_WINFO=\
+	"..\ars_framework\Src\WindowsCE\FontEffects.hpp"\
+	
+
 !ENDIF 
 
 # End Source File
@@ -2780,6 +3476,18 @@ DEP_CPP_WINGE=\
 DEP_CPP_WINGE=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+NODEP_CPP_WINGE=\
+	"..\ars_framework\Src\WindowsCE\Geometry.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+NODEP_CPP_WINGE=\
+	"..\ars_framework\Src\WindowsCE\Geometry.hpp"\
 	
 
 !ENDIF 
@@ -2845,6 +3553,10 @@ DEP_CPP_WINGR=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
 !ENDIF 
 
 # End Source File
@@ -2894,6 +3606,18 @@ DEP_CPP_WINPR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+DEP_CPP_WINPR=\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
+
+DEP_CPP_WINPR=\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	
 
 !ENDIF 
@@ -2946,6 +3670,10 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
 
 !ENDIF 
 
@@ -3097,6 +3825,10 @@ SOURCE=.\sm_inoah.rc
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release Handango"
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release Handango"
 
 !ENDIF 
 
