@@ -74,7 +74,7 @@ void DeinitConnection()
 Transmission::Transmission(
                            const ArsLexis::String& host,
                            INTERNET_PORT           port,
-                           const ArsLexis::String& localInfo)
+                           const ArsLexis::String& url)
 {
     if (!g_hInternet)
     {
@@ -87,7 +87,7 @@ Transmission::Transmission(
     }
     this->host = host;
     this->port = port;
-    this->localInfo = localInfo;
+    this->url  = url;
     hIConnect_ = NULL;
     hIRequest_ = NULL;
 }
@@ -141,8 +141,8 @@ DWORD Transmission::sendRequest()
     //todo: check that HttpOpenRequest succeded
     //InternetSetStatusCallback(hIConnect, dispatchCallback);
     hIRequest_ = HttpOpenRequest(
-        hIConnect_, NULL , localInfo.c_str(),
-        NULL, NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+        hIConnect_, NULL , url.c_str(),
+        _T("HTTP/1.0"), NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE, 0);
     DWORD dwordLen=sizeof(DWORD);
 
     // add Host header so that it works with virtual hosting
@@ -152,16 +152,8 @@ DWORD Transmission::sendRequest()
     if ( !HttpAddRequestHeaders(hIRequest_, hostHdr.c_str(), -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW) )
         return setError();
 
-    /*DWORD status;	
-    HttpQueryInfo(hIRequest ,HTTP_QUERY_FLAG_NUMBER |
-    HTTP_QUERY_STATUS_CODE , &status, &dwordLen, 0);
-    DWORD size;
-    HttpQueryInfo(hIRequest ,HTTP_QUERY_FLAG_NUMBER |
-    HTTP_QUERY_CONTENT_LENGTH , &size, &dwordLen, 0);
-    */
-    BOOL succ;
     DWORD buffSize=2048;
-    succ = InternetSetOption(hIRequest_, 
+    BOOL fOk = InternetSetOption(hIRequest_, 
         INTERNET_OPTION_READ_BUFFER_SIZE, &buffSize, dwordLen);
         /*std::wstring fullURL(server+url+TEXT(" HTTP/1.0"));
         hIRequest = InternetOpenUrl(
@@ -169,11 +161,11 @@ DWORD Transmission::sendRequest()
         fullURL.c_str(),
     NULL,0,0, context=transContextCnt++);*/
 
-    if (!succ)
+    if (!fOk)
         return setError();
     //InternetSetStatusCallback(hIRequest, dispatchCallback);
     //if(!HttpSendRequestEx(hIRequest,NULL,NULL,HSR_ASYNC,context))
-    if(!HttpSendRequest(hIRequest_,NULL,0,NULL,0))
+    if (!HttpSendRequest(hIRequest_,NULL,0,NULL,0))
         return setError();
     
     CHAR   sbcsbuffer[255]; 

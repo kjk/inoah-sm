@@ -19,20 +19,27 @@
     #define STORE_FOLDER CSIDL_PROGRAMS
 #endif
 
+extern String GetNextLine(const ArsLexis::String& str, String::size_type& curPos, bool& fEnd);
+
 using ArsLexis::String;
 using ArsLexis::char_t;
 
 const char_t * errorStr        = _T("ERROR");
-const char_t * cookieStr       = _T("COOKIE");
 const char_t * messageStr      = _T("MESSAGE");
-const char_t * definitionStr   = _T("DEF");
+
+const char_t * cookieStr       = _T("COOKIE");
+
 const char_t * wordListStr     = _T("WORDLIST");
-const char_t * requestsLeftStr = _T("REQUESTS_LEFT");
-const char_t * pronunciationStr= _T("PRON");
+
+const char_t * definitionStr   = _T("DEF");
+
+//const char_t * pronunciationStr= _T("PRON");
+//const char_t * requestsLeftStr = _T("REQUESTS_LEFT");
+
 const char_t * regFailedStr    = _T("REGISTRATION_FAILED");
 const char_t * regOkStr        = _T("REGISTRATION_OK");
 
-#define urlCommon _T("/dict-2.php?pv=2&cv=1.0&")
+#define urlCommon    _T("/dict-2.php?pv=2&cv=1.0&")
 #define urlCommonLen sizeof(urlCommon)/sizeof(urlCommon[0])
 
 const String sep             = _T("&");
@@ -70,8 +77,8 @@ static FieldDef fieldsDef[fieldsCount] = {
     { messageStr, fieldValueFollow },
     { definitionStr, fieldValueFollow },
     { wordListStr, fieldValueFollow },
-    { requestsLeftStr, fieldValueInline },
-    { pronunciationStr,fieldValueInline },
+//    { requestsLeftStr, fieldValueInline },
+//    { pronunciationStr,fieldValueInline },
     { regFailedStr, fieldNoValue },
     { regOkStr, fieldNoValue }
 };
@@ -85,9 +92,14 @@ static String::size_type FieldStrLen(eFieldId fieldId)
 
 static bool fFieldHasValue(eFieldId fieldId)
 {
-    if (fieldNoValue==fieldsDef[(int)fieldId].fieldType)
-        return false;
-    return true;
+    switch (fieldId)
+    {
+        case registrationFailedField:
+        case registrationOkField:
+            return false;
+        default:
+            return true;
+    }
 }
 
 static void SaveStringToFile(const String& fileName, const String& str)
@@ -185,6 +197,7 @@ void ServerResponseParser::GetFieldValue(eFieldId fieldId, String& fieldValueOut
         fieldValueOut.assign(_T(""));
         return;
     }
+
     if (!fFieldHasValue(fieldId))
     {
         assert(String::npos==GetFieldValueStart(fieldId));
@@ -249,7 +262,74 @@ String::size_type ServerResponseParser::GetFollowValueEnd(String::size_type fiel
     return fieldValueEnd;
 }
 
-void ServerResponseParser::ParseResponse()
+bool ServerResponseParser::FParseResponseIfNot()
+{
+    if (_fParsed)
+        return !_fMalformed;
+
+    bool fOk = FParseResponse();
+    _fParsed = true;
+    _fMalformed = !fOk;       
+    return fOk;
+}
+
+// parse response. return true if everythings good, false if the response
+// is malformed
+bool ServerResponseParser::FParseResponse()
+{
+    String             line;
+    bool               fEnd;
+    String::size_type  curPos = 0;
+    String::size_type  lineStartPos;
+
+    assert( !_fParsed );
+
+    eFieldId          fieldId;
+
+    lineStartPos = curPos;
+    line = GetNextLine(_content, curPos, fEnd);
+    if (fEnd)
+        return false;
+
+    fieldId = GetFieldId(line,0);
+    if (fieldIdInvalid==fieldId)
+        return false;
+
+    if ( (registrationFailedField==fieldId) || (registrationOkField==fieldId) )
+    {
+        SetFieldStart(fieldId, lineStartPos);
+        // this should be the only thing in the line
+        line = GetNextLine(_content, curPos, fEnd);
+        if (!fEnd)
+            return false;
+    }
+
+    String::size_type fieldValueStart = curPos;
+    String::size_type fieldValueEnd;
+
+    if ( (errorField==fieldId)  || (messageField==fieldId) ||
+         (cookieField==fieldId) || (wordListField==fieldId) )
+    {
+        fieldValueEnd = GetFollowValueEnd(fieldValueStart);
+    }
+    else if (definitionField==fieldId)
+    {
+        // now we must have definition field, followed by word,
+        // optional pronField, optional requestsLeftField and definition itself
+        // we treat is as one thing
+        fieldValueEnd = _content.length();
+    }
+    else
+        return false;
+
+    String::size_type fieldValueLen = fieldValueEnd - fieldValueStart;
+    SetFieldStart(fieldId, lineStartPos);
+    SetFieldValueStart(fieldId, fieldValueStart);
+    SetFieldValueLen(fieldId, fieldValueLen);
+    return true;
+}
+
+void ServerResponseParser::ParseResponseOld()
 {
     if (_fParsed)
         return;
@@ -340,8 +420,9 @@ void ServerResponseParser::ParseResponse()
 }
 
 bool ServerResponseParser::fMalformed()
-{
-    ParseResponse();
+{    
+    bool fOk = FParseResponseIfNot();
+    assert(fOk==!_fMalformed);
     return _fMalformed;
 }
 

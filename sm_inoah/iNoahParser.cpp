@@ -4,7 +4,49 @@
 #include <ParagraphElement.hpp>
 #include <HorizontalLineElement.hpp>
 #include <list>
+
 using namespace ArsLexis;
+
+// given a string str and curPos which is a valid index within str, return
+// a substring from curPos until newline or end of string. Removes the newline
+// from the string. Updates curPos so that it can be called in sequence.
+// Sets fEnd to true if there are no more lines.
+// Handles the following kinds of new lines: "\n", "\r", "\n\r", "\r\n"
+String GetNextLine(const ArsLexis::String& str, String::size_type& curPos, bool& fEnd)
+{
+    fEnd = false;
+    if (curPos==str.length())
+    {
+        fEnd = true;
+        return String();
+    }
+
+    String::size_type lineStartPos = curPos;
+    String::size_type lineEndPos;
+    String::size_type delimPos   = str.find_first_of(_T("\n\r"), lineStartPos);
+
+    if (String::npos == delimPos)
+    {
+        lineEndPos = str.length()-1;
+        curPos = str.length();     
+    }
+    else
+    {
+        if (0==delimPos)
+            lineEndPos = 0;
+        else
+            lineEndPos = delimPos;
+        assert ( (_T('\n')!=str[lineEndPos]) && (_T('\r')!=str[lineEndPos]))
+
+        curPos = delimPos+1;
+        while ( (_T('\n')==str[curPos]) || (_T('\r')==str[curPos]))
+        {
+            curPos++;
+        }
+    }
+    String::size_type lineLen = lineEndPos - lineStartPos;
+    return str.substr(lineStartPos, lineLen);
+}
 
 const String iNoahParser::arabNums[] = 
 { 
@@ -378,48 +420,6 @@ Definition *parseDefinitionOld(ArsLexis::String& defTxt)
     return parsedDef;
 }
 
-
-// given a string str and curPos which is a valid index within str, return
-// a substring from curPos until newline or end of string. Removes the newline
-// from the string. Updates curPos so that it can be called in sequence.
-// Sets fEnd to true if there are no more lines.
-// Handles the following kinds of new lines: "\n", "\r", "\n\r", "\r\n"
-static String GetNextLine(const ArsLexis::String& str, String::size_type& curPos, bool& fEnd)
-{
-    fEnd = false;
-    if (curPos==str.length())
-    {
-        fEnd = true;
-        return String();
-    }
-
-    String::size_type lineStartPos = curPos;
-    String::size_type lineEndPos;
-    String::size_type delimPos   = str.find_first_of(_T("\n\r"), lineStartPos);
-
-    if (String::npos == delimPos)
-    {
-        lineEndPos = str.length()-1;
-        curPos = str.length();     
-    }
-    else
-    {
-        if (0==delimPos)
-            lineEndPos = 0;
-        else
-            lineEndPos = delimPos;
-        assert ( (_T('\n')!=str[lineEndPos]) && (_T('\r')!=str[lineEndPos]))
-
-        curPos = delimPos+1;
-        while ( (_T('\n')==str[curPos]) || (_T('\r')==str[curPos]))
-        {
-            curPos++;
-        }
-    }
-    String::size_type lineLen = lineEndPos - lineStartPos;
-    return str.substr(lineStartPos, lineLen);
-}
-
 static bool FIsPartOfSpeech(const String& str)
 {
     if ( (str.length()>0) && (_T('$')==str[0]) )
@@ -444,6 +444,23 @@ static bool FIsDef(const String& str)
 static bool FIsExample(const String& str)
 {
     if ( (str.length()>0) && (_T('#')==str[0]) )
+        return true;
+    return false;
+}
+
+const char_t *pronTxt    = _T("PRON");
+const char_t *reqLeftTxt = _T("REQUESTS_LEFT");
+
+static bool FIsPron(const String& str)
+{
+    if ( 0==str.find(pronTxt) )
+        return true;
+    return false;
+}
+
+static bool FIsReqLeft(const String& str)
+{
+    if (0==str.find(reqLeftTxt))
         return true;
     return false;
 }
@@ -569,12 +586,16 @@ Definition *parseDefinition(const ArsLexis::String& defTxt)
     String  line;
     String::size_type curPos = 0;
 
-    // get word
+    // first in the definition is a word
     line = GetNextLine(defTxt,curPos,fEnd);
     if (fEnd)
         return NULL;
 
     String word = line;
+
+    // currently not shown
+    String pron;
+    String requestsLeft;
 
     ParagraphElement* wordParagraph = new ParagraphElement();
     if (NULL == wordParagraph)
@@ -595,7 +616,15 @@ Definition *parseDefinition(const ArsLexis::String& defTxt)
         if (fEnd)
             break;
 
-        if (FIsPartOfSpeech(line))
+        if (FIsPron(line))
+        {
+            pron = line.substr(tstrlen(pronTxt)+1,-1);
+        }
+        else if (FIsReqLeft(line))
+        {
+            requestsLeft = line.substr(tstrlen(reqLeftTxt)+1,-1);
+        }
+        else if (FIsPartOfSpeech(line))
         {
             fAfterSynonyms = true;
             assert(2==line.len());

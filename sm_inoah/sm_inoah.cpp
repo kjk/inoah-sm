@@ -187,7 +187,7 @@ static void DoRecent(HWND hwnd)
     if (!fOk)
         return;
 
-    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
+    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd, RecentLookupsDlgProc))
     {
         ArsLexis::String word(g_recentWord); 
         drawProgressInfo(hwnd, _T("definition..."));                

@@ -13,7 +13,7 @@ class Transmission
 {
     static  HINTERNET   openInternet();
     DWORD               lastError_;
-    String              localInfo;
+    String              url;
     String              host;
     INTERNET_PORT       port;
     HINTERNET           hIConnect_;
@@ -24,7 +24,7 @@ class Transmission
 
 public:
 
-    Transmission(const ArsLexis::String& host, const INTERNET_PORT port, const  ArsLexis::String& localInfo);
+    Transmission(const ArsLexis::String& host, const INTERNET_PORT port, const  ArsLexis::String& url);
 
     virtual DWORD  sendRequest();
     virtual void   getResponse(ArsLexis::String& ret);

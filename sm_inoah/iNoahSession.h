@@ -1,10 +1,6 @@
 #if !defined(_INOAH_SESSION_H_)
 #define _INOAH_SESSION_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
 #include "BaseTypes.hpp"
 #include "Transmission.h"
 
@@ -62,8 +58,8 @@ enum eFieldId {
     messageField,
     definitionField,
     wordListField,
-    requestsLeftField,
-    pronField,
+   // requestsLeftField,
+   // pronField,
     registrationFailedField,
     registrationOkField,
     fieldsCount = registrationOkField + 1 // because we start from 0
@@ -80,7 +76,9 @@ public:
     void    GetFieldValue(eFieldId fieldId, String& fieldValueOut);
 
 private:
-    void   ParseResponse();
+    bool   FParseResponseIfNot();
+    bool   FParseResponse();
+    void   ParseResponseOld();
     String _content;
     bool   _fParsed;    // did we parse the response already?
     bool   _fMalformed; // was the response malformed (having incorrect format)?

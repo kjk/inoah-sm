@@ -5,10 +5,10 @@
 
 using namespace ArsLexis;
 
-WNDPROC oldListWndProc;
-HWND hRecentLookupaDlg=NULL;
+WNDPROC g_oldListWndProc    = NULL;
+HWND    g_hRecentLookupaDlg = NULL;
 
-std::list<TCHAR*> words;
+std::list<char_t *> words;
 
 const int hotKeyCode=0x32;
 
@@ -22,12 +22,75 @@ LRESULT CALLBACK ListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             switch(wp)
             {
                 case hotKeyCode:
-                    SendMessage(hRecentLookupaDlg, WM_COMMAND, ID_SELECT, 0);
+                    SendMessage(g_hRecentLookupaDlg, WM_COMMAND, ID_SELECT, 0);
                     break;
             }
         }
     }
-    return CallWindowProc(oldListWndProc, hwnd, msg, wp, lp);
+    return CallWindowProc(g_oldListWndProc, hwnd, msg, wp, lp);
+}
+
+static BOOL InitRecentLookups(HWND hDlg)
+{
+    // Specify that the dialog box should stretch full screen
+    SHINITDLGINFO shidi;
+    ZeroMemory(&shidi, sizeof(shidi));
+    shidi.dwMask = SHIDIM_FLAGS;
+    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
+    shidi.hDlg = hDlg;
+    
+    // Set up the menu bar
+    SHMENUBARINFO shmbi;
+    ZeroMemory(&shmbi, sizeof(shmbi));
+    shmbi.cbSize = sizeof(shmbi);
+    shmbi.hwndParent = hDlg;
+    shmbi.nToolBarId = IDR_RECENT_MENUBAR ;
+    shmbi.hInstRes = g_hInst;
+    
+    // If we could not initialize the dialog box, return an error
+    if (!SHInitDialog(&shidi))
+        return FALSE;
+    
+    if (!SHCreateMenuBar(&shmbi))
+        return FALSE;
+    
+    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
+        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+    
+    g_hRecentLookupaDlg = hDlg;
+
+    HWND ctrl=GetDlgItem(hDlg, IDC_LIST_RECENT);
+    g_oldListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ListWndProc);
+    RegisterHotKey( ctrl, hotKeyCode, 0, VK_TACTION);
+    
+    std::list<char_t *>::iterator iter;
+    for (iter=words.begin();!(iter==words.end());iter++) 
+        delete [] (*iter);
+
+    int last = g_wordList.find_first_of(_T('\n'));
+    int first=0;
+
+    while((last!=-1)&&(last-g_wordList.length()!=0))
+    {
+        ArsLexis::String tmp=g_wordList.substr(first,last-first);
+        if (tmp.compare(_T(""))!=0)
+        {
+            TCHAR *str  =new TCHAR [tmp.length()+1];
+            wcscpy(str,tmp.c_str());
+            SendMessage(
+                ctrl,
+                LB_ADDSTRING,
+                0,
+                (LPARAM)str);
+            words.push_back(str);
+        }
+        first=last+1;
+        last=g_wordList.find_first_of(TCHAR('\n'),first);
+    }
+    SendMessage (ctrl, LB_SETCURSEL, 0, 0);
+    //UpdateWindow(ctrl);
+    return TRUE;
 }
 
 BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
@@ -59,68 +122,4 @@ BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
         }
     }
     return FALSE;
-}
-
-BOOL InitRecentLookups(HWND hDlg)
-{
-    // Specify that the dialog box should stretch full screen
-    SHINITDLGINFO shidi;
-    ZeroMemory(&shidi, sizeof(shidi));
-    shidi.dwMask = SHIDIM_FLAGS;
-    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
-    shidi.hDlg = hDlg;
-    
-    // Set up the menu bar
-    SHMENUBARINFO shmbi;
-    ZeroMemory(&shmbi, sizeof(shmbi));
-    shmbi.cbSize = sizeof(shmbi);
-    shmbi.hwndParent = hDlg;
-    shmbi.nToolBarId = IDR_RECENT_MENUBAR ;
-    shmbi.hInstRes = g_hInst;
-    
-    // If we could not initialize the dialog box, return an error
-    if (!SHInitDialog(&shidi))
-        return FALSE;
-    
-    if (!SHCreateMenuBar(&shmbi))
-        return FALSE;
-    
-    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-    
-    hRecentLookupaDlg=hDlg;
-
-    HWND ctrl=GetDlgItem(hDlg, IDC_LIST_RECENT);
-    oldListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ListWndProc);
-    RegisterHotKey( ctrl, hotKeyCode, 0, VK_TACTION);
-
-    
-    std::list<TCHAR*>::iterator iter;
-    for (iter=words.begin();!(iter==words.end());iter++) 
-        delete [] (*iter);
-
-    int last = g_wordList.find_first_of(_T('\n'));
-    int first=0;
-
-    while((last!=-1)&&(last-g_wordList.length()!=0))
-    {
-        ArsLexis::String tmp=g_wordList.substr(first,last-first);
-        if (tmp.compare(_T(""))!=0)
-        {
-            TCHAR *str  =new TCHAR [tmp.length()+1];
-            wcscpy(str,tmp.c_str());
-            SendMessage(
-                ctrl,
-                LB_ADDSTRING,
-                0,
-                (LPARAM)str);
-            words.push_back(str);
-        }
-        first=last+1;
-        last=g_wordList.find_first_of(TCHAR('\n'),first);
-    }
-    SendMessage (ctrl, LB_SETCURSEL, 0, 0);
-    //UpdateWindow(ctrl);
-    return TRUE;
 }
