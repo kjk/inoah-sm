@@ -8,27 +8,28 @@ AppName     = "iNoah"               ; maximum of 40 characters, full app name wi
 InstallDir  = %CE1%\%AppName%       ; Program Files\iNoah
  
 [SourceDisksNames]                  ; directory that holds the application's files
-;1 = , "Common Files",,Common
-1 = , ".",,.
+;1 = , ".",,.
+1 = , "Common Files",,
 
 [SourceDisksFiles]                  ; list of files to be included in .cab
 inoah.exe = 1
  
 [DefaultInstall]                    ; operations to be completed during install
 CopyFiles   = CopyToProgramFiles
-AddReg      = RegData
 CEShortcuts = Shortcuts   
+;AddReg      = RegData
  
 [DestinationDirs]                   ; default destination directories for each operation section
 CopyToProgramFiles    = 0, %InstallDir%
-Shortcuts   = 0, %CE14%             ; \Windows\Start Menu\Programs\Games
+;Shortcuts   = 0, %CE14%             ; \Windows\Start Menu\Programs\Games
+Shortcuts = 0, %CE11% 		         ; \Windows\Start Menu\
  
 [CopyToProgramFiles]                ; copy operation file list
 "inoah.exe", inoah.exe
  
-[RegData]                           ; registry key list
-HKCU,Software\%AppName%,MajorVersion,0x00010001,1
-HKCU,Software\%AppName%,MinorVersion,0x00010001,0
- 
-[Shortcuts]                         ; Shortcut created in destination dir, %CE14%
+;[RegData]                           ; registry key list
+;HKCU,Software\%AppName%,MajorVersion,0x00010001,1
+;HKCU,Software\%AppName%,MinorVersion,0x00010001,0
+
+[Shortcuts]                         ; Shortcut created in destination dir
 %AppName%,0,inoah.exe
