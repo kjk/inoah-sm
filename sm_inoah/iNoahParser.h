@@ -9,19 +9,34 @@
 class iNoahParser
 {
 public:
-    void parse(ArsLexis::String text);
+    iNoahParser()
+        : explanation(NULL), examples(NULL), synonyms(NULL)
+    {
+    }
+    Definition* parse(ArsLexis::String text);
 private:
     class ElementsList
     {
-        list<DefinitionElement*> lst;
+        std::list<DefinitionElement*> lst;
     public:
-        void push_back(DefinitionElement* el);        
+        void push_back(DefinitionElement* el);
         ~ElementsList();
         int size() {return lst.size();}
         void merge(ElementsList& r)
         {   
-            lst.merge(r.lst);
+            std::list<DefinitionElement*>::iterator iter;
+            for (iter=r.lst.begin();!(iter==r.lst.end());iter++ )
+                back_inserter(this->lst) = *iter;
+            r.lst.clear();
         }
+        void merge(Definition& def)
+        {   
+            std::list<DefinitionElement*>::iterator iter;
+            for (iter=lst.begin();!(iter==lst.end());iter++ )
+                def.appendElement(*iter);
+            lst.clear();
+        }
+
     };
     //ArsLexis::String definition;
     static const ArsLexis::String arabNums[];

@@ -3,6 +3,7 @@
 
 #include "resource.h"
 #include "iNoahSession.h"
+#include "iNoahParser.h"
 #include "TAPIDevice.h"
 #include "BaseTypes.hpp"
 #include "GenericTextElement.hpp"
@@ -47,6 +48,8 @@ void setDefinition(ArsLexis::String& defs)
         ParagraphElement* parent=0;
         //parent->setChildIndentation(16);
         int start=0;
+        iNoahParser parser;
+        //definition_=parser.parse(defs);
         for(int i=0;i<defs.length(); i++)
         {
             if(defs[i]==TCHAR('\n'))

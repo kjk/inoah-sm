@@ -51,7 +51,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 CPP=clarm.exe
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
-# ADD CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /I "..\ipedia\Src" /I "./" /I "../ipedia/Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -83,7 +83,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 CPP=clarm.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
-# ADD CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
+# ADD CPP /nologo /W3 /Zi /Od /I "..\ipedia\Src" /I "./" /I "../ipedia/Src" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -115,7 +115,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
-# ADD CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
+# ADD CPP /nologo /W3 /I "..\ipedia\Src" /I "./" /I "../ipedia/Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -148,7 +148,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
-# ADD CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /I "./" /I "../ipedia/Src" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -177,21 +177,49 @@ SOURCE=..\ipedia\Src\BulletElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_BULLE=\
-	{$(INCLUDE)}"BulletElement.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\BulletElement.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_BULLE=\
-	{$(INCLUDE)}"BulletElement.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\BulletElement.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -222,25 +250,11 @@ NODEP_CPP_BULLE=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_BULLE=\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
-	{$(INCLUDE)}"BulletElement.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\BulletElement.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -252,20 +266,30 @@ SOURCE=..\ipedia\Src\CommonGeometry.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
+DEP_CPP_COMMO=\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	
+
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_COMMO=\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_COMMO=\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_COMMO=\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
 	
 
 !ENDIF 
@@ -277,7 +301,39 @@ SOURCE=..\ipedia\Src\CommonGraphics.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
+DEP_CPP_COMMON=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_COMMON=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
@@ -301,19 +357,19 @@ NODEP_CPP_COMMON=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_COMMON=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -326,19 +382,47 @@ SOURCE=..\ipedia\Src\Definition.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_DEFIN=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_DEFIN=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -369,24 +453,10 @@ NODEP_CPP_DEFIN=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_DEFIN=\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -399,17 +469,45 @@ SOURCE=..\ipedia\Src\DefinitionElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_DEFINI=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_DEFINI=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -438,23 +536,9 @@ NODEP_CPP_DEFINI=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_DEFINI=\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -466,25 +550,41 @@ SOURCE=..\ipedia\Src\FontEffects.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
+DEP_CPP_FONTE=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_FONTE=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_FONTE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_FONTE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -550,25 +650,12 @@ NODEP_CPP_FORMA=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_FORMA=\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\FormattedTextElement.hpp"\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -581,19 +668,49 @@ SOURCE=..\ipedia\Src\GenericTextElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_GENER=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\cctype"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_GENER=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\cctype"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -624,25 +741,10 @@ NODEP_CPP_GENER=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_GENER=\
-	".\cctype"\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\GenericTextElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -655,19 +757,47 @@ SOURCE=..\ipedia\Src\HorizontalLineElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_HORIZ=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"HorizontalLineElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\HorizontalLineElement.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_HORIZ=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"HorizontalLineElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\HorizontalLineElement.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -697,24 +827,10 @@ NODEP_CPP_HORIZ=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_HORIZ=\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"HorizontalLineElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\HorizontalLineElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -748,46 +864,33 @@ DEP_CPP_INOAH=\
 	".\iNoahParser.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	
+NODEP_CPP_INOAH=\
+	".\almFont.hpp"\
+	".\almGraphicsInline.hpp"\
+	".\aseTypes.hpp"\
+	".\ativeGeometry.hpp"\
+	".\ativeGraphics.hpp"\
+	".\ebug.hpp"\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\eometry.hpp"\
+	".\ontEffects.hpp"\
+	".\raphics.hpp"\
+	".\stdint"\
+	".\tdint.h"\
+	".\tility.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_INOAH=\
 	".\iNoahParser.h"\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	
+NODEP_CPP_INOAH=\
+	".\BaseTypes.hpp"\
 	
 
 !ENDIF 
@@ -839,14 +942,11 @@ DEP_CPP_INOAHS=\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
 	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
 	{$(INCLUDE)}"ceutil.h"\
-	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INOAHS=\
+	".\BaseTypes.hpp"\
 	
 
 !ENDIF 
@@ -859,21 +959,47 @@ SOURCE=..\ipedia\Src\LineBreakElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_LINEB=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\LineBreakElement.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_LINEB=\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\LineBreakElement.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -903,24 +1029,11 @@ NODEP_CPP_LINEB=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_LINEB=\
-	".\RenderingPreferences.hpp"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\DefinitionElement.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\LineBreakElement.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -933,13 +1046,39 @@ SOURCE=..\ipedia\Src\Rendering.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_RENDE=\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_RENDE=\
-	{$(INCLUDE)}"Rendering.hpp"\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -965,20 +1104,7 @@ NODEP_CPP_RENDE=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_RENDE=\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	"..\ipedia\Src\Rendering.hpp"\
 	
 
 !ENDIF 
@@ -1032,21 +1158,11 @@ NODEP_CPP_RENDER=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_RENDER=\
-	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	
+NODEP_CPP_RENDER=\
+	".\FontEffects.hpp"\
 	
 
 !ENDIF 
@@ -1097,34 +1213,22 @@ NODEP_CPP_SM_IN=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_SM_IN=\
+	"..\ipedia\Src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
-	".\RenderingPreferences.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"BulletElement.hpp"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
 	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"HorizontalLineElement.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"ParagraphElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	
+NODEP_CPP_SM_IN=\
+	".\BaseTypes.hpp"\
+	".\BulletElement.hpp"\
+	".\Definition.hpp"\
+	".\GenericTextElement.hpp"\
+	".\HorizontalLineElement.hpp"\
+	".\ParagraphElement.hpp"\
 	
 
 !ENDIF 
@@ -1175,10 +1279,10 @@ NODEP_CPP_TAPID=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_TAPID=\
+	"..\ipedia\Src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
@@ -1212,9 +1316,9 @@ DEP_CPP_TAPIL=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_TAPIL=\
+	"..\ipedia\Src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
@@ -1261,9 +1365,9 @@ NODEP_CPP_TRANS=\
 
 DEP_CPP_TRANS=\
 	".\Transmission.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"stdint.h"\
+	
+NODEP_CPP_TRANS=\
+	".\BaseTypes.hpp"\
 	
 
 !ENDIF 
@@ -1295,11 +1399,9 @@ DEP_CPP_WINFO=\
 
 DEP_CPP_WINFO=\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"stdint.h"\
+	
+NODEP_CPP_WINFO=\
+	".\FontEffects.hpp"\
 	
 
 !ENDIF 
@@ -1311,28 +1413,30 @@ SOURCE=.\WinGeometry.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
-NODEP_CPP_WINGE=\
-	".\Geometry.hpp"\
+DEP_CPP_WINGE=\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
-NODEP_CPP_WINGE=\
-	".\Geometry.hpp"\
+DEP_CPP_WINGE=\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_WINGE=\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_WINGE=\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
 	
 
 !ENDIF 
@@ -1383,19 +1487,9 @@ NODEP_CPP_WINGR=\
 
 DEP_CPP_WINGR=\
 	".\sm_inoah.h"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Utility.hpp"\
+	
+NODEP_CPP_WINGR=\
+	".\Graphics.hpp"\
 	
 
 !ENDIF 

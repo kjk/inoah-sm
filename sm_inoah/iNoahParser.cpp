@@ -1,7 +1,7 @@
 #include "iNoahParser.h"
 #include <DefinitionElement.hpp>
 #include <GenericTextElement.hpp>
-
+#include <ParagraphElement.hpp>
 using namespace ArsLexis;
 
 const String iNoahParser::arabNums[] = 
@@ -29,13 +29,13 @@ const String iNoahParser::pOfSpeach[2][5] =
         TEXT("adj. ")}
 };
 
-void iNoahParser::parse(String text)
+Definition* iNoahParser::parse(String text)
 {
     int sep = text.find_first_of(char_t('\n'));
     String word(text.substr(0, sep));
     list<ElementsList*> sorted[pOfSpeechCnt];
     String meanings(text.substr(sep+1,text.length()-sep-1));
-    while(meanings.compare(TEXT(""))!=0)    
+    while(meanings.compare(TEXT(""))!=0)
     {
         int nextIdx = 0;
         char_t currBeg = meanings[0];
@@ -62,7 +62,6 @@ void iNoahParser::parse(String text)
                 }
                 else
                 {
-
                     txtToParse.assign(meanings.substr(0, nextIdx));
                     meanings = meanings.substr(nextIdx + 1);
                 }
@@ -75,9 +74,6 @@ void iNoahParser::parse(String text)
                     if(synonyms) (*mean).merge(*synonyms);
                 }
                 
-                if(examples) delete examples;
-                if(synonyms) delete synonyms;
-
                 if(mean->size()>0)
                     sorted[pOfSpeech].push_back(mean);
                 break;
@@ -86,35 +82,37 @@ void iNoahParser::parse(String text)
             currBeg = nextBeg;
         }
     }
+    Definition* def=new Definition;
+    if(!def) return NULL;
+    
     int cntPOS=0;
     for(int i=0;i<pOfSpeechCnt;i++)
     {
+        ParagraphElement* parent=0;
         int cntMeaning=1;
         if (sorted[i].size() > 0)
-        {
-            //POfSpeechList pofsl =
-            //    new POfSpeechList(arabNums[cntPOS] + " ", lineWidth);
-            /*pofsl.addSubToken(
-                new POfSpeech(
-                    DefinitionListToken
-                    .pOfSpeach[DefinitionListToken
-                    .fullForm][i],
-                    lineWidth));
-            addSubToken(pofsl);*/
+        {   
+            GenericTextElement *pofsl=new GenericTextElement(arabNums[cntPOS] + TEXT(" "));
+            GenericTextElement *pofs=new GenericTextElement(pOfSpeach[fullForm][i]);
+            def->appendElement(parent=new ParagraphElement());
+            def->appendElement(pofsl);
+            def->appendElement(pofs);
+            pofs->setParent(parent);
+            pofsl->setParent(parent);
             cntPOS++;
-            for (uint j = 0; j < sorted[i].size(); j++)
-            {
-            /*DefinitionListToken tk =
-                (DefinitionListToken) sorted[i].get(j);
-                tk.setText(Integer.toString(j + 1) + ") ");
-                    addSubToken(tk);*/
-            }
+            std::list<ElementsList*>::iterator iter;
+            for (iter=sorted[i].begin();!(iter==sorted[i].end());iter++ )
+                (*iter)->merge(*def);
         }
     }
+    return def;
 }
 
 bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpeach)
 {
+    //delete examples;
+    //delete synonyms;
+    //delete explanation;
     explanation = NULL;
     examples = NULL;
     synonyms = NULL;
@@ -227,12 +225,12 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
         if(start+2>=currIndx)
             //throw new Exception("One of synonyms malformed");
         {
-            if(lst) delete lst;
+            delete lst;
             error.assign(TEXT("Synonym malformed."));
             return NULL;
         }
 
-        String newSynonym=text.substr(start + 2, currIndx);
+        String newSynonym=text.substr(start + 2, currIndx-start-2);
         if(word.compare(newSynonym)!=0)
         {
             if(last)
@@ -261,7 +259,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
             currIndx = text.length();
         if(start+2>=currIndx)
         {
-            if(lst) delete lst;
+            delete lst;
             error.assign(TEXT("Example malformed."));
             return NULL;
         }
