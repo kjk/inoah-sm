@@ -188,9 +188,9 @@ namespace ArsLexis
         width = size.cx;
     }
 
-    Graphics::Font_t& Graphics::font()
-    {return support_.font;}
+    //Graphics::Font_t& Graphics::font()
+    //{return support_.font;}
     
-    const Graphics::Font_t& Graphics::font() const
+    Graphics::Font_t Graphics::font() const
     {return support_.font;}
 }
