@@ -51,12 +51,6 @@ BEGIN
 END
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menubar
-//
-
 IDR_MENU_MENU1 MENU DISCARDABLE 
 BEGIN
     POPUP "&Dummy"
@@ -74,14 +68,16 @@ BEGIN
 #ifdef DEBUG
 		MENUITEM "Clear cache",         IDM_CACHE
 #endif
+        POPUP "About"
+	    BEGIN
+    		MENUITEM "ArsLexis home",       IDM_MENU_HOME
+		    MENUITEM "Check updates",       IDM_MENU_UPDATES
+		    MENUITEM "About",            	IDM_MENU_ABOUT
+	    END
+
         MENUITEM "Quit",                IDOK
     END
 END
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
 
 STRINGTABLE DISCARDABLE 
 BEGIN
@@ -92,11 +88,6 @@ BEGIN
     IDS_REGISTER		"Register"
 
 END
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
 
 IDD_RECENT DIALOG DISCARDABLE  4, 4, 80, 70
 STYLE WS_POPUP | WS_VISIBLE

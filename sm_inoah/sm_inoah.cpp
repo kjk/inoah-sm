@@ -354,6 +354,22 @@ void static onHotKey(WPARAM wp, LPARAM lp)
     }
 }
 
+// Try to launch IE with a given url
+static bool GotoURL(LPCTSTR lpszUrl)
+{
+    SHELLEXECUTEINFO sei;
+    memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
+    sei.cbSize  = sizeof(SHELLEXECUTEINFO);
+    sei.fMask   = SEE_MASK_FLAG_NO_UI;
+    sei.lpVerb  = _T("open");
+    sei.lpFile  = lpszUrl;
+    sei.nShow   = SW_SHOWMAXIMIZED;
+
+	if (ShellExecuteEx(&sei))
+		return true;
+	return false;
+}
+
 static LRESULT onCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT result = TRUE;
@@ -399,6 +415,22 @@ static LRESULT onCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case IDM_CACHE:
             g_session.clearCache();
+            break;
+
+        case IDM_MENU_HOME:
+            // Try to open hyperlink
+            GotoURL(_T("http://arslexis.com/pda/sm.html"));
+            break;
+        
+        case IDM_MENU_UPDATES:
+            GotoURL(_T("http://arslexis.com/updates/sm-inoah-1-0.html"));
+            break;
+
+        case IDM_MENU_ABOUT:
+            // TODO:
+            //isAboutVisible = true;
+            //setMenu(hwnd);
+            InvalidateRect(hwnd,NULL,TRUE);
             break;
 
         default:
