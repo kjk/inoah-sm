@@ -325,7 +325,7 @@ Definition *ParseAndFormatDefinition(const String& defTxt, String& wordOut)
         else if (FIsPartOfSpeech(line))
         {
             fAfterPos = true;
-            assert(2==line.len());
+            assert(2==line.length());
             curPosAbbrev = line.substr(1,1);
         }
         else if (FIsSynonim(line))

@@ -465,7 +465,7 @@ static void PaintAbout(HDC hdc, RECT& rect)
 
 static void RepaintDefinition(int scrollDelta)
 {
-    RECT clientRect;
+    RECT    clientRect;
     GetClientRect(g_hwndMain, &clientRect);
     ArsLexis::Rectangle bounds = clientRect;
 
@@ -480,6 +480,7 @@ static void RepaintDefinition(int scrollDelta)
 
     bool fDidDoubleBuffer = false;
     HDC  offscreenDc = ::CreateCompatibleDC(gr.handle());
+
     if (offscreenDc) 
     {
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
@@ -487,6 +488,7 @@ static void RepaintDefinition(int scrollDelta)
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             ArsLexis::Graphics offscreen(offscreenDc, NULL);
+            gr.copyArea(defRect, offscreen, defRect.topLeft);
             if (0 != scrollDelta)
                 GetDefinition()->scroll(offscreen, renderingPrefs(), scrollDelta);
             else
@@ -507,7 +509,7 @@ static void RepaintDefinition(int scrollDelta)
         else
             GetDefinition()->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
     }
-    g_forceLayoutRecalculation=false;
+    g_forceLayoutRecalculation = false;
 }
 
 static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
