@@ -27,7 +27,6 @@ const char_t * cookieStr       = _T("COOKIE");
 const char_t * messageStr      = _T("MESSAGE");
 const char_t * definitionStr   = _T("DEF");
 const char_t * wordListStr     = _T("WORDLIST");
-// const char_t * registrationStr = _T("REGISTRATION");
 const char_t * requestsLeftStr = _T("REQUESTS_LEFT");
 const char_t * pronunciationStr= _T("PRON");
 const char_t * regFailedStr    = _T("REGISTRATION_FAILED");
@@ -117,6 +116,42 @@ static void SaveStringToFile(const String& fileName, const String& str)
     DWORD written;
     WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
     CloseHandle(handle);
+}
+
+static String LoadStringFromFile(String fileName)
+{
+    TCHAR szPath[MAX_PATH];
+    // It doesn't help to have a path longer than MAX_PATH
+    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    // Append directory separator character as needed
+    if (!fOk)
+        return _T("");
+    
+    String fullPath = szPath +  iNoahFolder + fileName;
+    
+    HANDLE handle = CreateFile(fullPath.c_str(), 
+        GENERIC_READ, FILE_SHARE_READ, NULL, 
+        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
+        NULL); 
+
+    if (INVALID_HANDLE_VALUE==handle)
+        return TEXT("");
+    
+    TCHAR  buf[254];
+    DWORD  bytesRead;
+    String ret;
+
+    while (TRUE)
+    {
+        fOk = ReadFile(handle, &buf, sizeof(buf), &bytesRead, NULL);
+
+        if (!fOk || (0==bytesRead))
+            break;
+        ret.append(buf, bytesRead/sizeof(TCHAR));
+    }
+
+    CloseHandle(handle);
+    return ret;
 }
 
 ServerResponseParser::ServerResponseParser(String &content)
@@ -427,7 +462,7 @@ void iNoahSession::getWord(String word, String& ret)
         return;
     }
 
-    String regCode = loadString(regCodeFile);
+    String regCode = LoadStringFromFile(regCodeFile);
 
     if ( !regCode.empty() )
         regCode = sep+regCodeParam+regCode;
@@ -501,7 +536,7 @@ void iNoahSession::sendRequest(String url, String answer, String& ret)
 
 bool iNoahSession::getCookie()
 {
-    String storedCookie = loadString(cookieFile);
+    String storedCookie = LoadStringFromFile(cookieFile);
 
     if (storedCookie.length()>0)
     {
@@ -559,42 +594,6 @@ bool iNoahSession::getCookie()
     return true;
 }
 
-String iNoahSession::loadString(String fileName)
-{
-    TCHAR szPath[MAX_PATH];
-    // It doesn't help to have a path longer than MAX_PATH
-    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-    // Append directory separator character as needed
-    
-    String fullPath = szPath +  iNoahFolder + fileName;
-    
-    HANDLE handle = CreateFile(fullPath.c_str(), 
-        GENERIC_READ, FILE_SHARE_READ, NULL, 
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
-        NULL); 
-
-    if (INVALID_HANDLE_VALUE==handle)
-        return TEXT("");
-    
-    TCHAR cookie[254];
-    DWORD nBytesRead = -1;
-    BOOL  bResult = 1;
-    String ret;
-
-    while (bResult && nBytesRead!=0)
-    {
-        bResult = ReadFile(handle, &cookie, sizeof(cookie), &nBytesRead, NULL);
-
-        if (!bResult)
-            break;
-        ret.append(cookie, nBytesRead/sizeof(TCHAR));
-    }   
-
-    CloseHandle(handle);
-    return ret;
-}
-
-
 TCHAR numToHex(TCHAR num)
 {    
     if (num>=0 && num<=9)
@@ -617,13 +616,13 @@ void stringAppendHexified(String& str, const String& toHexify)
 void iNoahSession::clearCache()
 {
     TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
     String fullPath = szPath + iNoahFolder;
-    CreateDirectory(fullPath.c_str(), NULL);
+    // CreateDirectory(fullPath.c_str(), NULL);
     fullPath += cookieFile;
-    f = DeleteFile(fullPath.c_str());
+    fOk = DeleteFile(fullPath.c_str());
     fullPath = szPath + iNoahFolder + regCodeFile;
-    f = DeleteFile(fullPath.c_str());
+    fOk = DeleteFile(fullPath.c_str());
     fCookieReceived_ = false;
 }
 
@@ -631,12 +630,13 @@ void iNoahSession::clearCache()
 // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnppc2k/html/ppc_hpocket.asp
 // 128 is enough for buffer size
 #define INFO_BUF_SIZE 128
-String iNoahSession::getDeviceInfo()
+String getDeviceInfo()
 {
     SMS_ADDRESS      address;
     ArsLexis::String regsInfo;
     ArsLexis::String text;
     TCHAR            buffer[INFO_BUF_SIZE];
+    BOOL             fOk;
 
     memset(&address,0,sizeof(SMS_ADDRESS));
 #ifndef WIN32_PLATFORM_PSPC
@@ -649,7 +649,10 @@ String iNoahSession::getDeviceInfo()
 #endif
 
     memset(buffer,0,sizeof(buffer));
-    if (SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0))
+
+    fOk = SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0);
+
+    if (fOk)
     {
         if (text.length()>0)
             text += TEXT(":");
@@ -658,7 +661,9 @@ String iNoahSession::getDeviceInfo()
     }
 
     memset(buffer,0,sizeof(buffer));
-    if (SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0))
+    fOk = SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0);
+
+    if (fOk)
     {
         if (text.length()>0)
             text += TEXT(":");

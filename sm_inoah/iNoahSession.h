@@ -10,6 +10,8 @@
 
 using ArsLexis::String;
 
+String  getDeviceInfo();
+
 class iNoahSession
 {
     
@@ -34,13 +36,11 @@ public:
     String         getLastResponse() { return content_; }
     ResponseCode   getLastResponseCode() { return responseCode; }
 
-    String  getDeviceInfo();
     void    clearCache();
     virtual ~iNoahSession();
 
 private:
     bool    fCookieReceived_;
-    String  loadString(String fileName);
     String  cookie;
     String  content_;
     void    sendRequest(String url, String answer, String& ret);
