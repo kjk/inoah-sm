@@ -354,7 +354,7 @@ String iNoahSession::getDeviceInfo()
         stringAppendHexified(text, address.ptsAddress);
     }
     #endif
-    memset(&buffer,0,sizeof(buffer));
+    memset(buffer,0,sizeof(buffer));
     if (SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0))
     {
         if (text.length()>0)
@@ -363,7 +363,7 @@ String iNoahSession::getDeviceInfo()
         stringAppendHexified(text,buffer);
     }
 
-    memset(&buffer,0,sizeof(buffer));
+    memset(buffer,0,sizeof(buffer));
     if (SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0))
     {
         if (text.length()>0)
