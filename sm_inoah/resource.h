@@ -50,7 +50,8 @@
 
 #define IDC_STRING_LIST                 1000
 #define IDC_EDIT_REGCODE                1001
-
+#define IDC_STATIC_REG_CODE             1002
+#define IDC_PURCHASE_REG_CODE           1003
 
 // Next default values for new objects
 // 

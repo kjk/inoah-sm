@@ -588,8 +588,7 @@ static void DoRecentLookups(HWND hwnd)
 
 static void OnCreate(HWND hwnd)
 {
-    SHMENUBARINFO mbi;
-    ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
+    SHMENUBARINFO mbi = {0};
     mbi.cbSize     = sizeof(SHMENUBARINFO);
     mbi.hwndParent = hwnd;
     mbi.nToolBarId = IDR_HELLO_MENUBAR;
@@ -600,6 +599,11 @@ static void OnCreate(HWND hwnd)
         PostQuitMessage(0);
         return;
     }
+
+/*    g_menuDy = 0;
+#ifdef WIN32_PLATFORM_PSPC
+    g_menuDy = GetSystemMetrics(SM_CYMENU);
+#endif*/
     
     g_hwndEdit = CreateWindow( _T("edit"), NULL,
         WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
@@ -779,6 +783,21 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return result;
 }
 
+static void OnSize(HWND hwnd, LPARAM lp)
+{
+
+    int dx = LOWORD(lp);
+    int dy = HIWORD(lp);
+
+#ifdef WIN32_PLATFORM_PSPC
+    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, true);
+    MoveWindow(g_hwndScroll, dx-5, 28 , 5, dy-28, false);
+#else
+    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, true);
+    MoveWindow(g_hwndScroll, dx-5, 28 , 5, dy-28, false);
+#endif
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT      lResult = TRUE;
@@ -792,8 +811,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case WM_SIZE:
-            MoveWindow(g_hwndEdit, 2, 2, LOWORD(lp)-4, 20, true);
-            MoveWindow(g_hwndScroll, LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
+            OnSize(hwnd, lp);
             break;
 
         case WM_SETFOCUS:
