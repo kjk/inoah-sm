@@ -343,7 +343,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_CACHE:
-            g_session.clearCache();
+            ClearCache();
             break;
 
         case IDM_MENU_HOME:

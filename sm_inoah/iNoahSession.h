@@ -10,6 +10,7 @@ String  getDeviceInfo();
 bool    FGetRandomDef(String& defOut);
 bool    FGetWord(const String& word, String& defOut);
 bool    FGetWordList(String& wordListOut);
+void    ClearCache();
 
 class iNoahSession
 {
@@ -32,7 +33,6 @@ public:
     String         getLastResponse() { return content_; }
     ResponseCode   getLastResponseCode() { return responseCode; }
 
-    void    clearCache();
     virtual ~iNoahSession();
 
 private:

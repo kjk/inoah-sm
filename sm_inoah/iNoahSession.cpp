@@ -479,9 +479,21 @@ static String BuildGetWordListUrl(const String& cookie)
     return url;
 }
 
+String g_regCode;
+
+static String GetRegCode()
+{
+	if (!g_regCode.empty())
+		return g_regCode;
+	// TODO: this will always try to reg code from file if we don't
+	// have reg code. Could avoid that by using additional flag
+	g_regCode = LoadStringFromFile(regCodeFile);
+    return g_regCode;
+}
+
 static String BuildGetWordUrl(const String& cookie, const String& word)
-{    
-    String regCode = LoadStringFromFile(regCodeFile);
+{
+    String regCode = GetRegCode();
     if ( !regCode.empty() )
         regCode = sep+regCodeParam+regCode;
 
@@ -899,17 +911,17 @@ void stringAppendHexified(String& str, const String& toHexify)
     }
 }
 
-void iNoahSession::clearCache()
+void ClearCache()
 {
     TCHAR szPath[MAX_PATH];
-    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    BOOL  fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
     String fullPath = szPath + iNoahFolder;
-    // CreateDirectory(fullPath.c_str(), NULL);
     fullPath += cookieFile;
     fOk = DeleteFile(fullPath.c_str());
     fullPath = szPath + iNoahFolder + regCodeFile;
     fOk = DeleteFile(fullPath.c_str());
-    fCookieReceived_ = false;
+    g_cookie.clear();
+    g_regCode.clear();
 }
 
 // According to this msdn info:
