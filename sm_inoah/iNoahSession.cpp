@@ -27,9 +27,6 @@ const char_t * wordListStr     = _T("WORDLIST");
 
 const char_t * definitionStr   = _T("DEF");
 
-//const char_t * pronunciationStr= _T("PRON");
-//const char_t * requestsLeftStr = _T("REQUESTS_LEFT");
-
 const char_t * regFailedStr    = _T("REGISTRATION_FAILED");
 const char_t * regOkStr        = _T("REGISTRATION_OK");
 
@@ -230,6 +227,8 @@ bool ServerResponseParser::FParseResponse()
         line = GetNextLine(_content, curPos, fEnd);
         if (!fEnd)
             return false;
+        else
+            return true;
     }
 
     String::size_type fieldValueStart = curPos;
@@ -279,7 +278,9 @@ static String BuildCommonWithCookie(const String& cookie, const String& optional
     url.append(cookieParam);
     url.append(cookie);
     url.append(sep);
-	return url;
+    url.append(optionalOne);
+    url.append(optionalTwo);
+    return url;
 }
 
 static String BuildGetCookieUrl()
@@ -308,39 +309,13 @@ static String BuildGetRandomUrl(const String& cookie)
 
 static String BuildGetWordListUrl(const String& cookie)
 {    
-    String url;
-    url.reserve(urlCommonLen +
-                cookieParam.length() +
-                cookie.length() +
-                sep.length() + 
-                recentRequest.length());
-
-    url.assign(urlCommon);
-    url.append(cookieParam);
-    url.append(cookie);
-    url.append(sep);
-    url.append(recentRequest);
+    String url = BuildCommonWithCookie(cookie,recentRequest);
     return url;
 }
 
 static String BuildGetWordUrl(const String& cookie, const String& word)
 {
-    String url;
-    url.reserve(urlCommonLen +
-                cookieParam.length() +
-                cookie.length() +
-                sep.length() + 
-                getWordParam.length() +
-                word.length()
-                );
-
-    url.assign(urlCommon);
-    url.append(cookieParam);
-    url.append(cookie);
-    url.append(sep);
-    url.append(getWordParam);
-    url.append(word);
-
+    String url = BuildCommonWithCookie(cookie,getWordParam,word);
     String regCode = GetRegCode();
     if (!regCode.empty())
     {
@@ -348,27 +323,12 @@ static String BuildGetWordUrl(const String& cookie, const String& word)
         url.append(regCodeParam);
         url.append(regCode);
     }
-
     return url;
 }
 
 static String BuildRegisterUrl(const String& cookie, const String& regCode)
 {
-    String url;
-    url.reserve(urlCommonLen +
-                cookieParam.length() +
-                cookie.length() +
-                sep.length() + 
-                registerParam.length() +
-                regCode.length()
-                );
-
-    url.assign(urlCommon);
-    url.append(cookieParam);
-    url.append(cookie);
-    url.append(sep);
-    url.append(registerParam);
-    url.append(regCode);
+    String url = BuildCommonWithCookie(cookie,registerParam,regCode);
     return url;
 }
 

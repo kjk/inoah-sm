@@ -2,11 +2,11 @@ TODO:
 1. Improve formatting
 1.1. group by pos
 1.2. add numbers
-6. re-write registration code
-2. test registration
 3. scripts to create a cab and setup file
 4. add an icon
 5. pocket pc/pocket pc phone edition version
 
 DONE:
+2. test registration (2004-08-06)
+6. re-write registration code (2004-08-06)
 

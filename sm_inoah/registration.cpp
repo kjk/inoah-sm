@@ -41,7 +41,6 @@ static BOOL OnInitDialog(HWND hDlg)
     shidi.dwFlags  = SHIDIF_SIZEDLGFULLSCREEN;
     shidi.hDlg     = hDlg;
 
-    // Set up the menu bar
     SHMENUBARINFO shmbi;
     ZeroMemory(&shmbi, sizeof(shmbi));
     shmbi.cbSize     = sizeof(shmbi);
@@ -77,9 +76,9 @@ static BOOL CALLBACK RegCodeDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
     if (WM_COMMAND==msg)
     {
-        assert( (ID_CANCEL==wp) || (IDM_REGISTER==wp));
+        assert( (IDM_LATER==wp) || (IDM_REGISTER==wp));
 
-        if (ID_CANCEL==wp)
+        if (IDM_LATER==wp)
         {
             EndDialog(hDlg, LATER_PRESSED);
             return TRUE;

@@ -190,10 +190,24 @@ String GetRegCode()
     return g_regCode;
 }
 
+void SetRegCode(const String& regCode)
+{
+    g_regCode = regCode;
+    SaveStringToFile(regCodeFile,regCode);
+}
+
 static void DeleteRegCode()
 {
     DeleteFile(regCodeFile);
     g_regCode.clear();
+}
+
+static bool FRegCodeExists()
+{
+    if (g_regCode.empty())
+        return false;
+    else
+        return true;
 }
 
 String g_cookie;
@@ -447,9 +461,10 @@ static bool GotoURL(LPCTSTR lpszUrl)
 
 static void OnRegister(HWND hwnd)
 {
-DoItAgain:
     String newRegCode;
-    bool fOk = FGetRegCodeFromUser(g_regCode, newRegCode);
+    String oldRegCode = GetRegCode();
+DoItAgain:
+    bool fOk = FGetRegCodeFromUser(oldRegCode, newRegCode);
     if (!fOk)
         return;
 
@@ -462,25 +477,26 @@ DoItAgain:
 
     if (fRegCodeOk)
     {
-        SaveStringToFile(regCodeFile,g_regCode);
-        g_regCode = newRegCode;
+        SetRegCode(newRegCode);        
         MessageBox(g_hwndMain, 
             _T("Thank you for registering iNoah."), 
             _T("Registration successful"), 
             MB_OK | MB_ICONINFORMATION);
+        // so that we change "Unregistered" to "Registered" in "About" screen
+        InvalidateRect(hwnd, NULL, TRUE);
     }
     else
     {
         if ( IDNO == MessageBox(g_hwndMain, 
-            _T("Incorrect registration code. Contact support@arslexis.com in case of problems. Do you want to re-enter the code ?"), 
-            _T("Wrong registration code"), MB_YESNO | MB_ICONERROR) )
+            _T("Wrong registration code. Please contact support@arslexis.com.\n\nRe-enter the code?"),
+            _T("Wrong reg code"), MB_YESNO) )
         {
             // this is "Ok" button. Clear-out registration code (since it was invalid)
-            g_regCode.clear();
-            // TODO: delete regCode file            
+            SetRegCode(_T(""));
         }
         else
         {
+            oldRegCode.assign(newRegCode);
             goto DoItAgain;
         }
     }
@@ -697,13 +713,17 @@ static void PaintAbout(HDC hdc, RECT& rect)
     SelectObject(hdc, fnt2);
     
     RECT tmpRect=rect;
-    DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
     tmpRect.top += 46;
-    DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
     tmpRect.top += 18;
-    DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+    DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
     tmpRect.top += 18;
-    DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+
+    if (FRegCodeExists())
+        DrawText(hdc, TEXT("Registered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    else
+        DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
     SelectObject(hdc,fnt);
     DeleteObject(fnt2);
 }

@@ -21,17 +21,16 @@ void SetCookie(const String& cookie);
 
 #define MENU_HEIGHT 26
 
-#define KJK_BUILD 1
-#ifdef KJK_BUILD
-#define server     TEXT("dict-pc.arslexis.com")
-#define serverPort 4080
-//#define server     TEXT("dict.arslexis.com")
-//#define serverPort 80
-#else
 //#define server     TEXT("arslex.no-ip.info")
 //#define serverPort 80
-#define server     TEXT("dict.arslexis.com")
+
+//#define server     _T("dict-pc.arslexis.com")
+//#define serverPort 4080
+
+#define server     _T("dict.arslexis.com")
 #define serverPort 80
-#endif
+
+//#define server     _T("dict-pc.local.org")
+//#define serverPort 4080
 
 #endif

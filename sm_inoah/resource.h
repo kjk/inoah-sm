@@ -45,6 +45,8 @@
 #define IDM_MENU_HOME                   133
 #define IDM_MENU_UPDATES                134
 #define IDM_MENU_ABOUT                  135
+#define IDM_LATER                       136
+#define IDS_LATER                       137
 
 #define IDC_LIST_RECENT                 1000
 #define IDC_EDIT_REGCODE                1001
