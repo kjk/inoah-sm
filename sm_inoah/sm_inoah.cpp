@@ -300,6 +300,125 @@ static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
     SetScrollBar(GetDefinition());
 }
 
+static void DrawFancyRectangle(HDC hdc, RECT *rect)
+{
+    int startX = rect->left;
+    int endX   = rect->right;
+    int startY = rect->top;
+    int endY   = rect->bottom;
+
+    POINT p[2];
+    p[0].y = startY;
+    p[1].y = endY;
+
+    LOGPEN pen;
+    HGDIOBJ prevPen = GetCurrentObject(hdc,OBJ_PEN);
+
+    GetObject(prevPen, sizeof(pen), &pen);
+
+    int dx = endX - startX;
+
+    int startBlueCol = 255;
+    int endBlueCol = 80;
+
+    int blueColSpread = startBlueCol - endBlueCol;
+
+    int spread = blueColSpread/dx;
+
+    int blueColor = startBlueCol;
+
+    for (int x=startX; x<endX; x++)
+    {
+        p[0].x = x;
+
+        HPEN newPen = CreatePenIndirect(&pen);
+        pen.lopnColor = RGB(0,0,blueColor);
+        SelectObject(hdc,newPen);
+
+        DeleteObject(prevPen);
+        prevPen = newPen;
+        p[1].x = p[0].x;
+        Polyline(hdc, p, 2);
+        blueColor -= spread;
+    }
+    DeleteObject(prevPen);
+}
+
+static void DrawRectangle(HDC hdc, RECT *rect)
+{
+    ::Rectangle(hdc, rect->left, rect->top, rect->right, rect->bottom);
+}
+
+// we draw a text inside a rectangle
+// rectangle size depends on the text size
+// i.e. dy must be font's dy + good spacing
+// dx will depend on the size of the screen i.e. it's 
+// also, rectangle is centered on the screen
+static void DrawProgressInfo(HWND hwnd, TCHAR* text)
+{
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    rect.right -= GetScrollBarDx();
+    // space between edges of the client area for the box
+    const int borderDxPadding = 10;
+
+    // calculte dx of the box
+    rect.left    += borderDxPadding;
+    rect.right   -= borderDxPadding;
+
+    // now calculate dy of the box to fit 2 lines of the text plus
+    // some padding
+
+    LOGFONT logfnt;
+    HFONT fnt = (HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfHeight += 1; // one point smaller
+    logfnt.lfWeight = 800;  // bold
+    DeleteObject(fnt);
+
+    fnt = (HFONT)CreateFontIndirect(&logfnt);
+    if (NULL==fnt)
+    {
+        // if we didn't get the font we wanted, just use standard
+        HFONT fnt = (HFONT)GetStockObject(SYSTEM_FONT);
+        GetObject(fnt, sizeof(logfnt), &logfnt);
+    }
+
+    int fontDy = -logfnt.lfHeight;
+
+    const int yPadding = 5;
+    const int lineSpacing = 3;
+
+    int rectDy = 2*fontDy + lineSpacing + yPadding*2;
+
+    int clientDy = rect.bottom-rect.top;
+
+    rect.top     += (clientDy-rectDy)/2;
+    rect.bottom  -= (clientDy-rectDy)/2;
+
+    HDC hdc=GetDC(hwnd);
+    HFONT prevFnt = (HFONT)SelectObject(hdc, fnt);
+
+    DrawFancyRectangle(hdc, &rect);
+
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc,RGB(255,255,255));
+    //SetTextColor(hdc,RGB(255,0,0));
+
+    RECT rectTxt = rect;
+    rectTxt.top += (yPadding - 2);
+    rectTxt.bottom = rectTxt.top + fontDy + 2*2;
+    DrawText(hdc, _T("Downloading"), -1, &rectTxt, DT_VCENTER | DT_CENTER);
+
+    rectTxt.top = rect.top + yPadding + fontDy + lineSpacing - 2;
+    rectTxt.bottom = rectTxt.top + fontDy + 2*2;
+    DrawText(hdc, text, -1, &rectTxt, DT_VCENTER | DT_CENTER);
+
+    SelectObject(hdc,prevFnt);
+    DeleteObject(fnt);
+    ReleaseDC(hwnd,hdc);
+}
+
 static void PaintAbout(HDC hdc, RECT& rect)
 {
     HFONT   fnt = (HFONT)GetStockObject(SYSTEM_FONT);
@@ -375,8 +494,6 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
     clientRect.bottom -= 2 + GetMenuDy();
     ArsLexis::Rectangle defRect = clientRect;
 
-    // ArsLexis::Rectangle defRect = rect;
-
     bool fCouldDoubleBuffer = false;
     HDC  offscreenDc = ::CreateCompatibleDC(hdc);
     if (offscreenDc) 
@@ -414,7 +531,10 @@ static void Paint(HWND hwnd, HDC hdc)
     rect.bottom -= 2;
 
     if (NULL==GetDefinition())
+    {
         PaintAbout(hdc,rect);
+        //DrawProgressInfo(hwnd, _T("Hello"));
+    }
     else
         PaintDefinition(hwnd, hdc, rect);
 
@@ -423,58 +543,6 @@ static void Paint(HWND hwnd, HDC hdc)
         SetScrollBar(GetDefinition());
         g_fUpdateScrollbars = false;
     }
-}
-
-static void DrawProgressInfo(HWND hwnd, TCHAR* text)
-{
-    RECT rect;
-    HDC hdc=GetDC(hwnd);
-    GetClientRect (hwnd, &rect);
-    rect.top     += 22;
-    rect.left    += 2;
-    rect.right   -= 7;
-    rect.bottom  -=2;
-    LOGFONT logfnt;
-    
-    ::Rectangle(hdc, 18, 83, 152, 123);
-    
-    POINT p[2];
-    p[0].y=85;
-    p[1].y=121;
-    LOGPEN pen;
-    HGDIOBJ hgdiobj = GetCurrentObject(hdc,OBJ_PEN);
-    GetObject(hgdiobj, sizeof(pen), &pen);
-
-    for (p[0].x=20; p[0].x<150; p[0].x++)
-    {                           
-        HPEN newPen = CreatePenIndirect(&pen);
-        pen.lopnColor = RGB(0,0,p[0].x+100);
-        SelectObject(hdc,newPen);
-        DeleteObject(hgdiobj);
-        hgdiobj=newPen;
-        p[1].x = p[0].x;
-        Polyline(hdc, p, 2);
-    }
-    DeleteObject(hgdiobj);
-
-    SelectObject(hdc,GetStockObject(HOLLOW_BRUSH));
-    HFONT fnt = (HFONT)GetStockObject(SYSTEM_FONT);
-    //GetObject(fnt, sizeof(logfnt), &logfnt);
-    //logfnt.lfHeight+=1;
-    //logfnt.lfWeight=800;
-    //SetTextColor(hdc,RGB(255,255,255));
-    SetTextColor(hdc,RGB(255,0,0));
-    // SetBkMode(hdc, TRANSPARENT);
-    //HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-    //SelectObject(hdc, fnt2);
-    SelectObject(hdc, fnt);
-    rect.top -= 10;
-    DrawText(hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
-    rect.top += 32;
-    DrawText(hdc, text, -1, &rect, DT_VCENTER|DT_CENTER);
-    SelectObject(hdc,fnt);
-    //DeleteObject(fnt2);
-    ReleaseDC(hwnd,hdc);
 }
 
 static void SetFontSize(int fontSize, HWND hwnd)
