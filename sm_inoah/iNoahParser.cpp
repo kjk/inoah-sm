@@ -18,6 +18,7 @@ const String iNoahParser::arabNums[] =
 const iNoahParser::pOfSpeechCnt = 5;
 const int iNoahParser::abbrev = 0;
 const int iNoahParser::fullForm = 1;
+
 const String iNoahParser::pOfSpeach[2][5] = 
 { 
     {
@@ -32,52 +33,84 @@ const String iNoahParser::pOfSpeach[2][5] =
     }
 };
 
+String getFullPosFromAbbrev(const String& posAbbrev)
+{
+    if (_T("v")==posAbbrev)
+        return String(_T("verb."));
+
+    if (_T("a")==posAbbrev)
+        return String(_T("adj."));
+
+    if (_T("r")==posAbbrev)
+        return String(_T("adv."));
+
+    if (_T("n")==posAbbrev)
+        return String(_T("noun"));
+
+    if (_T("s")==posAbbrev)
+        return String(_T("adj."));
+
+    return String(_T("unknown"));
+}
+
 Definition* iNoahParser::parse(const String& text)
 {
-    int sep = text.find_first_of(char_t('\n'));
-    String word(text.substr(0, sep));
+    int sepPos = text.find_first_of(char_t('\n'));
+
+    String word(text.substr(0, sepPos-1));
+
     std::list<ElementsList*> sorted[pOfSpeechCnt];
-    String meanings(text.substr(sep+1,text.length()-sep-1));
-    while(meanings.compare(TEXT(""))!=0)
+
+    String txtRest(text.substr(sepPos+1,text.length()-sepPos-1));
+
+    while (!txtRest.empty())
     {
-        int nextIdx = 0;
-        char_t currBeg = meanings[0];
-        String metBegs();
+        int     nextIdx = 0;
+        char_t  currBeg = txtRest[0];
+        String  metBegs;
+
         while (true)
         {
             char_t nextBeg;
             nextBeg=currBeg;
             do
             {
-                nextIdx = meanings.find_first_of(char_t('\n'), nextIdx+1);
-                if ((nextIdx != -1)&&(meanings.length() - nextIdx - 2 > 0 ))
-                    nextBeg = meanings[nextIdx+1];
-            } while ((nextBeg==currBeg) && (nextIdx != -1));
-            if ((nextIdx == -1)||(metBegs.find_first_of(nextBeg) != -1))
+                nextIdx = txtRest.find_first_of(char_t('\n'), nextIdx+1);
+                if ( (nextIdx != String::npos) && (txtRest.length() - nextIdx - 2 > 0 ))
+                {
+                    nextBeg = txtRest[nextIdx+1];
+                }
+            } while ( (nextBeg==currBeg) && (nextIdx != String::npos));
+
+            if ( (String::npos == nextIdx) ||
+                 (metBegs.find_first_of(nextBeg) != String::npos))
             {
                 ElementsList* mean = new ElementsList();
                 int pOfSpeech = 0;
                 String txtToParse;
-                if(nextIdx==-1)
+                if (nextIdx==-1)
                 {
-                    txtToParse.assign(meanings.substr(0, meanings.length() - 1));
-                    meanings.assign(TEXT(""));
+                    txtToParse.assign(txtRest.substr(0, txtRest.length() - 1));
+                    txtRest.clear();
                 }
                 else
                 {
-                    txtToParse.assign(meanings.substr(0, nextIdx));
-                    meanings = meanings.substr(nextIdx + 1);
+                    txtToParse.assign(txtRest.substr(0, nextIdx));
+                    txtRest = txtRest.substr(nextIdx + 1);
                 }
-                if(this->parseDefinitionList(
+                if (this->parseDefinitionList(
                     txtToParse,
                     word, pOfSpeech))
                 {
-                    if(explanation) (*mean).push_back(explanation);
-                    if(examples) (*mean).merge(*examples);
-                    if(synonyms) (*mean).merge(*synonyms);
+                    if (explanation)
+                        (*mean).push_back(explanation);
+                    if (examples)
+                        (*mean).merge(*examples);
+                    if (synonyms)
+                        (*mean).merge(*synonyms);
                 }
                 
-                if(mean->size()>0)
+                if (mean->size()>0)
                     sorted[pOfSpeech].push_back(mean);
                 break;
             }
@@ -85,8 +118,10 @@ Definition* iNoahParser::parse(const String& text)
             currBeg = nextBeg;
         }
     }
-    Definition* def=new Definition;
-    if(!def) return NULL;
+
+    Definition* def=new Definition();
+    if (NULL!=def)
+        return NULL;
     ParagraphElement* parent=0;
     appendElement(parent=new ParagraphElement());
     DynamicNewLineElement *el=new DynamicNewLineElement(word);
@@ -94,7 +129,8 @@ Definition* iNoahParser::parse(const String& text)
     el->setStyle(styleWord);
     el->setParent(parent);
     int cntPOS=0;
-    for(int i=0;i<pOfSpeechCnt;i++)
+
+    for (int i=0;i<pOfSpeechCnt;i++)
     {
 #ifdef HORLINES
         if (sorted[i].size() > 0)
@@ -138,9 +174,11 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
 {
     delete examples;
     delete synonyms;
+    delete explanation;
+
     explanation = NULL;
-    examples = NULL;
-    synonyms = NULL;
+    examples    = NULL;
+    synonyms    = NULL;
     
     int currIndx = 0;
     while (currIndx < static_cast<int>(text.length()))
@@ -232,7 +270,6 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
     this.addSubToken(synonyms);*/
     return true;
 }
-
 
 iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &word)
 {
@@ -334,10 +371,280 @@ void iNoahParser::ElementsList::push_front(DefinitionElement* el)
     lst.push_front(el);
 }
 
-Definition *parseDefinition(ArsLexis::String& defTxt)
+Definition *parseDefinitionOld(ArsLexis::String& defTxt)
 {
     iNoahParser  parser;
     Definition * parsedDef = parser.parse(defTxt);
     return parsedDef;
 }
-    
+
+
+// given a string str and curPos which is a valid index within str, return
+// a substring from curPos until newline or end of string. Removes the newline
+// from the string. Updates curPos so that it can be called in sequence.
+// Sets fEnd to true if there are no more lines.
+// Handles the following kinds of new lines: "\n", "\r", "\n\r", "\r\n"
+static String GetNextLine(const ArsLexis::String& str, String::size_type& curPos, bool& fEnd)
+{
+    fEnd = false;
+    if (curPos==str.length())
+    {
+        fEnd = true;
+        return String();
+    }
+
+    String::size_type lineStartPos = curPos;
+    String::size_type lineEndPos;
+    String::size_type delimPos   = str.find_first_of(_T("\n\r"), lineStartPos);
+
+    if (String::npos == delimPos)
+    {
+        lineEndPos = str.length()-1;
+        curPos = str.length();     
+    }
+    else
+    {
+        if (0==delimPos)
+            lineEndPos = 0;
+        else
+            lineEndPos = delimPos;
+        assert ( (_T('\n')!=str[lineEndPos]) && (_T('\r')!=str[lineEndPos]))
+
+        curPos = delimPos+1;
+        while ( (_T('\n')==str[curPos]) || (_T('\r')==str[curPos]))
+        {
+            curPos++;
+        }
+    }
+    String::size_type lineLen = lineEndPos - lineStartPos;
+    return str.substr(lineStartPos, lineLen);
+}
+
+static bool FIsPartOfSpeech(const String& str)
+{
+    if ( (str.length()>0) && (_T('$')==str[0]) )
+        return true;
+    return false;
+}
+
+static bool FIsSynonim(const String& str)
+{
+    if ( (str.length()>0) && (_T('!')==str[0]) )
+        return true;
+    return false;
+}
+
+static bool FIsDef(const String& str)
+{
+    if ( (str.length()>0) && (_T('@')==str[0]) )
+        return true;
+    return false;
+}
+
+static bool FIsExample(const String& str)
+{
+    if ( (str.length()>0) && (_T('#')==str[0]) )
+        return true;
+    return false;
+}
+
+typedef std::vector<String> StringVector_t;
+
+void formatSynset(Definition::Elements_t& elements,
+                  const String& posAbbrev, const String& synsetDef,
+                  const StringVector_t& synonyms,
+                  const StringVector_t& examples,
+                  int synsetNo)
+{
+    assert( synsetNo>=1 );
+
+    DynamicNewLineElement *dnlEl;
+
+    ParagraphElement* posParagraph = new ParagraphElement();
+    if (NULL == posParagraph)
+        return;
+    elements.push_back(posParagraph);
+
+    String posFull = getFullPosFromAbbrev(posAbbrev);
+    dnlEl = new DynamicNewLineElement(posFull);
+    if (NULL == dnlEl)
+        return;
+    dnlEl->setStyle(stylePOfSpeech);
+    dnlEl->setParent(posParagraph);
+    elements.push_back(dnlEl);
+
+    ParagraphElement* defParagraph = new ParagraphElement();
+    if (NULL == defParagraph)
+        return;
+    elements.push_back(defParagraph);
+    dnlEl = new DynamicNewLineElement(synsetDef);
+    if (NULL == dnlEl)
+        return;
+    dnlEl->setStyle(styleDefinition);
+    dnlEl->setParent(defParagraph);
+    elements.push_back(dnlEl);
+
+    uint_t synCount = synonyms.size();
+    if (synCount>0)
+    {
+        ParagraphElement* synListParagraph = new ParagraphElement();
+        if (NULL == synListParagraph)
+            return;
+        elements.push_back(synListParagraph);
+        dnlEl = new DynamicNewLineElement(_T("Synonyms: "));
+        if (NULL == dnlEl)
+            return;
+        dnlEl->setStyle(styleSynonymsList);
+        dnlEl->setParent(synListParagraph);
+        elements.push_back(dnlEl);
+
+        String syn;
+        String synLine;
+        for (uint_t i=0; i<synCount; i++)
+        {
+            syn = synonyms[i];
+            synLine.append(syn);
+            if (i!=synCount-1)
+            {
+                // not the last synonym
+                synLine.append(_T(", "));
+            }
+        }
+
+        /* ParagraphElement* synParagraph = new ParagraphElement();
+        if (NULL == synParagraph)
+            return;
+        elements.push_back(synParagraph); */
+        
+        dnlEl = new DynamicNewLineElement(synLine);
+        if (NULL == dnlEl)
+            return;
+        dnlEl->setStyle(styleSynonyms);
+        // dnlEl->setParent(synParagraph);
+        dnlEl->setParent(synListParagraph);
+        elements.push_back(dnlEl);
+    }
+
+    uint_t examplesCount = examples.size();
+    if (examplesCount>0)
+    {
+        String example;
+        String exampleLine;
+        for (uint_t i=0; i<examplesCount; i++)
+        {
+            example = examples[i];
+            exampleLine.assign(_T("\""));
+            exampleLine.append(example);
+            exampleLine.append(_T("\""));
+        }
+
+        ParagraphElement* exParagraph = new ParagraphElement();
+        if (NULL == exParagraph)
+            return;
+        elements.push_back(exParagraph);
+        dnlEl = new DynamicNewLineElement(exampleLine);
+        if (NULL == dnlEl)
+            return;
+        dnlEl->setStyle(styleExample);
+        dnlEl->setParent(exParagraph);
+        elements.push_back(dnlEl);
+    }
+}
+
+Definition *parseDefinition(const ArsLexis::String& defTxt)
+{
+    StringVector_t curExamples;
+    StringVector_t curSynonyms;
+    String         curSynsetDef;
+    String         curPosAbbrev;
+    int            curSynsetNo = 1;
+
+    Definition::Elements_t elements;
+
+    String syn;
+    String example;
+
+    bool    fNeedToAddSynset = false;
+    bool    fEnd;
+    String  line;
+    String::size_type curPos = 0;
+
+    // get word
+    line = GetNextLine(defTxt,curPos,fEnd);
+    if (fEnd)
+        return NULL;
+
+    String word = line;
+
+    ParagraphElement* wordParagraph = new ParagraphElement();
+    if (NULL == wordParagraph)
+        return NULL;
+    elements.push_back(wordParagraph);
+
+    DynamicNewLineElement *dnlEl = new DynamicNewLineElement(word);
+    if (NULL == dnlEl)
+        return NULL;
+    dnlEl->setStyle(styleWord);
+    dnlEl->setParent(wordParagraph);
+    elements.push_back(dnlEl);
+
+    bool fAfterSynonyms = false;
+    while (true)
+    {
+        line = GetNextLine(defTxt,curPos,fEnd);
+        if (fEnd)
+            break;
+
+        if (FIsPartOfSpeech(line))
+        {
+            fAfterSynonyms = true;
+            assert(2==line.len());
+            curPosAbbrev = line.substr(1,1);
+        }
+        else if (FIsSynonim(line))
+        {
+            if (fAfterSynonyms)
+            {
+                formatSynset(elements, curPosAbbrev, curSynsetDef,
+                    curSynonyms, curExamples, curSynsetNo);
+                curPosAbbrev.clear();
+                curSynsetDef.clear();
+                curSynonyms.clear();
+                curExamples.clear();
+                ++curSynsetNo;
+
+                fAfterSynonyms = false;
+            }
+            syn = line.substr(1,line.length()-1);
+            if (0!=syn.compare(word))
+            {
+                curSynonyms.push_back(syn);
+            }
+        }
+        else if (FIsDef(line))
+        {
+            fAfterSynonyms = true;
+            curSynsetDef = line.substr(1,line.length()-1);
+        }
+        else if (FIsExample(line))
+        {
+            fAfterSynonyms = true;
+            example = line.substr(1,line.length()-1);
+            curExamples.push_back(example);
+        }
+    }
+
+    if (fAfterSynonyms)
+    {
+        formatSynset(elements, curPosAbbrev, curSynsetDef,
+            curSynonyms, curExamples, curSynsetNo);
+    }
+
+    Definition* def=new Definition();
+    if (NULL==def)
+        return NULL;
+
+    def->replaceElements(elements);
+    return def;
+}
+

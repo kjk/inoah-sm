@@ -60,5 +60,7 @@ private:
     ElementsList* parseExamplesList(ArsLexis::String &text);
 };
 
-Definition *parseDefinition(ArsLexis::String& def);
+Definition *parseDefinitionOld(ArsLexis::String& def);
+Definition *parseDefinition(const ArsLexis::String& def);
+
 #endif
