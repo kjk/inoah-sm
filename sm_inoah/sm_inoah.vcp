@@ -862,6 +862,50 @@ DEP_CPP_DYNAM=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_ENTER=\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_ENTER=\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_ENTER=\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_ENTER=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\FontEffects.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
@@ -1513,32 +1557,36 @@ SOURCE=.\reclookups.cpp
 
 DEP_CPP_RECLO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
-	".\iNoahSession.h"\
-	".\reclookups.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_RECLO=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	".\iNoahSession.h"\
-	".\reclookups.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
-
-DEP_CPP_RECLO=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	".\iNoahSession.h"\
 	".\reclookups.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
 	
 NODEP_CPP_RECLO=\
+	".\iNoahSession.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_RECLO=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\reclookups.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	
+NODEP_CPP_RECLO=\
+	".\iNoahSession.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_RECLO=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\reclookups.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	
+NODEP_CPP_RECLO=\
+	".\iNoahSession.h"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1550,60 +1598,6 @@ DEP_CPP_RECLO=\
 	"..\ars_framework\Src\ErrBase.h"\
 	".\reclookups.h"\
 	".\sm_inoah.h"\
-	
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\registration.cpp
-
-!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
-
-DEP_CPP_REGIS=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	".\iNoahSession.h"\
-	".\registration.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_REGIS=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	".\iNoahSession.h"\
-	".\registration.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
-
-DEP_CPP_REGIS=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	".\iNoahSession.h"\
-	".\registration.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
-	
-NODEP_CPP_REGIS=\
-	".\stdint"\
-	".\tdint.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
-
-DEP_CPP_REGIS=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	".\registration.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ENDIF 
@@ -1703,7 +1697,6 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
-	".\iNoahSession.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
@@ -1712,6 +1705,7 @@ NODEP_CPP_RENDER=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	".\iNoahSession.h"\
 	".\WinFont.h"\
 	
 
@@ -1725,7 +1719,6 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
-	".\iNoahSession.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
@@ -1734,6 +1727,7 @@ NODEP_CPP_RENDER=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	".\iNoahSession.h"\
 	".\WinFont.h"\
 	
 
@@ -1824,7 +1818,6 @@ DEP_CPP_SERVE=\
 DEP_CPP_SERVE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\STLport\stlport\cctype"\
@@ -1899,23 +1892,23 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
-	".\iNoahParser.h"\
-	".\iNoahSession.h"\
 	".\reclookups.h"\
 	".\registration.h"\
 	".\RenderingPreferences.hpp"\
-	".\TAPIDevice.h"\
-	".\TAPILine.h"\
 	".\Transmission.h"\
 	
 NODEP_CPP_SM_IN=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	".\iNoahParser.h"\
+	".\iNoahSession.h"\
 	".\ms.h"\
 	".\niqueid.h"\
 	".\onnmgr.h"\
 	".\pcshell.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
 	".\WinFont.h"\
 	".\xTAPI.h"\
 	
@@ -1940,23 +1933,23 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
-	".\iNoahParser.h"\
-	".\iNoahSession.h"\
 	".\reclookups.h"\
 	".\registration.h"\
 	".\RenderingPreferences.hpp"\
-	".\TAPIDevice.h"\
-	".\TAPILine.h"\
 	".\Transmission.h"\
 	
 NODEP_CPP_SM_IN=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	".\iNoahParser.h"\
+	".\iNoahSession.h"\
 	".\ms.h"\
 	".\niqueid.h"\
 	".\onnmgr.h"\
 	".\pcshell.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
 	".\WinFont.h"\
 	".\xTAPI.h"\
 	
@@ -1992,12 +1985,12 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\DefinitionParser.hpp"\
 	".\reclookups.h"\
-	".\registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
@@ -2152,8 +2145,10 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
 	".\cctype"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2165,8 +2160,10 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
 	".\cctype"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -2178,8 +2175,10 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
 	".\cctype"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -2437,6 +2436,10 @@ SOURCE=.\DynamicNewLineElement.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\ErrBase.h
 # End Source File
 # Begin Source File
@@ -2482,10 +2485,6 @@ SOURCE=..\ars_framework\Src\NativeGraphics.hpp
 # Begin Source File
 
 SOURCE=.\reclookups.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\registration.h
 # End Source File
 # Begin Source File
 
