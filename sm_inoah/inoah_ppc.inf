@@ -33,3 +33,8 @@ Shortcuts = 0, %CE11% 		         ; \Windows\Start Menu\
 
 [Shortcuts]                         ; Shortcut created in destination dir
 %AppName%,0,inoah.exe
+
+[CEDevice]
+; disable a warning on ppc 2003 about possible display problems
+; it says that the app supports square screens and screen rotation.
+BuildMax = 0xE0000000  

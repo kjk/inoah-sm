@@ -1,4 +1,6 @@
 TODO:
+27. doesn't work with whitespace at the end of the word (e.g. "verb "). strip
+whitespace before sending the word.
 26. add Ctrl-Q as "quit" shortcut
 
 For future versions:
