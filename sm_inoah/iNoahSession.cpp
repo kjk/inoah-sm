@@ -251,7 +251,7 @@ String iNoahSession::loadString(String fileName)
 {
     TCHAR szPath[MAX_PATH];
     // It doesn't help to have a path longer than MAX_PATH
-    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, 
+    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, 
         STORE_FOLDER,
         FALSE);
     // Append directory separator character as needed
@@ -285,7 +285,7 @@ String iNoahSession::loadString(String fileName)
 void iNoahSession::storeString(String fileName, String str)
 {
     TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, 
+    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, 
         STORE_FOLDER, 
         FALSE);
     String fullPath = szPath + iNoahFolder;
@@ -324,7 +324,7 @@ void stringAppendHexified(String& str, const String& toHexify)
 void iNoahSession::clearCache()
 {
     TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, STORE_FOLDER, FALSE);
+    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
     String fullPath = szPath + iNoahFolder;
     CreateDirectory (fullPath.c_str(), NULL);
     fullPath+=cookieFile;

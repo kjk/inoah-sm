@@ -44,7 +44,7 @@ RenderingPreferences::RenderingPreferences()
     bullet[0]=(bulletType()==bulletCircle)?TCHAR('*'):TCHAR('>');
     bullet[1]=TCHAR(' ');
     bullet[2]=TCHAR(' ');
-    Graphics graphics(GetDC(hwndMain),hwndMain);
+    Graphics graphics(GetDC(g_hwndMain),g_hwndMain);
     Graphics::FontSetter setFont(graphics, font);
     //standardIndentation_=graphics.textWidth(bullet, 2);
 }
