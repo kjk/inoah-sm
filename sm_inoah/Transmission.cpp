@@ -167,6 +167,17 @@ DWORD Transmission::setError()
         content += TEXT(")");
     }
 
+    if (ERROR_INTERNET_NAME_NOT_RESOLVED==lastError_)
+    {
+        content += TEXT(" (can't resolve name ");
+        content += host;
+        content += TEXT(":");
+        memset(buffer,0,sizeof(buffer));
+        _itow(port, buffer, 10);
+        content += buffer;
+        content += TEXT(")");
+    }
+
     //LocalFree( lpMsgBuf );
     if (hIConnect_)
     {
