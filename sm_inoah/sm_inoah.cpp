@@ -16,7 +16,12 @@
 #include "HorizontalLineElement.hpp"
 #include "Definition.hpp"
 
+// those 3 must be in this sequence in order to get IID_DestNetInternet
+// http://www.smartphonedn.com/forums/viewtopic.php?t=360
+#include <objbase.h>
+#include <initguid.h>
 #include <connmgr.h>
+
 #include <windows.h>
 #include <tpcshell.h>
 #include <wingdi.h>
@@ -638,7 +643,7 @@ bool initConnection()
     
     // Get the network information where we want to establish a
     // connection
-    TCHAR tchRemoteUrl[256] = TEXT("\0");
+/*    TCHAR tchRemoteUrl[256] = TEXT("\0");
     assert( sizeof(server) < sizeof(tchRemoteUrl) );
     wsprintf(tchRemoteUrl, server);
     GUID guidNetworkObject;
@@ -646,13 +651,8 @@ bool initConnection()
     
     if(ConnMgrMapURL(tchRemoteUrl, &guidNetworkObject, &dwIndex)
         == E_FAIL) 
-        /*MessageBox(
-        NULL,
-        TEXT("Could not map the request to a network identifier."),
-        TEXT("Error"),
-        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);*/
         return false;
-    
+*/    
     // Now that we've got the network address, set up the
     // connection structure
     CONNMGR_CONNECTIONINFO ccInfo;
@@ -662,11 +662,14 @@ bool initConnection()
     ccInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
     ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
     ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
-    ccInfo.guidDestNet = guidNetworkObject;
+    ccInfo.guidDestNet = IID_DestNetInternet;
+    //ccInfo.guidDestNet = guidNetworkObject;
     
+    HRESULT res;
     // Make the connection request (timeout in 5 seconds)
-    if(ConnMgrEstablishConnectionSync(&ccInfo, &hConnection,
-        dwTimeout, &dwStatus) == E_FAIL) 
+    res = ConnMgrEstablishConnectionSync(&ccInfo, &hConnection, dwTimeout, &dwStatus);
+    
+    if (FAILED(res))
         return false;
     return true;
 }

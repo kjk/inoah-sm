@@ -51,7 +51,6 @@ private:
     bool checkErrors(Transmission &tr, ArsLexis::String &ret);
     int CreateAppFolder (HWND hWnd, TCHAR *pszAppFolder, int nMax);
     bool getCookie();
-    void text2Hex(const ArsLexis::String& text, ArsLexis::String& hex);    
 
     ResponseCode responseCode;
 

@@ -297,12 +297,14 @@ TCHAR numToHex(TCHAR num)
     return TCHAR('A')+num-10;
 }
 
-void iNoahSession::text2Hex(const String& text, String& hex)
+// Append hexbinary-encoded string toHexify to the input/output string str
+void stringAppendHexified(String& str, const String& toHexify)
 {
-    for(size_t i=0;text.length()<i;i++)
+    size_t toHexifyLen = toHexify.length();
+    for(size_t i=0;i<toHexifyLen;i++)
     {
-        hex += numToHex((text[i] & 0xF0) >> 4);
-        hex += numToHex(text[i] & 0x0F);
+        str += numToHex((toHexify[i] & 0xF0) >> 4);
+        str += numToHex(toHexify[i] & 0x0F);
     }
 }
 
@@ -335,7 +337,7 @@ String iNoahSession::getDeviceInfo()
     if (SUCCEEDED(res))
     {
         text.assign(TEXT("PN"));
-        text2Hex(address.ptsAddress,text);
+        stringAppendHexified(text, address.ptsAddress);
     }
 
     memset(&buffer,0,sizeof(buffer));
@@ -344,7 +346,7 @@ String iNoahSession::getDeviceInfo()
         if (text.length()>0)
             text+=TEXT(":");
         text+=TEXT("OC");
-        text2Hex(buffer,text);
+        stringAppendHexified(text,buffer);
     }
 
     memset(&buffer,0,sizeof(buffer));
@@ -353,7 +355,7 @@ String iNoahSession::getDeviceInfo()
         if (text.length()>0)
             text+=TEXT(":");
         text+=TEXT("OD");
-        text2Hex(buffer,text);
+        stringAppendHexified(text,buffer);
     }
     return text;
 }
