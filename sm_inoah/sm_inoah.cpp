@@ -1,6 +1,3 @@
-// sm_inoah.cpp : Defines the entry point for the application.
-//
-
 #include "resource.h"
 #include "sm_inoah.h"
 #include "iNoahSession.h"
@@ -30,14 +27,15 @@
 #include <uniqueid.h>
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
-HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
-HWND hwndScroll;
+HWND      hwndMain = NULL;    // Handle to Main window returned from CreateWindow
+HWND      hwndScroll;
 
 static bool g_forceLayoutRecalculation=false;
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
-Definition *definition_ = NULL;
+
+Definition *g_definition = NULL;
 
 RenderingPreferences* prefs= new RenderingPreferences();
 
@@ -46,8 +44,10 @@ bool rec=false;
 ArsLexis::String wordList;
 ArsLexis::String recentWord;
 ArsLexis::String regCode;
-iNoahSession session;
-HANDLE hConnection = NULL;
+iNoahSession     session;
+HANDLE           hConnection = NULL;
+bool             compactView=FALSE;
+ArsLexis::String g_text=TEXT("");
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 WNDPROC oldEditWndProc;
@@ -55,23 +55,33 @@ void    drawProgressInfo(HWND hwnd, TCHAR* text);
 void    setFontSize(int diff,HWND hwnd);
 void    paint(HWND hwnd, HDC hdc);
 bool    initConnection();
-void    setScrollBar(Definition* definition_);
+void    setScrollBar(Definition* definition);
 void    setDefinition(ArsLexis::String& defs, HWND hwnd);
-//void displayPhoneInfo();
 
-// Processed messages:
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
+#define MAX_WORD_LEN 64
+static void doLookup(HWND hwnd, HWND hwndEdit)
+{
+    TCHAR buf[MAX_WORD_LEN+1];
+    int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+    if (0==len)
+        return;
+
+    memset(buf,0,sizeof(buf));
+    len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
+    SendMessage(hwndEdit, EM_SETSEL, 0,-1);
+
+    ArsLexis::String word(buf); 
+    drawProgressInfo(hwnd, TEXT("definition..."));
+    session.getWord(word,g_text);
+    setDefinition(g_text,hwnd);
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT     lResult = TRUE;
     HDC         hdc;
     PAINTSTRUCT ps;
     static HWND hwndEdit;
-
-    static bool compactView=FALSE;
-    static ArsLexis::String text=TEXT("");
 
     switch(msg)
     {
@@ -85,30 +95,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 #else
                 ArsLexis::String errorMsg = TEXT("Can't establish connection.");
 #endif
-                // TODO: should we exit now? Maybe just display an error
-                // information on the screen instead of message box?
                 MessageBox(
                     hwnd,
                     errorMsg.c_str(),
                     TEXT("Error"),
                     MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
                     );
-                //SetFocus(hwndEdit);
-                //PostQuitMessage(0);
-                //break;
             }
-            //)break;
-            //initialize();
-            // create the menu bar
+
             SHMENUBARINFO mbi;
             ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
             mbi.cbSize = sizeof(SHMENUBARINFO);
             mbi.hwndParent = hwnd;
             mbi.nToolBarId = IDR_HELLO_MENUBAR;
             mbi.hInstRes = g_hInst;
-            
-            //if (tr.sendRequest()==NO_ERROR);
-            //	tr.getResponse();
             
             if (!SHCreateMenuBar(&mbi)) 
             {
@@ -134,7 +134,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_SCROLL,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
-            setScrollBar(definition_);
+            setScrollBar(g_definition);
             // In order to make Back work properly, it's necessary to 
             // override it and then call the appropriate SH API
             (void)SendMessage(
@@ -144,6 +144,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 );
 
             setFontSize(IDM_FNT_STANDARD, hwnd);
+            SetFocus(hwndEdit);
             break;
         }
         case WM_SIZE:
@@ -198,15 +199,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     break;
                 case ID_LOOKUP:
                 {
-                    int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
-                    TCHAR *buf=new TCHAR[len+1];
-                    len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-                    SendMessage(hwndEdit, EM_SETSEL, 0,len);
-                    ArsLexis::String word(buf); 
-                    drawProgressInfo(hwnd, TEXT("definition..."));
-                    session.getWord(word,text);
-                    setDefinition(text,hwnd);
-                    delete buf;
+                    doLookup(hwnd, hwndEdit);
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;
                 }
@@ -251,8 +244,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
                             {                        
                                 drawProgressInfo(hwnd, TEXT("definition..."));
-                                session.getWord(recentWord,text);
-                                setDefinition(text,hwnd);
+                                session.getWord(recentWord,g_text);
+                                setDefinition(g_text,hwnd);
                             }
                             break;
                         }
@@ -267,12 +260,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case IDM_CACHE:
                     session.clearCache();
                     break;
-                /*case IDM_PHONEINFO:
-                    displayPhoneInfo();
-                    break;*/
                 default:
                     return DefWindowProc(hwnd, msg, wp, lp);
             }
+            SetFocus(hwndEdit);
             break;
         }
         
@@ -280,8 +271,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         {
             ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
             int page=0;
-            if (definition_)
-                page=definition_->shownLinesCount();
+            if (NULL!=g_definition)
+                page=g_definition->shownLinesCount();
             switch(HIWORD(lp))
             {
                 case VK_TBACK:
@@ -289,9 +280,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         SHSendBackToFocusWindow( msg, wp, lp );
                     break;
                 case VK_TDOWN:
-                    if(definition_)
-                        definition_->scroll(gr,*prefs,page);
-                    setScrollBar(definition_);
+                    if(NULL!=g_definition)
+                        g_definition->scroll(gr,*prefs,page);
+                    setScrollBar(g_definition);
                     break;
             }
             break;
@@ -301,7 +292,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             hdc = BeginPaint (hwnd, &ps);
             paint(hwnd, hdc);
             EndPaint (hwnd, &ps);
-        }		
+        }
         break;
         
         case WM_CLOSE:
@@ -320,22 +311,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return (lResult);
 }
 
-
-//
-//  FUNCTION: InitInstance(HANDLE, int)
-//
-//  PURPOSE: Saves instance handle and creates main window
-//
-//  COMMENTS:
-//
-//    In this function, we save the instance handle in a global variable and
-//    create and display the main program window.
-//
 BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
 {
     
     g_hInst = hInstance;
-    hwndMain = CreateWindow(szAppName,						
+    hwndMain = CreateWindow(szAppName,
         szTitle,
         WS_VISIBLE,
         CW_USEDEFAULT,
@@ -344,7 +324,7 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
         CW_USEDEFAULT,
         NULL, NULL, hInstance, NULL );
     
-    if ( !hwndMain )		
+    if ( !hwndMain )
     {
         return FALSE;
     }
@@ -354,11 +334,6 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
     return TRUE;
 }
 
-//
-//  FUNCTION: InitApplication(HANDLE)
-//
-//  PURPOSE: Sets the properties for our window.
-//
 BOOL InitApplication ( HINSTANCE hInstance )
 {
     WNDCLASS wc;
@@ -381,11 +356,6 @@ BOOL InitApplication ( HINSTANCE hInstance )
 }
 
 
-//
-//  FUNCTION: WinMain(HANDLE, HANDLE, LPWSTR, int)
-//
-//  PURPOSE: Entry point for the application
-//
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPWSTR    lpCmdLine,
@@ -395,8 +365,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
     MSG msg;
     HWND hHelloWnd = NULL;	
     
-    //Check if Hello.exe is running. If it's running then focus on the window
-    hHelloWnd = FindWindow(szAppName, szTitle);	
+    // Check if we're already running. If it's running then focus on the window
+    hHelloWnd = FindWindow(szAppName, szTitle);
     if (hHelloWnd) 
     {
         SetForegroundWindow (hHelloWnd);    
@@ -435,7 +405,7 @@ void paint(HWND hwnd, HDC hdc)
     rect.left   +=2;
     rect.right  -=7;
     rect.bottom -=2;
-    if (!definition_)
+    if (NULL==g_definition)
     {
         LOGFONT logfnt;
         HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
@@ -471,7 +441,7 @@ void paint(HWND hwnd, HDC hdc)
                 HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
                 {
                     ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                    definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                    g_definition->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
                     offscreen.copyArea(defRect, gr, defRect.topLeft);
                 }
                 ::SelectObject(offscreenDc, oldBitmap);
@@ -484,12 +454,12 @@ void paint(HWND hwnd, HDC hdc)
         else
             doubleBuffer=false;
         if (!doubleBuffer)
-            definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+            g_definition->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
         g_forceLayoutRecalculation=false;
     }
     if(rec)
     {
-        setScrollBar(definition_);
+        setScrollBar(g_definition);
         rec=false;
     }
 }
@@ -500,16 +470,22 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_KEYDOWN:
         {
-            if(definition_)
+
+            if (VK_TACTION==wp)
+            {
+                doLookup(GetParent(hwnd), hwnd);
+                return 0;
+            }
+            if(NULL!=g_definition)
             {
                 int page=0;
                 switch (wp) 
                 {
                     case VK_DOWN:
-                        page=definition_->shownLinesCount();
+                        page=g_definition->shownLinesCount();
                         break;
                     case VK_UP:
-                        page=-static_cast<int>(definition_->shownLinesCount());
+                        page=-static_cast<int>(g_definition->shownLinesCount());
                         break;
                 }
                 if (0!=page)
@@ -529,7 +505,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
                             {
                                 ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                                definition_->scroll(offscreen,*prefs, page);
+                                g_definition->scroll(offscreen,*prefs, page);
                                 offscreen.copyArea(defRect, gr, defRect.topLeft);
                             }
                             ::SelectObject(offscreenDc, oldBitmap);
@@ -542,9 +518,9 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     else
                         doubleBuffer=false;
                     if (!doubleBuffer)
-                        definition_->scroll(gr,*prefs, page);
+                        g_definition->scroll(gr,*prefs, page);
                     
-                    setScrollBar(definition_);
+                    setScrollBar(g_definition);
                     return 0;
                 }
             }
@@ -634,27 +610,12 @@ void setFontSize(int diff, HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
+// note: this will fail on emulator but might work on the device
 bool initConnection()
 {
-    // Establish a synchronous connection
-
     DWORD dwStatus  = 0;
-    DWORD dwTimeout = 5000;
-    
-    // Get the network information where we want to establish a
-    // connection
-/*    TCHAR tchRemoteUrl[256] = TEXT("\0");
-    assert( sizeof(server) < sizeof(tchRemoteUrl) );
-    wsprintf(tchRemoteUrl, server);
-    GUID guidNetworkObject;
-    DWORD dwIndex = 0;
-    
-    if(ConnMgrMapURL(tchRemoteUrl, &guidNetworkObject, &dwIndex)
-        == E_FAIL) 
-        return false;
-*/    
-    // Now that we've got the network address, set up the
-    // connection structure
+    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
+
     CONNMGR_CONNECTIONINFO ccInfo;
     
     memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
@@ -663,27 +624,24 @@ bool initConnection()
     ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
     ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
     ccInfo.guidDestNet = IID_DestNetInternet;
-    //ccInfo.guidDestNet = guidNetworkObject;
     
-    HRESULT res;
-    // Make the connection request (timeout in 5 seconds)
-    res = ConnMgrEstablishConnectionSync(&ccInfo, &hConnection, dwTimeout, &dwStatus);
+    HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &hConnection, dwTimeout, &dwStatus);
     
     if (FAILED(res))
         return false;
     return true;
 }
 
-void setScrollBar(Definition* definition_)
+void setScrollBar(Definition* definition)
 {
     int frst=0;
     int total=0;
     int shown=0;
-    if(definition_)
+    if(definition)
     {
-        frst=definition_->firstShownLine();
-        total=definition_->totalLinesCount();
-        shown=definition_->shownLinesCount();
+        frst=definition->firstShownLine();
+        total=definition->totalLinesCount();
+        shown=definition->shownLinesCount();
     }
     
     SetScrollPos(
@@ -719,11 +677,12 @@ void setDefinition(ArsLexis::String& defs, HWND hwnd)
         }
         default:
         {
-            delete definition_;
+            delete g_definition;
+            g_definition = NULL;
             ParagraphElement* parent=0;
             int start=0;
             iNoahParser parser;
-            definition_=parser.parse(defs);
+            g_definition=parser.parse(defs);
             ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
             rec=true;
             InvalidateRect(hwnd,NULL,TRUE);

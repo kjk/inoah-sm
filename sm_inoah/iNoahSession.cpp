@@ -23,9 +23,9 @@ const String definitionStr   = TEXT("DEF");
 const String wordListStr     = TEXT("WORDLIST");
 const String registrationStr = TEXT("REGISTRATION");
 
-const String script          = TEXT("/palm.php?");
-const String protocolVersion = TEXT("pv=1");
-const String clientVersion   = TEXT("cv=0.5");
+const String script          = TEXT("/dict-2.php?");
+const String protocolVersion = TEXT("pv=2");
+const String clientVersion   = TEXT("cv=1.0");
 const String sep             = TEXT("&");
 const String cookieRequest   = TEXT("get_cookie");
 const String deviceInfoParam = TEXT("di=");
@@ -291,7 +291,7 @@ void iNoahSession::storeString(String fileName, String str)
 
 TCHAR numToHex(TCHAR num)
 {    
-    if (num>0 && num<9)
+    if (num>=0 && num<=9)
         return TCHAR('0')+num;
     // assert (num<16);
     return TCHAR('A')+num-10;

@@ -31,8 +31,10 @@ TCHAR szTitle[];
 //#define server     TEXT("dict.arslexis.com")
 //#define serverPort 80
 #else
-#define server     TEXT("arslex.no-ip.info")
-#define serverPort 80
+//#define server     TEXT("arslex.no-ip.info")
+//#define serverPort 80
+#define server     TEXT("dict-pc.arslexis.com")
+#define serverPort 4080
 #endif
 
 #endif // !defined(AFX_SM_INOAH_H__7A9C1511_DE39_4376_A573_C6693074425B__INCLUDED_)
