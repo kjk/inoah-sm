@@ -656,7 +656,7 @@ static void OnCreate(HWND hwnd)
     SHMENUBARINFO mbi = {0};
     mbi.cbSize     = sizeof(SHMENUBARINFO);
     mbi.hwndParent = hwnd;
-    mbi.nToolBarId = IDR_HELLO_MENUBAR;
+    mbi.nToolBarId = IDR_MAIN_MENUBAR;
     mbi.hInstRes   = g_hInst;
 
     if (!SHCreateMenuBar(&mbi)) 

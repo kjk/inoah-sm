@@ -10,7 +10,7 @@
 #define TPC
 
 #define IDC_STATIC                      (-1)
-#define IDR_HELLO_MENUBAR               101
+#define IDR_MAIN_MENUBAR                101
 #define IDS_LOOKUP                      102   
 #define ID_MENU_BTN                     103
 #define IDM_EDIT_UNDO                   104
@@ -19,7 +19,7 @@
 #define IDS_MENU_BTN                    107
 #define IDM_MENU_UNCHECK                108
 #define IDM_MENU_QUIT                   109
-#define IDR_MENU_MENU1                  110
+#define IDR_MENU_MAIN                   110
 #define IDM_MENU_REGISTER               111
 #define IDM_MENU_COMPACT                112
 #define IDM_MENU_RECENT                 113

@@ -2,127 +2,170 @@
 
 ID_ICON ICON "inoah.ico"
 
-IDR_HELLO_MENUBAR RCDATA
-BEGIN
-	IDR_MENU_MENU1,
-	2,
-	I_IMAGENONE, ID_LOOKUP, TBSTATE_ENABLED, 
-	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-	IDS_LOOKUP, 0, NOMENU,
+#ifdef WIN32_PLATFORM_PSPC
+  IDR_MAIN_MENUBAR RCDATA
+  BEGIN
+    IDR_MENU_MAIN,
+    4,
+    I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
+    TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+    IDS_MAIN_MENU_BTN, 0, 0,
 
-	I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
-	TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
-	IDS_MENU_BTN, 0, 0,
-END
+    I_IMAGENONE, ID_OPTIONS_MENU_BTN, TBSTATE_ENABLED, 
+    TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+    IDS_OPTIONS_MENU_BTN, 0, 1,
+  END
+#else
+  IDR_MAIN_MENUBAR RCDATA
+  BEGIN
+    IDR_MENU_MAIN,
+    2,
+    I_IMAGENONE, ID_LOOKUP, TBSTATE_ENABLED, 
+    TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_LOOKUP, 0, NOMENU,
 
-IDR_MENU_MENU1 MENU DISCARDABLE 
-BEGIN
-    POPUP "&Dummy"
-    BEGIN
-        MENUITEM "Random word",              	IDM_MENU_RANDOM
-        MENUITEM "Recent lookups",              IDM_MENU_RECENT
-		// compact view doesn't work right
-        //MENUITEM "Compact view",                IDM_MENU_COMPACT
-        MENUITEM "Register",                    IDM_MENU_REGISTER
-	POPUP "Font size"
-	BEGIN
-		MENUITEM "Large",            	IDM_FNT_LARGE
-		MENUITEM "Standard",            IDM_FNT_STANDARD
-		MENUITEM "Small",            	IDM_FNT_SMALL
-	END
-//#ifdef DEBUG
-//		MENUITEM "Clear cache",         IDM_CACHE
-//#endif
-        POPUP "About"
-	    BEGIN
-    		MENUITEM "ArsLexis home",       IDM_MENU_HOME
-		    MENUITEM "Check updates",       IDM_MENU_UPDATES
-		    MENUITEM "About",            	IDM_MENU_ABOUT
-	    END
-#ifdef DEBUG
-        MENUITEM "Quit",                IDOK
+    I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
+    TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+    IDS_MENU_BTN, 0, 0,
+  END
+
 #endif
-    END
+
+#ifdef WIN32_PLATFORM_PSPC
+
+IDR_MENU_MAIN MENU DISCARDABLE 
+BEGIN
+  POPUP "&Dummy"
+  BEGIN
+    MENUITEM "Search"                   IDM_SEARCH
+    MENUITEM "Random word",             IDM_MENU_RANDOM
+    MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
+#ifdef DEBUG
+    MENUITEM "Quit",                    IDOK
+#endif
+  END
+  POPUP "&Dummy"
+  BEGIN
+    MENUITEM "Register",                IDM_MENU_REGISTER
+    MENUITEM SEPARATOR
+    //MENUITEM "Tutorial",                IDM_MENU_TUTORIAL
+    MENUITEM "ArsLexis home",           IDM_MENU_HOME
+    MENUITEM "Check updates",           IDM_MENU_UPDATES
+    MENUITEM "About",                   IDM_MENU_ABOUT
+  END
 END
+
+#else
+
+IDR_MENU_MAIN MENU DISCARDABLE 
+BEGIN
+  POPUP "&Dummy"
+  BEGIN
+    MENUITEM "Random word",                 IDM_MENU_RANDOM
+    MENUITEM "Recent lookups",              IDM_MENU_RECENT
+    // compact view doesn't work right
+    //MENUITEM "Compact view",                IDM_MENU_COMPACT
+    MENUITEM "Register",                    IDM_MENU_REGISTER
+  POPUP "Font size"
+  BEGIN
+    MENUITEM "Large",               IDM_FNT_LARGE
+    MENUITEM "Standard",            IDM_FNT_STANDARD
+    MENUITEM "Small",               IDM_FNT_SMALL
+  END
+  //#ifdef DEBUG
+  //      MENUITEM "Clear cache",         IDM_CACHE
+  //#endif
+  POPUP "About"
+  BEGIN
+    MENUITEM "ArsLexis home",       IDM_MENU_HOME
+    MENUITEM "Check updates",       IDM_MENU_UPDATES
+    MENUITEM "About",               IDM_MENU_ABOUT
+  END
+#ifdef DEBUG
+  MENUITEM "Quit",                IDOK
+#endif
+  END
+END
+#endif
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_LOOKUP          "Lookup"
-    IDS_MENU_BTN        "Menu"
-    IDS_SELECT		    "Lookup"
-    IDS_CANCEL		    "Cancel"
-    IDS_REGISTER		"Register"
-	IDS_LATER           "Later"
+  IDS_LOOKUP          "Lookup"
+  IDS_MENU_BTN        "Menu"
+  IDS_SELECT          "Lookup"
+  IDS_CANCEL          "Cancel"
+  IDS_REGISTER        "Register"
+  IDS_LATER           "Later"
 END
 
 IDR_STRING_LIST_MENUBAR RCDATA
 BEGIN
-	0,
-	2,
-	I_IMAGENONE, ID_SELECT, TBSTATE_ENABLED,
-	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-	IDS_SELECT, 0, NOMENU,
-
-	I_IMAGENONE, ID_CANCEL, TBSTATE_ENABLED,
-	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-	IDS_CANCEL, 0, NOMENU,
+  0,
+  2,
+  I_IMAGENONE, ID_SELECT, TBSTATE_ENABLED,
+  TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+  IDS_SELECT, 0, NOMENU,
+  
+  I_IMAGENONE, ID_CANCEL, TBSTATE_ENABLED,
+  TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+  IDS_CANCEL, 0, NOMENU,
 END
 
 IDD_STRING_LIST DIALOG DISCARDABLE  4, 4, 80, 70
 STYLE WS_POPUP | WS_VISIBLE
 FONT 8, "System"
 BEGIN
-    LISTBOX IDC_STRING_LIST,0,2,100,88,
-		    LBS_NOTIFY | LBS_STANDARD | NOT LBS_SORT | 
-		    WS_TABSTOP | NOT WS_BORDER
+  LISTBOX IDC_STRING_LIST,0,2,100,88,
+    LBS_NOTIFY | LBS_STANDARD | NOT LBS_SORT | 
+    WS_TABSTOP | NOT WS_BORDER
 END
 
 #ifdef WIN32_PLATFORM_PSPC
-	IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
-	STYLE WS_POPUP | WS_VISIBLE
-	FONT 8, "System"
-	BEGIN
-	    CTEXT "Enter registration code:", IDC_STATIC_REG_CODE, 28, 27, 80, 12
-	    EDITTEXT IDC_EDIT_REGCODE, 2, 27+12, 134, 12,
-	        ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
-	    DEFPUSHBUTTON "Register",IDM_REGISTER, 10, 27+12+18, 50, 12
-	    PUSHBUTTON    "Later",   IDM_LATER,    78, 27+12+18, 50, 12
+  IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
+  STYLE WS_POPUP | WS_VISIBLE
+  FONT 8, "System"
+  BEGIN
+    CTEXT "Enter registration code:", IDC_STATIC_REG_CODE, 28, 27, 80, 12
+    EDITTEXT IDC_EDIT_REGCODE, 2, 27+12, 134, 12,
+        ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
+    DEFPUSHBUTTON "Register",IDM_REGISTER, 10, 27+12+18, 50, 12
+    PUSHBUTTON    "Later",   IDM_LATER,    78, 27+12+18, 50, 12
 
 #ifdef HANDANGO
-		CTEXT "Purchase registration code at http://handango.com/products. Product ID: 34344", IDC_PURCHASE_REG_CODE, 0, 27+12+18+20, 120, 24
-#else
-		CTEXT "Purchase registration code at http:/www.arslexis.com", IDC_PURCHASE_REG_CODE, 10, 27+12+18+20, 120, 24
+    CTEXT "Purchase registration code at http://handango.com/products. Product ID: 34344", IDC_PURCHASE_REG_CODE, 0, 27+12+18+20, 120, 24
+    #else
+    CTEXT "Purchase registration code at http:/www.arslexis.com", IDC_PURCHASE_REG_CODE, 10, 27+12+18+20, 120, 24
 #endif
 
-	END
+  END
 #else
-	// this is for Smartphone
-	IDR_REGISTER_MENUBAR RCDATA
-	BEGIN
-		0,
-		2,
-		I_IMAGENONE, IDM_REGISTER, TBSTATE_ENABLED,
-		TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-		IDS_REGISTER, 0, NOMENU,
-	
-		I_IMAGENONE, IDM_LATER, TBSTATE_ENABLED,
-		TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-		IDS_LATER, 0, NOMENU,
-	END
+  // this is for Smartphone
+  IDR_REGISTER_MENUBAR RCDATA
+  BEGIN
+    0,
+    2,
+    I_IMAGENONE, IDM_REGISTER, TBSTATE_ENABLED,
+    TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_REGISTER, 0, NOMENU,
 
-	IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
-	STYLE WS_POPUP | WS_VISIBLE
-	FONT 8, "System"
-	BEGIN
-	CTEXT "Enter registration code:", IDC_STATIC, 0, 25, 100, 10
-	EDITTEXT IDC_EDIT_REGCODE, 2, 25+12, 96, 10,
-		ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
+    I_IMAGENONE, IDM_LATER, TBSTATE_ENABLED,
+    TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_LATER, 0, NOMENU,
+  END
+
+  IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
+  STYLE WS_POPUP | WS_VISIBLE
+  FONT 8, "System"
+  BEGIN
+  CTEXT "Enter registration code:", IDC_STATIC, 0, 25, 100, 10
+  EDITTEXT IDC_EDIT_REGCODE, 2, 25+12, 96, 10,
+    ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
 
 #ifdef HANDANGO
-	CTEXT "Purchase registration code at http://handango.com/products. Product ID: 34344",IDC_STATIC, 0, 25+12+14, 100, 20
+  CTEXT "Purchase registration code at http://handango.com/products. Product ID: 34344",IDC_STATIC, 0, 25+12+14, 100, 20
 #else
-	CTEXT "Purchase registration code at http:/www.arslexis.com",IDC_STATIC, 0, 25+12+14, 100, 20
+  CTEXT "Purchase registration code at http:/www.arslexis.com",IDC_STATIC, 0, 25+12+14, 100, 20
 #endif
-	END
+END
 #endif
 
