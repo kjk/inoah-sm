@@ -4,7 +4,12 @@
 #include "resource.h"
 #include "iNoahSession.h"
 #include "TAPIDevice.h"
-#include "..\ipedia\src\BaseTypes.hpp"
+#include "BaseTypes.hpp"
+#include "GenericTextElement.hpp"
+#include "BulletElement.hpp"
+#include "ParagraphElement.hpp"
+#include "HorizontalLineElement.hpp"
+
 #include <windows.h>
 #include <tpcshell.h>
 

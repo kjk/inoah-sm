@@ -10,10 +10,13 @@
 #endif // _MSC_VER > 1000
 
 #include <wingdi.h>
+#include "FontEffects.hpp"
+
 class FontWrapper
 {
     friend class WinFont;
     FontWrapper(HFONT fnt);
+
     virtual ~FontWrapper();
 
 private:
@@ -31,6 +34,7 @@ public:
     WinFont();
 	WinFont(HFONT font);
     WinFont& operator=(const WinFont& r);
+    void setEffects(ArsLexis::FontEffects& fx);
     WinFont(const WinFont& copy);
     HFONT getHandle() const;
 	virtual ~WinFont();

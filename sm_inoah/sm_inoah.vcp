@@ -177,9 +177,9 @@ SOURCE=.\iNoahSession.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_INOAH=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_INOAH=\
 	".\Tranmission.h"\
@@ -188,9 +188,9 @@ NODEP_CPP_INOAH=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_INOAH=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_INOAH=\
 	".\Tranmission.h"\
@@ -199,9 +199,9 @@ NODEP_CPP_INOAH=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_INOAH=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_INOAH=\
 	".\stdint"\
@@ -212,9 +212,10 @@ NODEP_CPP_INOAH=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_INOAH=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
+	".\sm_inoah.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"ceutil.h"\
 	{$(INCLUDE)}"cstdint"\
@@ -235,8 +236,8 @@ SOURCE=.\sm_inoah.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_SM_IN=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_SM_IN=\
 	".\ibrate.h"\
@@ -247,8 +248,8 @@ NODEP_CPP_SM_IN=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_SM_IN=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_SM_IN=\
 	".\ibrate.h"\
@@ -259,8 +260,8 @@ NODEP_CPP_SM_IN=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_SM_IN=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_SM_IN=\
 	".\ibrate.h"\
@@ -273,15 +274,14 @@ NODEP_CPP_SM_IN=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_SM_IN=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Tapi.h"\
 	{$(INCLUDE)}"tpcshell.h"\
 	
 
@@ -295,46 +295,51 @@ SOURCE=.\TAPIDevice.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_TAPID=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
+	
+NODEP_CPP_TAPID=\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_TAPID=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
+	
+NODEP_CPP_TAPID=\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_TAPID=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
+	
+NODEP_CPP_TAPID=\
+	".\stdint"\
+	".\tdint.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_TAPID=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Tapi.h"\
 	
 
 !ENDIF 
@@ -365,13 +370,12 @@ DEP_CPP_TAPIL=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_TAPIL=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Tapi.h"\
 	{$(INCLUDE)}"tsp.h"\
 	
 
@@ -385,22 +389,22 @@ SOURCE=.\Transmission.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_TRANS=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_TRANS=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_TRANS=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	
 NODEP_CPP_TRANS=\
 	".\stdint"\
@@ -410,9 +414,126 @@ NODEP_CPP_TRANS=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_TRANS=\
-	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\WinFont.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_WINFO=\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_WINFO=\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_WINFO=\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_WINFO=\
+	".\WinFont.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\WinGeometry.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+NODEP_CPP_WINGE=\
+	".\Geometry.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+NODEP_CPP_WINGE=\
+	".\Geometry.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_WINGE=\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_WINGE=\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\WinGraphics.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+NODEP_CPP_WINGR=\
+	".\Graphics.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+NODEP_CPP_WINGR=\
+	".\Graphics.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_WINGR=\
+	".\WinFont.h"\
+	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Debug.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"Graphics.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	{$(INCLUDE)}"NativeGraphics.hpp"\
+	{$(INCLUDE)}"PalmFont.hpp"\
+	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_WINGR=\
+	".\WinFont.h"\
+	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Debug.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"Graphics.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	{$(INCLUDE)}"NativeGraphics.hpp"\
+	{$(INCLUDE)}"PalmFont.hpp"\
+	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -446,6 +567,10 @@ SOURCE=.\TAPILine.h
 # Begin Source File
 
 SOURCE=.\Transmission.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\WinFont.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
