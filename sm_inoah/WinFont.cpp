@@ -36,6 +36,11 @@ WinFont& WinFont::operator=(const WinFont& r)
     return *this;
 }
 
+HFONT WinFont::getHandle() const
+{
+    return fntWrapper->font;
+}
+
 WinFont::~WinFont()
 {
     fntWrapper->detach();

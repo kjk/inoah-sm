@@ -32,6 +32,7 @@ public:
 	WinFont(HFONT font);
     WinFont& operator=(const WinFont& r);
     WinFont(const WinFont& copy);
+    HFONT getHandle() const;
 	virtual ~WinFont();
 private:
     FontWrapper* fntWrapper;

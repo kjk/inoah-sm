@@ -14,6 +14,7 @@ namespace ArsLexis
         Font_t oldOne=support_.font;
         support_.font=font;
         //FntSetFont(support_.font.withEffects());
+        SelectObject(handle_, font.getHandle());
         return oldOne;
     }
 
@@ -27,53 +28,28 @@ namespace ArsLexis
         RestoreDC(handle_,-1);
     }
     
-/*    class PalmUnderlineSetter
-    {
-        UnderlineModeType originalUnderline_;
-    public:
-        
-        explicit PalmUnderlineSetter(UnderlineModeType newMode):
-            originalUnderline_(WinSetUnderlineMode(newMode))
-        {}
-        
-        ~PalmUnderlineSetter()
-        {WinSetUnderlineMode(originalUnderline_);}
-        
-    };
-    
-    inline static UnderlineModeType convertUnderlineMode(FontEffects::Underline underline)
-    {
-        UnderlineModeType result=noUnderline;
-        switch (underline)
-        {
-            case FontEffects::underlineDotted:
-                result=grayUnderline;
-                break;
-            case FontEffects::underlineSolid:
-                result=solidUnderline;
-                break;
-        }
-        return result;                
-    }
-     */       
     
     void Graphics::drawText(const char_t* text, uint_t length, const Point& topLeft)
     {
         /*FontEffects fx=support_.font.effects();
         PalmUnderlineSetter setUnderline(convertUnderlineMode(fx.underline()));
+        */
         
-        uint_t height=fontHeight();
-        uint_t top=topLeft.y;
+        //uint_t height=fontHeight();
+        /*uint_t top=topLeft.y;
         if (fx.subscript())
-            top+=(height*0.333);
-        WinDrawChars(text, length, topLeft.x, top);
-        if (fx.strikeOut())
+            top+=(height*0.333);*/
+        //WinDrawChars(text, length, topLeft.x, top);
+        /*if (fx.strikeOut())
         {
             uint_t baseline=fontBaseline();
             top=topLeft.y+baseline*0.667;
             uint_t width=FntCharsWidth(text, length);
             drawLine(topLeft.x, top, topLeft.x+width, top);
         }*/
+        ExtTextOut(handle_, topLeft.x, topLeft.y, 0, 
+            NULL, text, length, NULL);
+        //(handle_, topLeft.x , topLeft.y, text, length);
     }
     
     inline void Graphics::erase(const Rectangle& rect)
@@ -88,15 +64,11 @@ namespace ArsLexis
     inline void Graphics::copyArea(const Rectangle& sourceArea, Graphics& targetSystem, const Point& targetTopLeft)
     {
         NativeRectangle_t nr=toNative(sourceArea);
-        BitBlt(handle_, 
-            targetTopLeft.x, targetTopLeft.y, 
-            sourceArea.width(), sourceArea.height(), 
-            targetSystem.handle_, 
-            nr.left, nr.top,
-            PATCOPY);
+        BitBlt(handle_, targetTopLeft.x, targetTopLeft.y, 
+            sourceArea.width(), sourceArea.height(), targetSystem.handle_, 
+            nr.left, nr.top, PATCOPY);
     }
-
-
+    
     inline void Graphics::drawLine(Coord_t x0, Coord_t y0, Coord_t x1, Coord_t y1)
     {
         POINT p[2];
@@ -107,8 +79,7 @@ namespace ArsLexis
         Polyline(handle_, p, 2);
         // MoveToEx(handle_, x0, y0);
         // LineTo(handle_, x1, y1); THIS DOESN'T WORK - STUPID WIN CE
-        // WinDrawLine(x0, y0, x1, y1);
-        
+        // WinDrawLine(x0, y0, x1, y1);        
     }
 
     inline NativeColor_t Graphics::setForegroundColor(NativeColor_t color)
@@ -125,7 +96,7 @@ namespace ArsLexis
         DeleteObject(hgdiobj);
         return old;
     }
-  
+    
     inline NativeColor_t Graphics::setBackgroundColor(NativeColor_t color)
     {
         return SetBkColor(handle_,color);
@@ -136,28 +107,43 @@ namespace ArsLexis
         return SetTextColor(handle_,color ); 
     }
     
-    /*
+    
     inline uint_t Graphics::fontHeight() const
     {
-        uint_t height=FntLineHeight();
-        FontEffects fx=support_.font.effects();
-        if (fx.superscript() || fx.subscript())
-            height*=1.333;
-        return height;
+        LOGFONT fnt;
+        HGDIOBJ font=GetCurrentObject(handle_, OBJ_FONT);
+        GetObject(font, sizeof(fnt), &fnt); 
+        //FntLineHeight();
+        //FontEffects fx=support_.font.effects();
+        //if (fx.superscript() || fx.subscript())
+        //    height*=1.333;
+        return fnt.lfHeight;
     }
-    
+   
     inline uint_t Graphics::fontBaseline() const
     {
-        uint_t baseline=FntBaseLine();
-        if (support_.font.effects().superscript())
-            baseline+=(FntLineHeight()*0.333);
-        return baseline;
+        //uint_t baseline=FntBaseLine();
+        //if (support_.font.effects().superscript())
+            //baseline+=(FntLineHeight()*0.333);
+        TEXTMETRIC ptm;
+        GetTextMetrics(handle_, &ptm);
+        return ptm.tmDescent;
     }
-    */
+
     inline uint_t Graphics::wordWrap(const char_t* text, uint_t width)
     {
         //return FntWordWrap(text, width);
-        return 10;          
+        int len;
+        SIZE size;
+        GetTextExtentExPoint(handle_, text, _tcslen(text),
+            width, &len, NULL, &size);
+        //length = len;
+        width = size.cx;
+        for(int i=_tcslen(text);i>0;i--)
+            if (text[i]==TCHAR(" ")||text[i]==TCHAR("\t")||
+                text[i]==TCHAR("\n")) 
+                return i;
+        return _tcslen(text);
     }
 
     inline uint_t Graphics::textWidth(const char_t* text, uint_t length)

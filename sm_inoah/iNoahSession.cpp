@@ -238,7 +238,7 @@ void iNoahSession::storeCookie(String cookie)
 
 String iNoahSession::getDeviceInfo()
 {
-	return TEXT("DN6172736c657869735f73696d");
+	return TEXT("SP6172736c657869735f73696d");
 	// candidates to use: 
 	// TSPI_providerInit
 	// lineGetID

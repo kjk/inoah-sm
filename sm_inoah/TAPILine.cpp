@@ -86,7 +86,6 @@ TAPILine::TAPILine(DWORD dwLineID, TAPIDevice* device)
         
         if (error = lineGetGeneralInfo(this->hLine, lplineGeneralInfo))
             return;
-        
         if (lplineGeneralInfo->dwNeededSize <= lplineGeneralInfo->dwTotalSize)
             break;  
         
