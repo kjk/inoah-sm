@@ -157,7 +157,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ENDIF 
 
@@ -215,15 +215,14 @@ DEP_CPP_INOAH=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_INOAH=\
-	".\ibrate.h"\
-	".\inuserm.h"\
-	".\ipapi.h"\
-	".\pcshell.h"\
-	".\stdint"\
-	".\tdint.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"ceutil.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ENDIF 
@@ -276,12 +275,14 @@ NODEP_CPP_SM_IN=\
 DEP_CPP_SM_IN=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_SM_IN=\
-	".\pcshell.h"\
-	".\stdint"\
-	".\tdint.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Tapi.h"\
+	{$(INCLUDE)}"tpcshell.h"\
 	
 
 !ENDIF 
@@ -289,44 +290,49 @@ NODEP_CPP_SM_IN=\
 # End Source File
 # Begin Source File
 
-SOURCE=.\TAPI.cpp
+SOURCE=.\TAPIDevice.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
-DEP_CPP_TAPI_=\
+DEP_CPP_TAPID=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
-	".\TAPI.h"\
-	{$(INCLUDE)}"Tapi.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
-DEP_CPP_TAPI_=\
+DEP_CPP_TAPID=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
-	".\TAPI.h"\
-	{$(INCLUDE)}"Tapi.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
-DEP_CPP_TAPI_=\
+DEP_CPP_TAPID=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
-	".\TAPI.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Tapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
-DEP_CPP_TAPI_=\
+DEP_CPP_TAPID=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\sm_inoah.h"\
-	".\TAPI.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
 	{$(INCLUDE)}"Tapi.h"\
 	
@@ -359,7 +365,14 @@ DEP_CPP_TAPIL=\
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_TAPIL=\
+	"..\ipedia\src\BaseTypes.hpp"\
+	".\TAPIDevice.h"\
 	".\TAPILine.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Tapi.h"\
+	{$(INCLUDE)}"tsp.h"\
 	
 
 !ENDIF 
@@ -399,10 +412,8 @@ NODEP_CPP_TRANS=\
 DEP_CPP_TRANS=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
-	
-NODEP_CPP_TRANS=\
-	".\stdint"\
-	".\tdint.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
 	
 
 !ENDIF 
@@ -426,7 +437,7 @@ SOURCE=.\sm_inoah.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TAPI.h
+SOURCE=.\TAPIDevice.h
 # End Source File
 # Begin Source File
 

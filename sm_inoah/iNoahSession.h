@@ -39,12 +39,13 @@ public:
 
 private:
 	bool cookieReceived;
-
+    void storeCookie(ArsLexis::String cookie);
+    ArsLexis::String loadCookie();
 	ArsLexis::String cookie;
 	ArsLexis::String content;
 	void sendRequest(ArsLexis::String url,ArsLexis::String answer,ArsLexis::String& ret);
 	bool checkErrors(Transmission &tr, ArsLexis::String &ret);
-	
+	int CreateAppFolder (HWND hWnd, TCHAR *pszAppFolder, int nMax);
 	bool getCookie();
 	
 	ResponseCode responseCode;
