@@ -12,23 +12,23 @@
 #include <wingdi.h>
 #include "FontEffects.hpp"
 
-class FontWrapper
-{
-    friend class WinFont;
-    FontWrapper(HFONT fnt);
-    virtual ~FontWrapper();
-
-private:
-    void attach() {refsCount++; }
-    void detach() {refsCount--; }
-    unsigned getRefsCount() {return refsCount;}
-    FontWrapper();
-    unsigned refsCount;
-    HFONT font;
-};
 
 class WinFont  
 {
+    class FontWrapper
+    {
+        friend class WinFont;
+        FontWrapper(HFONT fnt);
+        virtual ~FontWrapper();
+    
+    private:
+        void attach() {refsCount++; }
+        void detach() {refsCount--; }
+        unsigned getRefsCount() {return refsCount;}
+        FontWrapper();
+        unsigned refsCount;
+        HFONT font;
+    };
 public:
     WinFont();
 	WinFont(HFONT font);

@@ -68,14 +68,14 @@ WinFont::~WinFont()
         delete fntWrapper;
 }
 
-FontWrapper::FontWrapper(HFONT fnt):
+WinFont::FontWrapper::FontWrapper(HFONT fnt):
     font(fnt),
     refsCount(1)
 {
     
 }
 
-FontWrapper::~FontWrapper()
+WinFont::FontWrapper::~FontWrapper()
 {
     DeleteObject(this->font);
 }

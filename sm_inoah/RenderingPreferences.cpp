@@ -6,13 +6,22 @@
 #include "FontEffects.hpp"
 #include "WinFont.h"
 #include "sm_inoah.h"
+#include <wingdi.h>
 using ArsLexis::FontEffects;
 using ArsLexis::Graphics;
 
 RenderingPreferences::RenderingPreferences()
     //:standardIndentation_(16)
 {
-    //styles_[styleHeader].font=WinFont((HFONT)GetStockObject(SYSTEM_FONT));
+    LOGFONT logfnt;
+    
+    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfWeight=900;
+    
+    styles_[styleSynonyms].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[styleSynonyms].textColor = RGB(255,0,255);
+    styles_[styleExample].textColor = RGB(0,0,255);
     int screenDepths=0;
     bool color=false;
     /*Err error=WinScreenMode(winScreenModeGet, NULL, NULL, &screenDepths, &color);*/

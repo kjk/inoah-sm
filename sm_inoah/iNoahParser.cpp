@@ -2,6 +2,8 @@
 #include <DefinitionElement.hpp>
 #include <GenericTextElement.hpp>
 #include <ParagraphElement.hpp>
+#include <HorizontalLineElement.hpp>
+
 using namespace ArsLexis;
 
 const String iNoahParser::arabNums[] = 
@@ -100,9 +102,20 @@ Definition* iNoahParser::parse(String text)
             pofs->setParent(parent);
             pofsl->setParent(parent);
             cntPOS++;
+            char_t buffer[20];
+            int j=1;
             std::list<ElementsList*>::iterator iter;
-            for (iter=sorted[i].begin();!(iter==sorted[i].end());iter++ )
+            for (iter=sorted[i].begin();!(iter==sorted[i].end());iter++,j++ )
+            {
+                _itow( j, buffer, 10 );
+                ArsLexis::String str(buffer);
+                str+=TEXT(") ");
+                GenericTextElement* el=new GenericTextElement(str);
+                def->appendElement(el);
+                //el->setParent(parent);
                 (*iter)->merge(*def);
+            }
+            def->appendElement(new HorizontalLineElement());
         }
     }
     return def;
@@ -110,9 +123,8 @@ Definition* iNoahParser::parse(String text)
 
 bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpeach)
 {
-    //delete examples;
-    //delete synonyms;
-    //delete explanation;
+    delete examples;
+    delete synonyms;
     explanation = NULL;
     examples = NULL;
     synonyms = NULL;
@@ -122,7 +134,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
     {
         int start = currIndx;
         char_t c = text[currIndx];
-        currIndx = text.find_first_of('\n', currIndx);
+        currIndx = text.find_first_of(char_t('\n'), currIndx);
         if (currIndx == -1)
             currIndx = text.length();
         switch (c)
@@ -133,14 +145,14 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
                 while ((currIndx < text.length() - 2)
                     && (currIndx != -1)
                     && (text[currIndx + 1] == c))
-                    currIndx = text.find_first_of('\n', currIndx + 1);
+                    currIndx = text.find_first_of(char_t('\n'), currIndx + 1);
                 if (currIndx == -1)
                     currIndx = text.length();
                 // Create synonyms subtoken on the basis of
                 if (c != '!')
                 {
                     if(!(examples = this->parseExamplesList(
-                            TCHAR('\n') + 
+                            char_t('\n') + 
                             text.substr(start, currIndx - start))))
                         return false;
                 }
@@ -148,7 +160,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
                 else
                 {
                     if (!(synonyms = this->parseSynonymsList(
-                            TCHAR('\n') + 
+                            char_t('\n') + 
                             text.substr(start, currIndx - start),word)))
                        return false;
                 }
@@ -159,7 +171,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
                 // Create Explanation subtoken
                 explanation =
                     new GenericTextElement(text.substr(start + 1, 
-                    currIndx)+TEXT(". "));
+                    currIndx-start-1)+TEXT(". "));
                 break;
             }
             case '$' :
@@ -219,7 +231,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
         && (text[currIndx+1] == '!'))
     {
         int start = currIndx;
-        currIndx = text.find_first_of('\n', currIndx+1);
+        currIndx = text.find_first_of(char_t('\n'), currIndx+1);
         if (currIndx == -1)
             currIndx = text.length();
         if(start+2>=currIndx)
@@ -236,6 +248,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
             if(last)
                 last->setText(last->text()+TEXT(", "));
             last = new GenericTextElement(newSynonym);
+            last->setStyle(styleSynonyms);
             lst->push_back(last);
         }
     }
@@ -254,7 +267,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
         && (text[currIndx+1] == '#'))
     {
         int start = currIndx;
-        currIndx = text.find_first_of('\n', currIndx+1);
+        currIndx = text.find_first_of(char_t('\n'), currIndx+1);
         if (currIndx == -1)
             currIndx = text.length();
         if(start+2>=currIndx)
@@ -269,6 +282,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
             TEXT("\"") + 
             text.substr(start + 2, currIndx-start-2) + 
             TEXT("\""));
+        last->setStyle(styleExample);
         lst->push_back(last);
     }
     if(last!=NULL)

@@ -44,13 +44,13 @@ void initialize()
 void setDefinition(ArsLexis::String& defs)
 {
         delete definition_;
-        definition_=new Definition();
+        //definition_=new Definition();
         ParagraphElement* parent=0;
         //parent->setChildIndentation(16);
         int start=0;
         iNoahParser parser;
-        //definition_=parser.parse(defs);
-        for(int i=0;i<defs.length(); i++)
+        definition_=parser.parse(defs);
+        /*for(int i=0;i<defs.length(); i++)
         {
             if(defs[i]==TCHAR('\n'))
             {
@@ -61,7 +61,7 @@ void setDefinition(ArsLexis::String& defs)
                 start=i+1;
                 element->setParent(parent);
             }
-        }
+        }*/
 }
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
