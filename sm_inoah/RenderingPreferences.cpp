@@ -10,7 +10,7 @@ using ArsLexis::FontEffects;
 using ArsLexis::Graphics;
 
 RenderingPreferences::RenderingPreferences():
-    standardIndentation_(0)
+    standardIndentation_(16)
 {
     styles_[styleHeader].font=WinFont((HFONT)GetStockObject(SYSTEM_FONT));
     int screenDepths=0;
@@ -38,7 +38,7 @@ RenderingPreferences::RenderingPreferences():
     
     Graphics::Font_t font(WinFont((HFONT)GetStockObject(SYSTEM_FONT)));
     TCHAR bullet[3];
-    bullet[0]=(bulletType()==bulletCircle)?TCHAR('*'):TCHAR(">");
+    bullet[0]=(bulletType()==bulletCircle)?TCHAR('*'):TCHAR('>');
     bullet[1]=TCHAR('\0');
     bullet[2]=TCHAR('\0');
     Graphics graphics(GetDC(hwndMain));

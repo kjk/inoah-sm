@@ -33,8 +33,8 @@ WinFont& WinFont::operator=(const WinFont& r)
     if (this==&r) 
         return *this;
     fntWrapper->detach();
-    //if (!fntWrapper->getRefsCount())
-    //    delete fntWrapper;
+    if (!fntWrapper->getRefsCount())
+        delete fntWrapper;
     this->fntWrapper = r.fntWrapper;
     this->fntWrapper->attach();
     return *this;
@@ -55,7 +55,7 @@ void WinFont::addEffects(ArsLexis::FontEffects& fx)
 
 }
 
-ArsLexis::FontEffects& WinFont::effects() const
+ArsLexis::FontEffects WinFont::effects() const
 {
     return ArsLexis::FontEffects();
 }
@@ -64,8 +64,8 @@ ArsLexis::FontEffects& WinFont::effects() const
 WinFont::~WinFont()
 {
     fntWrapper->detach();
-    //if (!fntWrapper->getRefsCount())
-    //    delete fntWrapper;
+    if (!fntWrapper->getRefsCount())
+        delete fntWrapper;
 }
 
 FontWrapper::FontWrapper(HFONT fnt):

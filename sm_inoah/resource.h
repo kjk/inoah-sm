@@ -25,6 +25,7 @@
 #define IDM_MENU_RECENT                 113
 #define ID_EDIT                         114
 #define ID_LOOKUP                       115
+#define ID_SCROLL                       116
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

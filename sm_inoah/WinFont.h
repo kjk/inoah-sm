@@ -36,7 +36,7 @@ public:
     void setEffects(ArsLexis::FontEffects& fx);
     WinFont(const WinFont& copy);
     void addEffects(ArsLexis::FontEffects& fx);
-    ArsLexis::FontEffects& effects() const;
+    ArsLexis::FontEffects effects() const;
     HFONT getHandle() const;
 	virtual ~WinFont();
     static WinFont getSymbolFont();

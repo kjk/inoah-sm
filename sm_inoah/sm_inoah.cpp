@@ -22,6 +22,7 @@ TCHAR szTitle[]   = TEXT("iNoah");
 Definition definition_ = Definition();
 
 iNoahSession session;
+
 void initialize()
 {
     //Err error=iPediaForm::initialize();
@@ -36,7 +37,7 @@ void initialize()
             TEXT("make. On some projects, this results in build times which are unacceptably large, when ")
             TEXT("all you want to do is change one file. In examining the source of the overly long build ")
             TEXT("times, it became evident that a number of apparently unrelated problems combine to produce ")
-            TEXT("the delay, but on analysis all have the same root cause. ")
+            TEXT("the delay, but on analysis all") //have the same root cause. ")
         ));
         element->setParent(parent);
         definition_.appendElement(element=new LineBreakElement());
@@ -95,14 +96,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	PAINTSTRUCT	ps;
 	RECT		rect;
     static HWND hwndEdit;
+    static HWND hwndScroll;
     static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("");
-    
+    static RenderingPreferences* prefs= new RenderingPreferences();
+
 	switch(msg)
 	{
 		case WM_CREATE:
 		{
-			// create the menu bar
+			initialize();
+            // create the menu bar
 			SHMENUBARINFO mbi;
 			ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
 			mbi.cbSize = sizeof(SHMENUBARINFO);
@@ -126,21 +130,76 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
 
+            hwndScroll = CreateWindow(
+                TEXT("scrollbar"),
+                NULL,
+                WS_CHILD | WS_VISIBLE | SBS_VERT,
+                0,0,0,0,hwnd,
+                (HMENU) ID_SCROLL,
+                ((LPCREATESTRUCT)lp)->hInstance,
+                NULL);
+            
+            SetScrollRange(
+                hwndScroll, 
+                SB_CTL, 
+                0,
+                definition_.totalLinesCount()-
+                definition_.shownLinesCount(), 
+                FALSE);
+
+            SetScrollPos(
+                hwndScroll, 
+                SB_CTL, 
+                0,
+                FALSE);
+            
             // In order to make Back work properly, it's necessary to 
 	        // override it and then call the appropriate SH API
 	        (void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
 		        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
 		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));            
-            initialize();
+            
+            RegisterHotKey(hwndMain, 1, MOD_KEYUP, VK_TDOWN);
+            //(void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TDOWN,
+		    //    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
+		    //    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));            
+
+            
 			break;
 		}
         case WM_SIZE:
             MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
+            MoveWindow(hwndScroll,LOWORD(lp)-5, 24 , 5, HIWORD(lp)-24, TRUE);
             break;
+
+        case WM_VSCROLL:
+        {
+            int page=definition_.shownLinesCount();
+            ArsLexis::Graphics gr=ArsLexis::Graphics(GetDC(hwndMain));   
+            
+            switch(LOWORD(wp))
+            {
+                case SB_PAGEDOWN:
+                    definition_.scroll(gr,*prefs,page);
+                    break;
+                case SB_LINEDOWN:
+                    definition_.scroll(gr,*prefs,1);
+                    break;
+                case SB_PAGEUP:
+                    definition_.scroll(gr,*prefs,-page);
+                    break;
+                case SB_LINEUP:
+                    definition_.scroll(gr,*prefs,-1);
+                    break;
+            }
+            break;
+        }
+        
         case WM_SETFOCUS:
             SetFocus(hwndEdit);
             break;
-		case WM_COMMAND:
+		
+        case WM_COMMAND:
         {
 			switch (wp)
 			{
@@ -179,24 +238,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			break;
         }
         case WM_HOTKEY:
-            if ( HIWORD(lp) == VK_TBACK && (0 != (MOD_KEYUP & LOWORD(lp))))
+        {
+            ArsLexis::Graphics gr=ArsLexis::Graphics(GetDC(hwndMain));
+            int page=definition_.shownLinesCount();
+            switch(HIWORD(lp))
             {
-                // check box is enabled, so we process the back key
-                SHSendBackToFocusWindow( msg, wp, lp );
-            }
+                case VK_TBACK:
+                    if ( 0 != (MOD_KEYUP & LOWORD(lp)))
+                        SHSendBackToFocusWindow( msg, wp, lp );
+                    break;
+                case VK_TDOWN:
+                    definition_.scroll(gr,*prefs,page);
+                    int page=definition_.shownLinesCount();
+                    break;       
+            }                    
             break;
-            
+        }    
 		case WM_PAINT:
 		{
 			hdc = BeginPaint (hwnd, &ps);
 			GetClientRect (hwnd, &rect);
             rect.top+=22;
             rect.left+=2;
-            rect.right-=2;
+            rect.right-=7;
             rect.bottom-=2;
-			DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);
+            ArsLexis::Graphics gr=ArsLexis::Graphics(hdc);   
             RenderingPreferences* prefs= new RenderingPreferences();
-            ArsLexis::Graphics gr=ArsLexis::Graphics(hdc);
+			DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);            
             definition_.render(gr, rect, *prefs, true);
 			EndPaint (hwnd, &ps);
 		}		
@@ -204,8 +272,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
-		break;
-
+		    break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 		break;
