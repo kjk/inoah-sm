@@ -9,6 +9,8 @@
 // Data
 //
 
+ID_ICON ICON "inoah.ico"
+
 IDR_HELLO_MENUBAR RCDATA
 BEGIN
 	IDR_MENU_MENU1,
@@ -47,7 +49,7 @@ BEGIN
     BEGIN
         MENUITEM "Random word",              	IDM_MENU_RANDOM
         MENUITEM "Recent lookups",              IDM_MENU_RECENT
-        MENUITEM "Compact View",                IDM_MENU_COMPACT
+        MENUITEM "Compact view",                IDM_MENU_COMPACT
         MENUITEM "Register",                    IDM_MENU_REGISTER
 	POPUP "Font size"
 	BEGIN
