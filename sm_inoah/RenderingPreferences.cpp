@@ -12,7 +12,7 @@ using ArsLexis::Graphics;
 RenderingPreferences::RenderingPreferences()
     //:standardIndentation_(16)
 {
-    styles_[styleHeader].font=WinFont((HFONT)GetStockObject(SYSTEM_FONT));
+    //styles_[styleHeader].font=WinFont((HFONT)GetStockObject(SYSTEM_FONT));
     int screenDepths=0;
     bool color=false;
     /*Err error=WinScreenMode(winScreenModeGet, NULL, NULL, &screenDepths, &color);*/

@@ -39,8 +39,8 @@ namespace ArsLexis
     {
         ReleaseDC(hwndMain,this->handle_);
     }
-    
-    void Graphics::drawText(const char_t* text, uint_t length, const Point& topLeft)
+
+    void Graphics::drawText(const char_t* text, uint_t length, const Point& topLeft, bool inverted)
     {
         /*FontEffects fx=support_.font.effects();
         PalmUnderlineSetter setUnderline(convertUnderlineMode(fx.underline()));
@@ -122,19 +122,17 @@ namespace ArsLexis
     
     uint_t Graphics::fontHeight() const
     {
-/*
-        LOGFONT fnt;
+        /*LOGFONT fnt;
         HGDIOBJ font=GetCurrentObject(handle_, OBJ_FONT);
         GetObject(font, sizeof(fnt), &fnt); 
         //FntLineHeight();
         //FontEffects fx=support_.font.effects();
         //if (fx.superscript() || fx.subscript())
-        //    height*=1.333;
-        return -fnt.lfHeight;
-*/
+        //    height*=1.333;*/
         TEXTMETRIC ptm;
         GetTextMetrics(handle_, &ptm);
-		return ptm.tmHeight;
+        return ptm.tmHeight;
+        //return -fnt.lfHeight;
     }
    
     uint_t Graphics::fontBaseline() const

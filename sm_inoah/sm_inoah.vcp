@@ -177,45 +177,21 @@ SOURCE=..\ipedia\Src\BulletElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_BULLE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
 	{$(INCLUDE)}"BulletElement.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_BULLE=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_BULLE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
 	{$(INCLUDE)}"BulletElement.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_BULLE=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -248,7 +224,7 @@ NODEP_CPP_BULLE=\
 DEP_CPP_BULLE=\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"BulletElement.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Debug.hpp"\
@@ -264,6 +240,7 @@ DEP_CPP_BULLE=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -275,17 +252,7 @@ SOURCE=..\ipedia\Src\CommonGeometry.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
-DEP_CPP_COMMO=\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	
-
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_COMMO=\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
@@ -310,37 +277,7 @@ SOURCE=..\ipedia\Src\CommonGraphics.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
-DEP_CPP_COMMON=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	
-NODEP_CPP_COMMON=\
-	"..\IPEDIA\SRC\WinFont.h"\
-	
-
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_COMMON=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
-	
-NODEP_CPP_COMMON=\
-	"..\IPEDIA\SRC\WinFont.h"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
@@ -365,7 +302,7 @@ NODEP_CPP_COMMON=\
 
 DEP_CPP_COMMON=\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"FontEffects.hpp"\
@@ -376,6 +313,7 @@ DEP_CPP_COMMON=\
 	{$(INCLUDE)}"PalmFont.hpp"\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -388,51 +326,24 @@ SOURCE=..\ipedia\Src\Definition.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_DEFIN=\
-	"..\ipedia\Src\Utility.hpp"\
-	
-NODEP_CPP_DEFIN=\
-	"..\IPEDIA\SRC\WinFont.h"\
-	".\almFont.hpp"\
-	".\almGraphicsInline.hpp"\
-	".\ativeGeometry.hpp"\
-	".\ativeGraphics.hpp"\
-	".\ebug.hpp"\
-	".\efinition.hpp"\
-	".\efinitionElement.hpp"\
-	".\endering.hpp"\
-	".\enericTextElement.hpp"\
-	".\eometry.hpp"\
-	".\ipedia\src\BaseTypes.hpp"\
-	".\ontEffects.hpp"\
-	".\raphics.hpp"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_DEFIN=\
-	"..\ipedia\Src\Utility.hpp"\
-	
-NODEP_CPP_DEFIN=\
-	"..\IPEDIA\SRC\WinFont.h"\
-	".\almFont.hpp"\
-	".\almGraphicsInline.hpp"\
-	".\ativeGeometry.hpp"\
-	".\ativeGraphics.hpp"\
-	".\ebug.hpp"\
-	".\efinition.hpp"\
-	".\efinitionElement.hpp"\
-	".\endering.hpp"\
-	".\enericTextElement.hpp"\
-	".\eometry.hpp"\
-	".\ipedia\src\BaseTypes.hpp"\
-	".\ontEffects.hpp"\
-	".\raphics.hpp"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_DEFIN=\
-	"..\ipedia\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	
@@ -452,15 +363,15 @@ NODEP_CPP_DEFIN=\
 	".\raphics.hpp"\
 	".\stdint"\
 	".\tdint.h"\
+	".\tility.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_DEFIN=\
-	"..\ipedia\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
@@ -475,6 +386,7 @@ DEP_CPP_DEFIN=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -487,41 +399,17 @@ SOURCE=..\ipedia\Src\DefinitionElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_DEFINI=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_DEFINI=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_DEFINI=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_DEFINI=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -552,7 +440,7 @@ NODEP_CPP_DEFINI=\
 DEP_CPP_DEFINI=\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"..\ipedia\src\BaseTypes.hpp"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
@@ -566,6 +454,7 @@ DEP_CPP_DEFINI=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -577,19 +466,7 @@ SOURCE=..\ipedia\Src\FontEffects.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
-DEP_CPP_FONTE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	
-
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_FONTE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
@@ -616,48 +493,107 @@ DEP_CPP_FONTE=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\ipedia\Src\FormattedTextElement.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_FORMA=\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	
+NODEP_CPP_FORMA=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_FORMA=\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	
+NODEP_CPP_FORMA=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_FORMA=\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	
+NODEP_CPP_FORMA=\
+	".\almFont.hpp"\
+	".\almGraphicsInline.hpp"\
+	".\aseTypes.hpp"\
+	".\ativeGeometry.hpp"\
+	".\ativeGraphics.hpp"\
+	".\ebug.hpp"\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\eometry.hpp"\
+	".\ontEffects.hpp"\
+	".\raphics.hpp"\
+	".\stdint"\
+	".\tdint.h"\
+	".\tility.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_FORMA=\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Debug.hpp"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"Graphics.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	{$(INCLUDE)}"NativeGraphics.hpp"\
+	{$(INCLUDE)}"PalmFont.hpp"\
+	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\ipedia\Src\GenericTextElement.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_GENER=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_GENER=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_GENER=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_GENER=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -706,6 +642,7 @@ DEP_CPP_GENER=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -718,43 +655,19 @@ SOURCE=..\ipedia\Src\HorizontalLineElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_HORIZ=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
 	{$(INCLUDE)}"HorizontalLineElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_HORIZ=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_HORIZ=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
 	{$(INCLUDE)}"HorizontalLineElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_HORIZ=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -801,6 +714,80 @@ DEP_CPP_HORIZ=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\iNoahParser.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_INOAH=\
+	".\iNoahParser.h"\
+	
+NODEP_CPP_INOAH=\
+	".\BaseTypes.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_INOAH=\
+	".\iNoahParser.h"\
+	
+NODEP_CPP_INOAH=\
+	".\BaseTypes.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_INOAH=\
+	".\iNoahParser.h"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Debug.hpp"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"Graphics.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	{$(INCLUDE)}"NativeGraphics.hpp"\
+	{$(INCLUDE)}"PalmFont.hpp"\
+	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_INOAH=\
+	".\iNoahParser.h"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"BaseTypes.hpp"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Debug.hpp"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Geometry.hpp"\
+	{$(INCLUDE)}"Graphics.hpp"\
+	{$(INCLUDE)}"NativeGeometry.hpp"\
+	{$(INCLUDE)}"NativeGraphics.hpp"\
+	{$(INCLUDE)}"PalmFont.hpp"\
+	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -812,33 +799,33 @@ SOURCE=.\iNoahSession.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
-DEP_CPP_INOAH=\
+DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
 	
-NODEP_CPP_INOAH=\
+NODEP_CPP_INOAHS=\
 	".\ipedia\src\BaseTypes.hpp"\
 	".\Tranmission.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
-DEP_CPP_INOAH=\
+DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
 	
-NODEP_CPP_INOAH=\
+NODEP_CPP_INOAHS=\
 	".\ipedia\src\BaseTypes.hpp"\
 	".\Tranmission.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
-DEP_CPP_INOAH=\
+DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
 	
-NODEP_CPP_INOAH=\
+NODEP_CPP_INOAHS=\
 	".\ipedia\src\BaseTypes.hpp"\
 	".\stdint"\
 	".\tdint.h"\
@@ -847,7 +834,7 @@ NODEP_CPP_INOAH=\
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
-DEP_CPP_INOAH=\
+DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
@@ -872,43 +859,21 @@ SOURCE=..\ipedia\Src\LineBreakElement.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_LINEB=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
 	{$(INCLUDE)}"Graphics.hpp"\
 	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_LINEB=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_LINEB=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
 	{$(INCLUDE)}"Graphics.hpp"\
 	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_LINEB=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -955,6 +920,7 @@ DEP_CPP_LINEB=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -967,37 +933,13 @@ SOURCE=..\ipedia\Src\Rendering.cpp
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
 
 DEP_CPP_RENDE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_RENDE=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
 
 DEP_CPP_RENDE=\
-	{$(INCLUDE)}"BaseTypes.hpp"\
-	{$(INCLUDE)}"Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Geometry.hpp"\
-	{$(INCLUDE)}"Graphics.hpp"\
-	{$(INCLUDE)}"NativeGeometry.hpp"\
-	{$(INCLUDE)}"NativeGraphics.hpp"\
-	{$(INCLUDE)}"PalmFont.hpp"\
-	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
-	
-NODEP_CPP_RENDE=\
-	"..\IPEDIA\SRC\WinFont.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1036,6 +978,7 @@ DEP_CPP_RENDE=\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -1103,6 +1046,7 @@ DEP_CPP_RENDER=\
 	{$(INCLUDE)}"PalmFont.hpp"\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -1180,6 +1124,7 @@ DEP_CPP_SM_IN=\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -1450,6 +1395,7 @@ DEP_CPP_WINGR=\
 	{$(INCLUDE)}"PalmFont.hpp"\
 	{$(INCLUDE)}"PalmGraphicsInline.hpp"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Utility.hpp"\
 	
 
 !ENDIF 
@@ -1481,6 +1427,10 @@ SOURCE=..\ipedia\Src\DefinitionElement.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\ipedia\Src\FormattedTextElement.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ipedia\Src\GenericTextElement.hpp
 # End Source File
 # Begin Source File
@@ -1490,6 +1440,10 @@ SOURCE=..\ipedia\Src\Geometry.hpp
 # Begin Source File
 
 SOURCE=..\ipedia\Src\Graphics.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\iNoahParser.h
 # End Source File
 # Begin Source File
 

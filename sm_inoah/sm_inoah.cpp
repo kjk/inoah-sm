@@ -23,67 +23,43 @@ HWND hwndScroll;
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
-Definition definition_;
+Definition *definition_ = new Definition();
 
 RenderingPreferences* prefs= new RenderingPreferences();
 iNoahSession session;
 
 void initialize()
 {
-    //Err error=iPediaForm::initialize();
-    //if (!error)
-    //{
+        definition_->clear();
         ParagraphElement* parent=0;
-        definition_.appendElement(parent=new ParagraphElement());
-        //parent->setChildIndentation(16);
+        definition_->appendElement(parent=new ParagraphElement());
         DefinitionElement* element=0;
-        definition_.appendElement(element=new GenericTextElement(
-            TEXT("For large UNIX projects, the traditional method of building the project is to use recursive ")
-            TEXT("make. On some projects, this results in build times which are unacceptably large, when ")
-            TEXT("all you want to do is change one file. In examining the source of the overly long build ")
-            TEXT("times, it became evident that a number of apparently unrelated problems combine to produce ")
-            TEXT("the delay, but on analysis all") //have the same root cause. ")
-        ));
+        definition_->appendElement(element=new GenericTextElement(
+            TEXT("Enter word and press lookup")
+         ));
         element->setParent(parent);
-        definition_.appendElement(element=new LineBreakElement());
-        element->setParent(parent);
-        definition_.appendElement(element=new GenericTextElement(
-            TEXT("This paper explores a number of problems regarding the use of recursive make, and ")
-            TEXT("shows that they are all symptoms of the same problem. Symptoms that the UNIX community ")
-            TEXT("have long accepted as a fact of life, but which need not be endured any longer. ")
-            TEXT("These problems include recursive makes which take ‘‘forever’’ to work out that they need ")
-            TEXT("to do nothing, recursive makes which do too much, or too little, recursive makes which ")
-            TEXT("are overly sensitive to changes in the source code and require constant Makefile intervention ")
-            TEXT("to keep them working. ")
-        ));
-        element->setParent(parent);
-        definition_.appendElement(new LineBreakElement());
-        BulletElement* bullet=0;
-        definition_.appendElement(bullet=new BulletElement());
-        definition_.appendElement(element=new GenericTextElement(
-            TEXT("The resolution of these problems can be found by looking at what make does, from first ")
-            TEXT("principles, and then analyzing the effects of introducing recursive make to this activity. ")
-            TEXT("The analysis shows that the problem stems from the artificial partitioning of the build into ")
-            TEXT("separate subsets. This, in turn, leads to the symptoms described. To avoid the symptoms, ")
-            TEXT("it is only necessary to avoid the separation; to use a single make session to build the ")
-            TEXT("whole project, which is not quite the same as a single Makefile. ")
-        ));
-        element->setParent(bullet);
-        definition_.appendElement(element=new HorizontalLineElement());
-        element->setParent(bullet);
-        definition_.appendElement(element=new GenericTextElement(
-            TEXT("This conclusion runs counter to much accumulated folk wisdom in building large projects ")
-            TEXT("on UNIX. Some of the main objections raised by this folk wisdom are examined and ")
-            TEXT("shown to be unfounded. The results of actual use are far more encouraging, with routine ")
-            TEXT("development performance improvements significantly faster than intuition may indicate, ")
-            TEXT("and without the intuitvely expected compromise of modularity. The use of a whole ")
-            TEXT("project make is not as difficult to put into practice as it may at first appear. ")
-        ));
-        element->setParent(bullet);
-    //}
-    //return error;
 }
-			
+
+void setDefinition(ArsLexis::String& defs)
+{
+        delete definition_;
+        definition_=new Definition();
+        ParagraphElement* parent=0;
+        //parent->setChildIndentation(16);
+        int start=0;
+        for(int i=0;i<defs.length(); i++)
+        {
+            if(defs[i]==TCHAR('\n'))
+            {
+                definition_->appendElement(parent=new ParagraphElement());
+                DefinitionElement* element=0;
+                ArsLexis::String txt=defs.substr(start,i-start);
+                definition_->appendElement(element=new GenericTextElement(txt));
+                start=i+1;
+                element->setParent(parent);
+            }
+        }
+}
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
 //
@@ -147,14 +123,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             SetScrollPos(
                 hwndScroll, 
                 SB_CTL, 
-                definition_.firstShownLine(),
+                definition_->firstShownLine(),
                 TRUE);
             SetScrollRange(
                 hwndScroll, 
                 SB_CTL, 
                 0,
-                definition_.totalLinesCount()-
-                definition_.shownLinesCount(), 
+                definition_->totalLinesCount()-
+                definition_->shownLinesCount(), 
                 TRUE);
 
             // In order to make Back work properly, it's necessary to 
@@ -238,6 +214,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     ArsLexis::String word(buf);
         			session.getWord(word,text);
+                    setDefinition(text);
                     delete buf;
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;
@@ -250,7 +227,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_HOTKEY:
         {
             ArsLexis::Graphics gr(GetDC(hwndMain));
-            int page=definition_.shownLinesCount();
+            int page=definition_->shownLinesCount();
             switch(HIWORD(lp))
             {
                 case VK_TBACK:
@@ -258,8 +235,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         SHSendBackToFocusWindow( msg, wp, lp );
                     break;
                 case VK_TDOWN:
-                    definition_.scroll(gr,*prefs,page);
-                    int page=definition_.shownLinesCount();
+                    definition_->scroll(gr,*prefs,page);
+                    int page=definition_->shownLinesCount();
                     break;       
             }                    
             break;
@@ -274,8 +251,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             rect.bottom-=2;
             ArsLexis::Graphics gr(hdc);   
             //RenderingPreferences* prefs= new RenderingPreferences();
-			DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);            
-            definition_.render(gr, rect, *prefs, true);
+			//DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);            
+            definition_->render(gr, rect, *prefs, true);
 			EndPaint (hwnd, &ps);
 		}		
 		break;
@@ -403,39 +380,39 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
         case WM_KEYDOWN:
         {
-            int page=definition_.shownLinesCount();
+            int page=definition_->shownLinesCount();
             ArsLexis::Graphics gr(GetDC(hwndMain));
 
             switch(wp)
             {
                 case VK_DOWN:
-                    definition_.scroll(gr,*prefs,1);
+                    definition_->scroll(gr,*prefs,page);
                     SetScrollPos(
                         hwndScroll, 
                         SB_CTL, 
-                        definition_.firstShownLine(),
+                        definition_->firstShownLine(),
                         FALSE);
                     SetScrollRange(
                         hwndScroll, 
                         SB_CTL, 
                         0,
-                        definition_.totalLinesCount()-
-                        definition_.shownLinesCount(), 
+                        definition_->totalLinesCount()-
+                        definition_->shownLinesCount(), 
                         TRUE);
                     return 0;
                 case VK_UP:
-                    definition_.scroll(gr,*prefs,-1);
+                    definition_->scroll(gr,*prefs,-page);
                     SetScrollPos(
                         hwndScroll, 
                         SB_CTL, 
-                        definition_.firstShownLine(),
+                        definition_->firstShownLine(),
                         FALSE);
                     SetScrollRange(
                         hwndScroll, 
                         SB_CTL, 
                         0,
-                        definition_.totalLinesCount()-
-                        definition_.shownLinesCount(), 
+                        definition_->totalLinesCount()-
+                        definition_->shownLinesCount(), 
                         TRUE);
                     return 0;
             }

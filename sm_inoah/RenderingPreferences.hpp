@@ -24,14 +24,22 @@ enum HyperlinkType
 enum ElementStyle
 {
     styleDefault,
-    styleHeader
+    styleWord,
+    styleDefinitionList,
+    styleDefinition,
+    styleExampleList,
+    styleExample,
+    styleSynonymsList,
+    styleSynonyms,
+    stylePOfSpeechList,
+    stylePOfSpeech
 };
 
 class RenderingPreferences
 {
 
     enum {
-        stylesCount_=2,
+        stylesCount_= 10,
         hyperlinkTypesCount_=3,
     };        
     
@@ -96,6 +104,7 @@ public:
 
     ArsLexis::Graphics::Color_t backgroundColor() const
     {return RGB(255,255,255);}
+    
 
 private:
     
