@@ -364,7 +364,7 @@ static String BuildGetCookieUrl()
     return url;
 }
 
-static String BuildGetRandomUrl(String& cookie)
+static String BuildGetRandomUrl(const String& cookie)
 {    
     String url;
     url.reserve(urlCommonLen +
@@ -381,8 +381,51 @@ static String BuildGetRandomUrl(String& cookie)
     return url;
 }
 
+static String BuildGetWordListUrl(const String& cookie)
+{    
+    String url;
+    url.reserve(urlCommonLen +
+                cookieParam.length() +
+                cookie.length() +
+                sep.length() + 
+                recentRequest.length());
+
+    url.assign(urlCommon);
+    url.append(cookieParam);
+    url.append(cookie);
+    url.append(sep);
+    url.append(recentRequest);
+    return url;
+}
+
+static String BuildGetWordUrl(const String& cookie, const String& word)
+{    
+    String regCode = LoadStringFromFile(regCodeFile);
+    if ( !regCode.empty() )
+        regCode = sep+regCodeParam+regCode;
+
+    String url;
+    url.reserve(urlCommonLen +
+                cookieParam.length() +
+                cookie.length() +
+                sep.length() + 
+                getWordParam.length() +
+                word.length() +
+                regCode.length()                
+                );
+
+    url.assign(urlCommon);
+    url.append(cookieParam);
+    url.append(cookie);
+    url.append(sep);
+    url.append(getWordParam);
+    url.append(word);
+    url.append(regCode);
+    return url;
+}
+
 // TODO: show errorCode in the message as well?
-void HandleConnectionError(DWORD errorCode)
+static void HandleConnectionError(DWORD errorCode)
 {
     MessageBox(g_hwndMain,
         _T("Connection error. Please contact support@arslexis.com if the problem persists."),
@@ -486,6 +529,101 @@ bool FGetCookie(String& cookieOut)
     return true;
 }
 
+bool FGetRandomDef(String& defOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetRandomUrl(cookie);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (NO_ERROR != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(definitionField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(definitionField,defOut);
+    return true;
+}
+
+bool FGetWord(const String& word, String& defOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetWordUrl(cookie,word);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (NO_ERROR != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(definitionField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(definitionField,defOut);
+    return true;
+}
+
+bool FGetWordList(String& wordListOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetWordListUrl(cookie);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (NO_ERROR != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(wordListField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(wordListField,wordListOut);
+    return true;
+}
 
 iNoahSession::iNoahSession()
  : fCookieReceived_(false),
@@ -528,58 +666,6 @@ bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
     return false;
 }
 
-bool FGetRandomDef(String& defOut)
-{
-    String cookie;
-    bool fOk = FGetCookie(cookie);
-    if (!fOk)
-        return false;
-
-    String  url = BuildGetRandomUrl(cookie);
-    String  response;
-    DWORD err = GetHttpBody(server,serverPort,url,response);
-    if (NO_ERROR != err)
-    {
-        HandleConnectionError(err);
-        return false;
-    }
-
-    ServerResponseParser responseParser(response);
-
-    fOk = FHandleParsedResponse(responseParser);
-    if (!fOk)
-        return false;
-
-    if (!responseParser.fHasField(definitionField))
-    {
-        HandleMalformedResponse();
-        return false;
-    }
-
-    responseParser.GetFieldValue(definitionField,defOut);
-    return true;
-}
-
-void iNoahSession::getRandomWord(String& ret)
-{
-    if ( !fCookieReceived_ && getCookie())
-    {
-        ret = content_;
-        return;
-    }
-    String tmp;
-    tmp.reserve(urlCommonLen+
-        cookieParam.length()+cookie.length()+sep.length()+
-        randomRequest.length()); 
-
-    tmp.assign(urlCommon);
-    tmp += cookieParam;
-    tmp += cookie;
-    tmp += sep;
-    tmp += randomRequest;
-
-    sendRequest(tmp,definitionStr,ret);
-}
 
 void iNoahSession::registerNoah(String registerCode, String& ret)
 {
@@ -613,57 +699,6 @@ void iNoahSession::registerNoah(String registerCode, String& ret)
         ret.assign(TEXT("Registration unsuccessful."));
         responseCode = serverError;
     }
-}
-
-void iNoahSession::getWord(String word, String& ret)
-{
-    if ( !fCookieReceived_ && getCookie())
-    {
-        ret=content_;
-        return;
-    }
-
-    String regCode = LoadStringFromFile(regCodeFile);
-
-    if ( !regCode.empty() )
-        regCode = sep+regCodeParam+regCode;
-
-    String url;
-    url.reserve(urlCommonLen+
-        cookieParam.length()+cookie.length()+sep.length()+
-        getWordParam.length()+word.length()+
-        regCode.length());
-
-    url.assign(urlCommon);
-    url += cookieParam;
-    url += cookie;
-    url += sep;
-    url += getWordParam;
-    url += word;
-    url += regCode;
-
-    sendRequest(url, definitionStr, ret);
-}
-
-void iNoahSession::getWordList(String& ret )
-{
-    if (!fCookieReceived_ && getCookie())
-    {
-        ret=content_;
-        return;
-    }
-
-    String tmp;
-    tmp.reserve(urlCommonLen+sep.length()+cookieParam.length()+
-        cookie.length()+sep.length()+recentRequest.length());
-    
-    tmp.assign(urlCommon);
-    tmp += cookieParam;
-    tmp += cookie;
-    tmp += sep;
-    tmp += recentRequest;
-
-    sendRequest(tmp,wordListStr,ret);
 }
 
 void iNoahSession::sendRequest(String url, String answer, String& ret)

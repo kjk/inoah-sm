@@ -1,20 +1,85 @@
+// those 3 must be in this sequence in order to get IID_DestNetInternet
+// http://www.smartphonedn.com/forums/viewtopic.php?t=360
+#include <objbase.h>
+#include <initguid.h>
+#include <connmgr.h>
+
 #include "Transmission.h"
 #include "winerror.h"
 #include "tchar.h"
 #include <BaseTypes.hpp>
 #include "sm_inoah.h"
 
-HINTERNET Transmission::hInternet_ = NULL;
+HINTERNET g_hInternet = NULL;
+HANDLE    g_hConnection = NULL;
+
+// try to establish internet connection.
+// If can't (e.g. because tcp/ip stack is not working), display a dialog box
+// informing about that and return false
+// Return true if established connection.
+// Can be called multiple times - will do nothing if connection is already established.
+bool FInitConnection()
+{
+    if (NULL!=g_hConnection)
+        return true;
+
+    CONNMGR_CONNECTIONINFO ccInfo;
+    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
+    ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
+    ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
+    ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
+    ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
+    ccInfo.guidDestNet = IID_DestNetInternet;
+    
+    DWORD dwStatus  = 0;
+    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
+    HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &g_hConnection, dwTimeout, &dwStatus);
+
+    if (FAILED(res))
+    {
+        assert(NULL==g_hConnection);
+        g_hConnection = NULL;
+    }
+
+    if (NULL==g_hConnection)
+    {
+#ifdef DEBUG
+        ArsLexis::String errorMsg = _T("Unable to connect to ");
+        errorMsg += server;
+#else
+        ArsLexis::String errorMsg = _T("Unable to connect");
+#endif
+        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+        MessageBox(
+            g_hwndMain,
+            errorMsg.c_str(),
+            TEXT("Error"),
+            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
+            );
+        return false;
+    }
+    else
+        return true;
+}
+
+void DeinitConnection()
+{
+    if (NULL != g_hConnection)
+    {
+        ConnMgrReleaseConnection(g_hConnection,1);
+        g_hConnection = NULL;
+    }
+}
 
 Transmission::Transmission(
                            const ArsLexis::String& host,
                            INTERNET_PORT           port,
                            const ArsLexis::String& localInfo)
 {
-    if (!hInternet_)
+    if (!g_hInternet)
     {
-        hInternet_ = openInternet();
-        if (!hInternet_)
+        g_hInternet = openInternet();
+        if (!g_hInternet)
         {
             lastError_ = GetLastError();
             return;
@@ -33,7 +98,7 @@ HINTERNET Transmission::openInternet()
     handle = InternetOpen(TEXT("inoah-client"),
         INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     //INTERNET_FLAG_ASYNC in case of callback
-    //InternetSetStatusCallback(hInternet_, dispatchCallback); 
+    //InternetSetStatusCallback(g_hInternet, dispatchCallback); 
 
 #ifdef DEBUG
     // a mystery: on emulator, GetLastError() returns 87 (ERROR_INVALID_PARAMETER)
@@ -46,20 +111,26 @@ HINTERNET Transmission::openInternet()
 
 void Transmission::closeInternet()
 {
-    if (hInternet_)
+    if (g_hInternet)
     {
-        InternetCloseHandle(hInternet_);
-        hInternet_ = NULL;
+        InternetCloseHandle(g_hInternet);
+        g_hInternet = NULL;
     }
 }
 
 DWORD Transmission::sendRequest()
 {
-    if (!hInternet_)
+    if (!g_hInternet)
         return lastError_;
 
+    if (!FInitConnection())
+    {
+        // TODO: return more sensible error
+        return 1;
+    }
+
     hIConnect_ = InternetConnect(
-        hInternet_,host.c_str(),port,
+        g_hInternet,host.c_str(),port,
         TEXT(" "),TEXT(" "),
         INTERNET_SERVICE_HTTP, 0, 0);
     
@@ -94,7 +165,7 @@ DWORD Transmission::sendRequest()
         INTERNET_OPTION_READ_BUFFER_SIZE, &buffSize, dwordLen);
         /*std::wstring fullURL(server+url+TEXT(" HTTP/1.0"));
         hIRequest = InternetOpenUrl(
-        hInternet_,
+        g_hInternet,
         fullURL.c_str(),
     NULL,0,0, context=transContextCnt++);*/
 

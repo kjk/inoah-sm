@@ -14,12 +14,6 @@
 #include "Definition.hpp"
 #include <Debug.hpp>
 
-// those 3 must be in this sequence in order to get IID_DestNetInternet
-// http://www.smartphonedn.com/forums/viewtopic.php?t=360
-#include <objbase.h>
-#include <initguid.h>
-#include <connmgr.h>
-
 #include <windows.h>
 #ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
@@ -46,7 +40,6 @@ bool        g_fRec=false;
 
 ArsLexis::String g_wordList;
 ArsLexis::String g_recentWord;
-ArsLexis::String g_text = TEXT("");
 iNoahSession     g_session;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -56,66 +49,6 @@ void    drawProgressInfo(HWND hwnd, TCHAR* text);
 void    setFontSize(int diff,HWND hwnd);
 void    paint(HWND hwnd, HDC hdc);
 void    setScrollBar(Definition* definition);
-
-HANDLE    g_hConnection = NULL;
-
-// try to establish internet connection.
-// If can't (e.g. because tcp/ip stack is not working), display a dialog box
-// informing about that and return false
-// Return true if established connection.
-// Can be called multiple times - will do nothing if connection is already established.
-static bool fInitConnection()
-{
-    if (NULL!=g_hConnection)
-        return true;
-
-    CONNMGR_CONNECTIONINFO ccInfo;
-    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
-    ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
-    ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
-    ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
-    ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
-    ccInfo.guidDestNet = IID_DestNetInternet;
-    
-    DWORD dwStatus  = 0;
-    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
-    HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &g_hConnection, dwTimeout, &dwStatus);
-
-    if (FAILED(res))
-    {
-        assert(NULL==g_hConnection);
-        g_hConnection = NULL;
-    }
-
-    if (NULL==g_hConnection)
-    {
-#ifdef DEBUG
-        ArsLexis::String errorMsg = _T("Unable to connect to ");
-        errorMsg += server;
-#else
-        ArsLexis::String errorMsg = _T("Unable to connect");
-#endif
-        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
-        MessageBox(
-            g_hwndMain,
-            errorMsg.c_str(),
-            TEXT("Error"),
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
-            );
-        return false;
-    }
-    else
-        return true;
-}
-
-static void deinitConnection()
-{
-    if (NULL != g_hConnection)
-    {
-        ConnMgrReleaseConnection(g_hConnection,1);
-        g_hConnection = NULL;
-    }
-}
 
 RenderingPreferences* g_renderingPrefs = NULL;
 
@@ -184,30 +117,22 @@ static void DoLookup(HWND hwnd)
     if (0==len)
         return;
 
-    if (!fInitConnection())
-        return;
-
     memset(buf,0,sizeof(buf));
     len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
     SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
 
     ArsLexis::String word(buf); 
-    drawProgressInfo(hwnd, TEXT("definition..."));
-    g_session.getWord(word,g_text);
-    setDefinition(g_text,hwnd);
-}
+    drawProgressInfo(hwnd, _T("definition..."));
 
-static void HandleServerResponse(ServerResponseParser& responseParser)
-{
-
-
+    String def;
+    bool fOk = FGetWord(word,def);
+    if (!fOk)
+        return;
+    setDefinition2(def);
 }
 
 static void DoRandom(HWND hwnd)
 {
-    if (!fInitConnection())
-        return;
-
     HDC hdc = GetDC(hwnd);
     paint(hwnd, hdc);
     ReleaseDC(hwnd, hdc);
@@ -218,9 +143,6 @@ static void DoRandom(HWND hwnd)
     if (!fOk)
         return;
     setDefinition2(def);
-/*    ArsLexis::String word;
-    g_session.getRandomWord(word);
-    setDefinition(word,hwnd); */
 }
 
 static void DoCompact(HWND hwnd)
@@ -256,45 +178,24 @@ static void DoCompact(HWND hwnd)
 
 static void DoRecent(HWND hwnd)
 {
-    if (!fInitConnection())
-        return;
-
     HDC hdc = GetDC(hwnd);
     paint(hwnd, hdc);
     ReleaseDC(hwnd, hdc);
     drawProgressInfo(hwnd, TEXT("recent lookups list..."));
 
-    g_wordList.assign(TEXT(""));
-    g_session.getWordList(g_wordList);
-    iNoahSession::ResponseCode code=g_session.getLastResponseCode();
+    bool fOk = FGetWordList(g_wordList);
+    if (!fOk)
+        return;
 
-    switch (code)
-    {   
-        case iNoahSession::serverMessage:
-        {
-            MessageBox(hwnd, g_wordList.c_str(), TEXT("Information"), 
-                MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
-            break;
-        }
-
-        case iNoahSession::serverError:
-        case iNoahSession::error:
-        {
-            MessageBox(hwnd, g_wordList.c_str(), TEXT("Error"), 
-                MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-            break;
-        }
-
-        default:
-        {
-            if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
-            {                        
-                drawProgressInfo(hwnd, TEXT("definition..."));
-                g_session.getWord(g_recentWord,g_text);
-                setDefinition(g_text,hwnd);
-            }
-            break;
-        }
+    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
+    {
+        ArsLexis::String word(g_recentWord); 
+        drawProgressInfo(hwnd, _T("definition..."));                
+        String def;
+        bool fOk = FGetWord(word,def);
+        if (!fOk)
+            return;
+        setDefinition2(def);
     }
 }
 
@@ -583,7 +484,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         DispatchMessage(&msg);
     }
 
-    deinitConnection();
+    DeinitConnection();
     Transmission::closeInternet();
 
     return msg.wParam;
@@ -622,10 +523,10 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
     bool fCouldntDoubleBuffer = false;
     HDC offscreenDc = ::CreateCompatibleDC(hdc);
     if (offscreenDc) 
-	{
+    {
         HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
         if (bitmap) 
-		{
+        {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             {
                 ArsLexis::Graphics offscreen(offscreenDc, NULL);

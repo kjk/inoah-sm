@@ -12,6 +12,8 @@ using ArsLexis::String;
 
 String  getDeviceInfo();
 bool    FGetRandomDef(String& defOut);
+bool    FGetWord(const String& word, String& defOut);
+bool    FGetWordList(String& wordListOut);
 
 class iNoahSession
 {
@@ -29,9 +31,6 @@ public:
     
     iNoahSession();
 
-    void  getRandomWord(String& ret);
-    void  getWord(String word, String& ret);
-    void  getWordList(String& ret);
     void  registerNoah(String registerCode, String& ret);
 
     String         getLastResponse() { return content_; }

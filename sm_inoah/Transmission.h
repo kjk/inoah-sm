@@ -6,9 +6,11 @@
 
 using ArsLexis::String;
 
+void DeinitConnection();
+bool FInitConnection();
+
 class Transmission
 {
-    static  HINTERNET   hInternet_;
     static  HINTERNET   openInternet();
     DWORD               lastError_;
     String              localInfo;
