@@ -130,10 +130,10 @@ void setDefinition(ArsLexis::String& defs)
 //
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    LRESULT		lResult = TRUE;
-    HDC			hdc;
-    PAINTSTRUCT	ps;
-    RECT		rect;
+    LRESULT     lResult = TRUE;
+    HDC         hdc;
+    PAINTSTRUCT ps;
+    RECT        rect;
     static HWND hwndEdit;
     
     static bool compactView=FALSE;
@@ -378,7 +378,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 logfnt.lfHeight+=1;
                 HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
                 SelectObject(hdc, fnt2);
-                DrawText (hdc, TEXT("Enter word and press \"Look up\""), -1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
+                DrawText (hdc, TEXT("Enter word and press \"Lookup\""), -1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
                 SelectObject(hdc,fnt);
                 DeleteObject(fnt2);
             }

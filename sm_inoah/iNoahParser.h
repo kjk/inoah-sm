@@ -44,7 +44,7 @@ private:
     //ArsLexis::String definition;
     Definition::Elements_t elements_;
     static const ArsLexis::String arabNums[];
-	static const pOfSpeechCnt;
+    static const pOfSpeechCnt;
     static const int abbrev;
     static const int fullForm;
     static const ArsLexis::String pOfSpeach[2][5];

@@ -18,7 +18,7 @@ public:
     DynamicNewLineElement(const ArsLexis::String& text);
     virtual bool breakBefore(const RenderingPreferences& prefs) const;    
 
-	virtual ~DynamicNewLineElement();
+    virtual ~DynamicNewLineElement();
 
 };
 

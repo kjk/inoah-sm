@@ -9,10 +9,10 @@ using namespace ArsLexis;
 const String iNoahParser::arabNums[] = 
 { 
     TEXT("I"), 
-        TEXT("II"), 
-        TEXT("III"), 
-        TEXT("IV"), 
-        TEXT("V")
+    TEXT("II"), 
+    TEXT("III"), 
+    TEXT("IV"), 
+    TEXT("V")
 };
 
 const iNoahParser::pOfSpeechCnt = 5;
@@ -22,13 +22,14 @@ const String iNoahParser::pOfSpeach[2][5] =
 { 
     {
         TEXT("v"), TEXT("a"), 
-            TEXT("r"), TEXT("n"), 
-            TEXT("s") 
+        TEXT("r"), TEXT("n"), 
+        TEXT("s") 
     }, 
     {
-            TEXT("verb. "), TEXT("adj. "), 
-                TEXT("adv. "), TEXT("noun. "), 
-                TEXT("adj. ")}
+        TEXT("verb. "), TEXT("adj. "), 
+        TEXT("adv. "), TEXT("noun. "), 
+        TEXT("adj. ")
+    }
 };
 
 Definition* iNoahParser::parse(String text)
@@ -51,7 +52,7 @@ Definition* iNoahParser::parse(String text)
                 nextIdx = meanings.find_first_of(char_t('\n'), nextIdx+1);
                 if ((nextIdx != -1)&&(meanings.length()>nextIdx+2))
                     nextBeg = meanings[nextIdx+1];
-            }while ((nextBeg==currBeg) && (nextIdx != -1));
+            } while ((nextBeg==currBeg) && (nextIdx != -1));
             if ((nextIdx == -1)||(metBegs.find_first_of(nextBeg) != -1))
             {
                 ElementsList* mean = new ElementsList();
@@ -299,7 +300,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
         last = new DynamicNewLineElement(
             TEXT("\"") + 
             text.substr(start + 2, currIndx-start-2) + 
-            TEXT("\""));
+            TEXT("\" "));
         last->setStyle(styleExample);
         lst->push_back(last);
     }
