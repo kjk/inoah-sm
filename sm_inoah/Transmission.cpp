@@ -1,7 +1,3 @@
-// Transmission.cpp: implementation of the Transmission class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "Transmission.h"
 #include "winerror.h"
 #include "tchar.h"

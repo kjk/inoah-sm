@@ -1,9 +1,5 @@
-// iNoahSession.h: interface for the iNoahSession class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_INOAHTRANSMISSION_H__2E89FAF6_91F8_46A0_8AB5_7C2397EEC8DB__INCLUDED_)
-#define AFX_INOAHTRANSMISSION_H__2E89FAF6_91F8_46A0_8AB5_7C2397EEC8DB__INCLUDED_
+#if !defined(_INOAH_SESSION_H_)
+#define _INOAH_SESSION_H_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -12,47 +8,48 @@
 #include "BaseTypes.hpp"
 #include "Transmission.h"
 
+using ArsLexis::String;
+
 class iNoahSession
 {
     
 public:
-    enum ResponseCode {
-        srvmessage, //MESSAGE
-            srverror,	//ERROR
-            error,		//other errors: unable to connect, 
-            //resolve name etc.
-            definition, //DEFINITION
-            wordlist,	//WORDLIST
+    enum ResponseCode
+    {
+        serverMessage,
+        serverError,
+        error,       // connection errors e.g. unable to connect, 
+        definition,
+        wordlist
     };
     
     iNoahSession();
-    
-    void getRandomWord(ArsLexis::String& ret);
-    void getWord(ArsLexis::String word, ArsLexis::String& ret);
-    void getWordList(ArsLexis::String& ret);
-    void registerNoah(ArsLexis::String registerCode, ArsLexis::String& ret);
 
-    ArsLexis::String getLastResponse() { return content_; }
-    ResponseCode     getLastResponseCode() { return responseCode; }
-    
-    ArsLexis::String getDeviceInfo();
-    void clearCache();
+    void  getRandomWord(String& ret);
+    void  getWord(String word, String& ret);
+    void  getWordList(String& ret);
+    void  registerNoah(String registerCode, String& ret);
+
+    String         getLastResponse() { return content_; }
+    ResponseCode   getLastResponseCode() { return responseCode; }
+
+    String  getDeviceInfo();
+    void    clearCache();
     virtual ~iNoahSession();
-    
+
 private:
-    bool cookieReceived;
-    void storeCookie(ArsLexis::String cookie);
-    ArsLexis::String loadString(ArsLexis::String fileName);
-    void iNoahSession::storeString(ArsLexis::String fileName, ArsLexis::String str);
-    ArsLexis::String cookie;
-    ArsLexis::String content_;
-    void sendRequest(ArsLexis::String url,ArsLexis::String answer,ArsLexis::String& ret);
-    bool checkErrors(Transmission &tr, ArsLexis::String &ret);
-    int CreateAppFolder (HWND hWnd, TCHAR *pszAppFolder, int nMax);
-    bool getCookie();
+    bool    fCookieReceived_;
+    void    storeCookie(String cookie);
+    String  loadString(String fileName);
+    void    iNoahSession::storeString(String fileName, String str);
+    String  cookie;
+    String  content_;
+    void    sendRequest(String url, String answer, String& ret);
+    bool    fErrorPresent(Transmission &tr, String &ret);
+    int     CreateAppFolder(HWND hWnd, TCHAR *pszAppFolder, int nMax);
+    bool    getCookie();
 
     ResponseCode responseCode;
-
 };
 
-#endif // !defined(AFX_INOAHTRANSMISSION_H__2E89FAF6_91F8_46A0_8AB5_7C2397EEC8DB__INCLUDED_)
+#endif

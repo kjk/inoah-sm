@@ -140,13 +140,13 @@ static void setDefinition(ArsLexis::String& defs, HWND hwnd)
     iNoahSession::ResponseCode code=g_session.getLastResponseCode();
     switch(code)
     {
-        case iNoahSession::srvmessage:
+        case iNoahSession::serverMessage:
         {
             MessageBox(hwnd,defs.c_str(),TEXT("Information"), 
             MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
             return;
         }
-        case iNoahSession::srverror:
+        case iNoahSession::serverError:
         case iNoahSession::error:
         {
             MessageBox(hwnd,defs.c_str(),TEXT("Error"), 
@@ -251,14 +251,14 @@ static void doRecent(HWND hwnd)
 
     switch (code)
     {   
-        case iNoahSession::srvmessage:
+        case iNoahSession::serverMessage:
         {
             MessageBox(hwnd, g_wordList.c_str(), TEXT("Information"), 
                 MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
             break;
         }
 
-        case iNoahSession::srverror:
+        case iNoahSession::serverError:
         case iNoahSession::error:
         {
             MessageBox(hwnd, g_wordList.c_str(), TEXT("Error"), 

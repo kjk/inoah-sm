@@ -1,7 +1,3 @@
-// iNoahSession.cpp: implementation of the iNoahSession class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "iNoahSession.h"
 #include "Transmission.h"
 #include "sm_inoah.h"
@@ -22,15 +18,16 @@
 
 using ArsLexis::String;
 
-// TODO: It should be clear text (for a while just some objects)
-// It's really intresting how they will be expanded
-
 const String errorStr        = TEXT("ERROR");
 const String cookieStr       = TEXT("COOKIE");
 const String messageStr      = TEXT("MESSAGE");
 const String definitionStr   = TEXT("DEF");
 const String wordListStr     = TEXT("WORDLIST");
 const String registrationStr = TEXT("REGISTRATION");
+const String requestsLeftStr = TEXT("REQUESTS_LEFT");
+const String pronunciationStr= TEXT("PRON");
+const String regFailedStr    = TEXT("REGISTRATION_FAILED");
+const String regOkStr        = TEXT("REGISTRATION_OK");
 
 const String script          = TEXT("/dict-2.php?");
 const String protocolVersion = TEXT("pv=2");
@@ -39,30 +36,32 @@ const String sep             = TEXT("&");
 const String cookieRequest   = TEXT("get_cookie=");
 const String deviceInfoParam = TEXT("di=");
 
-const String cookieParam   = TEXT("c=");
-const String registerParam = TEXT("register=");
-const String regCodeParam  = TEXT("rc=");
-const String getWordParam  = TEXT("get_word=");
+const String cookieParam     = TEXT("c=");
+const String registerParam   = TEXT("register=");
+const String regCodeParam    = TEXT("rc=");
+const String getWordParam    = TEXT("get_word=");
 
-const String randomRequest = TEXT("get_random_word=");
-const String recentRequest = TEXT("recent_lookups=");
+const String randomRequest   = TEXT("get_random_word=");
+const String recentRequest   = TEXT("recent_lookups=");
 
-const String iNoahFolder = TEXT ("\\iNoah");
-const String cookieFile  = TEXT ("\\Cookie");
-const String regCodeFile = TEXT ("\\RegCode");
-
+const String iNoahFolder     = TEXT ("\\iNoah");
+const String cookieFile      = TEXT ("\\Cookie");
+const String regCodeFile     = TEXT ("\\RegCode");
 
 iNoahSession::iNoahSession()
- : cookieReceived(false),
+ : fCookieReceived_(false),
    responseCode(error),
    content_(TEXT("No request."))
 {
     
 }
 
-bool iNoahSession::checkErrors(Transmission &tr, String &ret)
+// TODO: refactor things. This function does two unrelated things.
+// return true if there was an error during transmission. Otherwise
+// return false and stuff response into ret
+bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
 {
-    if (tr.sendRequest() != NO_ERROR)
+    if (NO_ERROR != tr.sendRequest())
     {
         //TODO: Better error handling
         responseCode = error;
@@ -73,17 +72,17 @@ bool iNoahSession::checkErrors(Transmission &tr, String &ret)
     tr.getResponse(ret);
     
     // Check whether server returned errror
-    if (ret.find(errorStr, 0) == 0 )
+    if (0==ret.find(errorStr, 0))
     {
         content_.assign(ret,errorStr.length()+1,-1);
-        responseCode = srverror;
+        responseCode = serverError;
         return true;
     }
     
-    if (ret.find(messageStr, 0) == 0 )
+    if (0==ret.find(messageStr, 0))
     {
         content_.assign(ret,messageStr.length()+1,-1);
-        responseCode = srvmessage;
+        responseCode = serverMessage;
         return true;
     }
     return false;
@@ -91,9 +90,9 @@ bool iNoahSession::checkErrors(Transmission &tr, String &ret)
 
 void iNoahSession::getRandomWord(String& ret)
 {
-    if ((!cookieReceived)&&(getCookie()))
+    if ( !fCookieReceived_ && getCookie())
     {
-        ret=content_;
+        ret = content_;
         return;
     }
     String tmp;
@@ -109,9 +108,9 @@ void iNoahSession::getRandomWord(String& ret)
 
 void iNoahSession::registerNoah(String registerCode, String& ret)
 {
-    if ((!cookieReceived) && (getCookie()))
+    if (!fCookieReceived_ && getCookie())
     {
-        ret=content_;
+        ret = content_;
         return;
     }
     
@@ -129,48 +128,59 @@ void iNoahSession::registerNoah(String registerCode, String& ret)
     if(ret.compare(TEXT("OK\n"))==0)
     {
         ret.assign(TEXT("Registration successful."));
-        responseCode=srvmessage;
+        responseCode = serverMessage;
         storeString(regCodeFile,registerCode);
     }
     else
     {
         ret.assign(TEXT("Registration unsuccessful."));
-        responseCode=srverror;
+        responseCode = serverError;
     }
 }
 
 void iNoahSession::getWord(String word, String& ret)
 {
-    if ((!cookieReceived)&&(getCookie()))
+    if ( !fCookieReceived_ && getCookie())
     {
         ret=content_;
         return;
     }
-    String rc=loadString(regCodeFile);
-    String tmp;
-    if(rc.compare(TEXT(""))!=0)
-        rc=sep+regCodeParam+rc;
-    tmp.reserve(script.length()+protocolVersion.length()+
+
+    String regCode = loadString(regCodeFile);
+
+    if ( !regCode.empty() )
+        regCode = sep+regCodeParam+regCode;
+
+    String url;
+    url.reserve(script.length()+protocolVersion.length()+
         sep.length()+clientVersion.length()+sep.length()+
         cookieParam.length()+cookie.length()+sep.length()+
         getWordParam.length()+word.length()+
-        rc.length());
-    
-    tmp+=script; tmp+=protocolVersion; tmp+=sep;
-    tmp+=clientVersion;tmp+=sep; tmp+=cookieParam;
-    tmp+=cookie;tmp+=sep;tmp+=getWordParam;tmp+=word;
-    tmp+=rc;
-    
-    sendRequest(tmp,definitionStr,ret);
+        regCode.length());
+
+    url += script;
+    url += protocolVersion;
+    url += sep;
+    url += clientVersion;
+    url += sep;
+    url += cookieParam;
+    url += cookie;
+    url += sep;
+    url += getWordParam;
+    url += word;
+    url += regCode;
+
+    sendRequest(url, definitionStr, ret);
 }
 
 void iNoahSession::getWordList(String& ret )
 {
-    if ((!cookieReceived)&&(getCookie()))
+    if (!fCookieReceived_ && getCookie())
     {
         ret=content_;
         return;
     }
+
     String tmp;
     tmp.reserve(script.length()+protocolVersion.length()+sep.length()+
         clientVersion.length()+sep.length()+cookieParam.length()+
@@ -185,15 +195,16 @@ void iNoahSession::getWordList(String& ret )
 void iNoahSession::sendRequest(String url, String answer, String& ret)
 {
     Transmission tr(server, serverPort, url);
-    String tmp;
-    tr.getResponse(tmp);
 
-    if (checkErrors(tr,tmp))
+    String response;
+    tr.getResponse(response);
+
+    if (fErrorPresent(tr,response))
         ; 
     else
-        if (0 == tmp.find(answer, 0))
+        if (0 == response.find(answer, 0))
         {
-            content_.assign(tmp, answer.length()+1, -1);
+            content_.assign(response, answer.length()+1, -1);
             this->responseCode = definition;
         }
     ret = content_;
@@ -207,7 +218,7 @@ bool iNoahSession::getCookie()
     if (storedCookie.length()>0)
     {
         cookie = storedCookie;
-        cookieReceived = true;
+        fCookieReceived_ = true;
         return false;
     }
 
@@ -230,13 +241,13 @@ bool iNoahSession::getCookie()
     Transmission tr(server, serverPort, tmp);
     String tmp2;
 
-    if (checkErrors(tr,tmp2))
+    if (fErrorPresent(tr,tmp2))
         return true;
 
     if (0==tmp2.find(cookieStr))
     {
         cookie.assign(tmp2,cookieStr.length()+1,-1);
-        cookieReceived = true;
+        fCookieReceived_ = true;
         storeCookie(cookie);
         return false;
     }
@@ -336,7 +347,7 @@ void iNoahSession::clearCache()
     f = DeleteFile(fullPath.c_str());
     fullPath = szPath + iNoahFolder + regCodeFile;
     f = DeleteFile(fullPath.c_str());
-    cookieReceived = false;
+    fCookieReceived_ = false;
 }
 
 // According to this msdn info:

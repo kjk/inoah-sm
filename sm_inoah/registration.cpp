@@ -29,14 +29,14 @@ static void OnRegister(HWND hDlg)
     iNoahSession::ResponseCode code = g_session.getLastResponseCode();
     switch (code)
     {
-        case iNoahSession::srvmessage:
+        case iNoahSession::serverMessage:
         {
             MessageBox(hDlg,text.c_str(),TEXT("Information"), 
                 MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
             EndDialog(hDlg, 1);
             break;
         }
-        case iNoahSession::srverror:
+        case iNoahSession::serverError:
         case iNoahSession::error:
         {
             MessageBox(hDlg,text.c_str(),TEXT("Error"), 
