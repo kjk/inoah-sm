@@ -154,6 +154,17 @@ static bool FAddDynamicLine(const String& txt, ElementStyle style, ParagraphElem
     return true;
 }
 
+static bool FAddFormattedText(const String& txt, ElementStyle style, ParagraphElement *parent, Definition::Elements_t& elements)
+{
+    FormattedTextElement* el = new FormattedTextElement(txt);
+    if (NULL == el)
+        return false;
+    el->setStyle(style);
+    el->setParent(parent);
+    elements.push_back(el);
+    return true;
+}
+
 static void FormatSynsetDef(const SynsetDef_t& synsetDef, int synsetNo, ParagraphElement *parent, Definition::Elements_t& elements)
 {
     char_t numberBuf[20];

@@ -246,7 +246,7 @@ static void* CreateNewClipboardData(const String& str)
     int     strLen = str.length();
 
     g_ClipboardText = LocalAlloc(LPTR, (strLen+1)*sizeof(char_t));
-    if (NULL!=g_ClipboardText)
+    if (NULL==g_ClipboardText)
         return NULL;
 
     ZeroMemory(g_ClipboardText, (strLen+1)*sizeof(char_t));
@@ -263,12 +263,15 @@ static void CopyToClipboard(HWND hwndMain, Definition *def)
     if (def->empty())
         return;
 
-    if (!OpenClipboard(hwndMain))
+    if (0==OpenClipboard(hwndMain))
         return;
 
     // TODO: should we put it anyway?
-    if (!EmptyClipboard())
+    if (0==EmptyClipboard())
+    {
+        // EmptyClipboard() failed to free the clipboard
         goto Exit;
+    }
     
     def->selectionToText(text);
 
