@@ -82,7 +82,7 @@ public:
         ArsLexis::Graphics::Color_t textColor;
         bool requiresNewLine;
         StyleFormatting():
-            font(WinFont((HFONT)GetStockObject(SYSTEM_FONT))),
+            font(WinFont()),
             textColor(RGB(0,0,0)),
             requiresNewLine(false)
         {}

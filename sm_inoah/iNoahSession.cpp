@@ -505,13 +505,27 @@ static String BuildGetWordUrl(const String& cookie, const String& word)
     return url;
 }
 
-// TODO: show errorCode in the message as well?
 static void HandleConnectionError(DWORD errorCode)
 {
-    MessageBox(g_hwndMain,
-        _T("Connection error. Please contact support@arslexis.com if the problem persists."),
-        _T("Error"), 
-        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    if (errConnectionFailed==errorCode)
+    {
+#ifdef DEBUG
+        ArsLexis::String errorMsg = _T("Unable to connect to ");
+        errorMsg += server;
+#else
+        ArsLexis::String errorMsg = _T("Unable to connect");
+#endif
+        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+        MessageBox(g_hwndMain,errorMsg.c_str(),
+            TEXT("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
+    }
+    else
+    {
+        // TODO: show errorCode in the message as well?
+        MessageBox(g_hwndMain,
+            _T("Connection error. Please contact support@arslexis.com if the problem persists."),
+            _T("Error"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    }
 }    
 
 static void HandleMalformedResponse()
@@ -585,10 +599,18 @@ bool FGetCookie(String& cookieOut)
         return true;
     }
 
-    String  url = BuildGetCookieUrl();
-    String  response;
-    DWORD   err = GetHttpBody(server,serverPort,url,response);
-    if (NO_ERROR != err)
+    String storedCookie = LoadStringFromFile(cookieFile);
+    if (!storedCookie.empty())
+    {
+        g_cookie = storedCookie;
+        cookieOut = g_cookie;
+        return true;
+    }
+
+    String url = BuildGetCookieUrl();
+    String response;
+    DWORD  err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
     {
         HandleConnectionError(err);
         return false;
@@ -607,6 +629,8 @@ bool FGetCookie(String& cookieOut)
     }
 
     responseParser.GetFieldValue(cookieField,cookieOut);
+    g_cookie = cookieOut;
+    SaveStringToFile(cookieFile,cookieOut);
     return true;
 }
 
@@ -620,7 +644,7 @@ bool FGetRandomDef(String& defOut)
     String  url = BuildGetRandomUrl(cookie);
     String  response;
     DWORD err = GetHttpBody(server,serverPort,url,response);
-    if (NO_ERROR != err)
+    if (errNone != err)
     {
         HandleConnectionError(err);
         return false;
@@ -652,7 +676,7 @@ bool FGetWord(const String& word, String& defOut)
     String  url = BuildGetWordUrl(cookie,word);
     String  response;
     DWORD err = GetHttpBody(server,serverPort,url,response);
-    if (NO_ERROR != err)
+    if (errNone != err)
     {
         HandleConnectionError(err);
         return false;
@@ -684,7 +708,7 @@ bool FGetWordList(String& wordListOut)
     String  url = BuildGetWordListUrl(cookie);
     String  response;
     DWORD err = GetHttpBody(server,serverPort,url,response);
-    if (NO_ERROR != err)
+    if (errNone != err)
     {
         HandleConnectionError(err);
         return false;
@@ -719,7 +743,7 @@ iNoahSession::iNoahSession()
 // return false and stuff response into ret
 bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
 {
-    if (NO_ERROR != tr.sendRequest())
+    if (errNone != tr.sendRequest())
     {
         //TODO: Better error handling
         responseCode = error;

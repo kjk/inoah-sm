@@ -69,8 +69,8 @@ const String iNoahParser::pOfSpeach[2][5] =
         TEXT("s") 
     }, 
     {
-        TEXT("verb. "), TEXT("adj. "), 
-        TEXT("adv. "), TEXT("noun. "), 
+        TEXT("verb "), TEXT("adj. "), 
+        TEXT("adv. "), TEXT("noun "), 
         TEXT("adj. ")
     }
 };
@@ -78,21 +78,21 @@ const String iNoahParser::pOfSpeach[2][5] =
 String getFullPosFromAbbrev(const String& posAbbrev)
 {
     if (_T("v")==posAbbrev)
-        return String(_T("verb."));
+        return String(_T("verb "));
 
     if (_T("a")==posAbbrev)
-        return String(_T("adj."));
-
-    if (_T("r")==posAbbrev)
-        return String(_T("adv."));
-
-    if (_T("n")==posAbbrev)
-        return String(_T("noun"));
+        return String(_T("adj. "));
 
     if (_T("s")==posAbbrev)
-        return String(_T("adj."));
+        return String(_T("adj. "));
 
-    return String(_T("unknown"));
+    if (_T("n")==posAbbrev)
+        return String(_T("noun "));
+
+    if (_T("r")==posAbbrev)
+        return String(_T("adv. "));
+
+    return String(_T("unknown "));
 }
 
 Definition* iNoahParser::parse(const String& text)
@@ -477,42 +477,53 @@ void formatSynset(Definition::Elements_t& elements,
 
     DynamicNewLineElement *dnlEl;
 
-    ParagraphElement* posParagraph = new ParagraphElement();
+    ParagraphElement* synParagraph = new ParagraphElement();
+    if (NULL == synParagraph)
+        return;
+    elements.push_back(synParagraph);
+
+
+    /* ParagraphElement* posParagraph = new ParagraphElement();
     if (NULL == posParagraph)
         return;
-    elements.push_back(posParagraph);
+    elements.push_back(posParagraph); */
 
     String posFull = getFullPosFromAbbrev(posAbbrev);
     dnlEl = new DynamicNewLineElement(posFull);
     if (NULL == dnlEl)
         return;
     dnlEl->setStyle(stylePOfSpeech);
-    dnlEl->setParent(posParagraph);
+    //dnlEl->setParent(posParagraph);
+    dnlEl->setParent(synParagraph);
     elements.push_back(dnlEl);
 
-    ParagraphElement* defParagraph = new ParagraphElement();
+/*    ParagraphElement* defParagraph = new ParagraphElement();
     if (NULL == defParagraph)
         return;
-    elements.push_back(defParagraph);
-    dnlEl = new DynamicNewLineElement(synsetDef);
+    elements.push_back(defParagraph);*/
+    String synsetDefNew(synsetDef);
+    synsetDefNew.append(_T(" "));
+    dnlEl = new DynamicNewLineElement(synsetDefNew);
     if (NULL == dnlEl)
         return;
     dnlEl->setStyle(styleDefinition);
-    dnlEl->setParent(defParagraph);
+    //dnlEl->setParent(defParagraph);
+    dnlEl->setParent(synParagraph);
     elements.push_back(dnlEl);
 
     uint_t synCount = synonyms.size();
     if (synCount>0)
     {
-        ParagraphElement* synListParagraph = new ParagraphElement();
+        /*ParagraphElement* synListParagraph = new ParagraphElement();
         if (NULL == synListParagraph)
             return;
-        elements.push_back(synListParagraph);
+        elements.push_back(synListParagraph);*/
         dnlEl = new DynamicNewLineElement(_T("Synonyms: "));
         if (NULL == dnlEl)
             return;
         dnlEl->setStyle(styleSynonymsList);
-        dnlEl->setParent(synListParagraph);
+        //dnlEl->setParent(synListParagraph);
+        dnlEl->setParent(synParagraph);
         elements.push_back(dnlEl);
 
         String syn;
@@ -526,6 +537,10 @@ void formatSynset(Definition::Elements_t& elements,
                 // not the last synonym
                 synLine.append(_T(", "));
             }
+            else
+            {
+                synLine.append(_T(" "));
+            }
         }
 
         /* ParagraphElement* synParagraph = new ParagraphElement();
@@ -537,33 +552,42 @@ void formatSynset(Definition::Elements_t& elements,
         if (NULL == dnlEl)
             return;
         dnlEl->setStyle(styleSynonyms);
-        // dnlEl->setParent(synParagraph);
-        dnlEl->setParent(synListParagraph);
+        dnlEl->setParent(synParagraph);
+        //dnlEl->setParent(synListParagraph);
         elements.push_back(dnlEl);
     }
 
     uint_t examplesCount = examples.size();
     if (examplesCount>0)
     {
+        dnlEl = new DynamicNewLineElement(String(TEXT("Examples: ")));
+        dnlEl->setStyle(styleExampleList);
+        elements.push_back(dnlEl);
+
         String example;
         String exampleLine;
         for (uint_t i=0; i<examplesCount; i++)
         {
             example = examples[i];
-            exampleLine.assign(_T("\""));
+            exampleLine.append(_T("\""));
             exampleLine.append(example);
             exampleLine.append(_T("\""));
+            if (i!=examplesCount-1)
+            {
+                exampleLine.append(_T(", "));
+            }
         }
 
-        ParagraphElement* exParagraph = new ParagraphElement();
+        /*ParagraphElement* exParagraph = new ParagraphElement();
         if (NULL == exParagraph)
             return;
-        elements.push_back(exParagraph);
+        elements.push_back(exParagraph);*/
         dnlEl = new DynamicNewLineElement(exampleLine);
         if (NULL == dnlEl)
             return;
         dnlEl->setStyle(styleExample);
-        dnlEl->setParent(exParagraph);
+        //dnlEl->setParent(exParagraph);
+        dnlEl->setParent(synParagraph);
         elements.push_back(dnlEl);
     }
 }
@@ -660,7 +684,7 @@ Definition *parseDefinition(const ArsLexis::String& defTxt)
             fAfterSynonyms = true;
             example = line.substr(1,line.length()-1);
             curExamples.push_back(example);
-        }
+        }            
     }
 
     if (fAfterSynonyms)

@@ -176,7 +176,7 @@ static void DoCompact(HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
-static void DoRecent(HWND hwnd)
+static void DoRecentLookups(HWND hwnd)
 {
     HDC hdc = GetDC(hwnd);
     paint(hwnd, hdc);
@@ -187,15 +187,24 @@ static void DoRecent(HWND hwnd)
     if (!fOk)
         return;
 
-    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd, RecentLookupsDlgProc))
+    if (g_wordList.empty())
     {
-        ArsLexis::String word(g_recentWord); 
-        drawProgressInfo(hwnd, _T("definition..."));                
-        String def;
-        bool fOk = FGetWord(word,def);
-        if (!fOk)
-            return;
-        setDefinition2(def);
+        MessageBox(g_hwndMain,
+            _T("No lookups have been made so far."),
+            _T("Information"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    }
+    else
+    {
+        if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd, RecentLookupsDlgProc))
+        {
+            ArsLexis::String word(g_recentWord); 
+            drawProgressInfo(hwnd, _T("definition..."));                
+            String def;
+            bool fOk = FGetWord(word,def);
+            if (!fOk)
+                return;
+            setDefinition2(def);
+        }
     }
 }
 
@@ -326,7 +335,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_RECENT:
-            DoRecent(hwnd);
+            DoRecentLookups(hwnd);
             break;
 
         case IDM_MENU_REGISTER:

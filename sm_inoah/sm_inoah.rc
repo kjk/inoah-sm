@@ -65,17 +65,18 @@ BEGIN
 		MENUITEM "Standard",            IDM_FNT_STANDARD
 		MENUITEM "Small",            	IDM_FNT_SMALL
 	END
-#ifdef DEBUG
-		MENUITEM "Clear cache",         IDM_CACHE
-#endif
+//#ifdef DEBUG
+//		MENUITEM "Clear cache",         IDM_CACHE
+//#endif
         POPUP "About"
 	    BEGIN
     		MENUITEM "ArsLexis home",       IDM_MENU_HOME
 		    MENUITEM "Check updates",       IDM_MENU_UPDATES
 		    MENUITEM "About",            	IDM_MENU_ABOUT
 	    END
-
+#ifdef DEBUG
         MENUITEM "Quit",                IDOK
+#endif
     END
 END
 

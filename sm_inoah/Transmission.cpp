@@ -42,22 +42,7 @@ bool FInitConnection()
     }
 
     if (NULL==g_hConnection)
-    {
-#ifdef DEBUG
-        ArsLexis::String errorMsg = _T("Unable to connect to ");
-        errorMsg += server;
-#else
-        ArsLexis::String errorMsg = _T("Unable to connect");
-#endif
-        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
-        MessageBox(
-            g_hwndMain,
-            errorMsg.c_str(),
-            TEXT("Error"),
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
-            );
         return false;
-    }
     else
         return true;
 }
@@ -125,8 +110,7 @@ DWORD Transmission::sendRequest()
 
     if (!FInitConnection())
     {
-        // TODO: return more sensible error
-        return 1;
+        return errConnectionFailed;
     }
 
     hIConnect_ = InternetConnect(
@@ -184,7 +168,7 @@ DWORD Transmission::sendRequest()
     assert(NULL!=hIConnect_);
     InternetCloseHandle(hIConnect_);
     hIConnect_ = NULL;
-    return NO_ERROR;
+    return errNone;
 }
 
 void Transmission::getResponse(ArsLexis::String& ret)
@@ -260,9 +244,9 @@ DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& ur
 {
     Transmission tr(host,port,url);
     DWORD err = tr.sendRequest();
-    if (NO_ERROR != err)
+    if (errNone != err)
         return err;
     tr.getResponse(bodyOut);
-    return NO_ERROR;
+    return errNone;
 }
 
