@@ -1,0 +1,21 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_HELLO_MENUBAR RCDATA
+BEGIN
+	0,
+	1,
+	I_IMAGENONE, IDOK, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+	IDS_HELLO_OK, 0, NOMENU,
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	IDS_HELLO_OK		"OK"
+END
