@@ -628,7 +628,7 @@ void AddSynsetDef(AllSynsetDefs_t& allSynsets, const String& posAbbrev, const Sy
 #endif
 }
 
-// how we work: first we collect all synsets grouped by part of speech i.e.:
+// how we work: first we collect all synsets grouped by part of speech
 // for each pos we have a list of: definition text, list of examples, list of synonyms
 Definition *ParseAndFormatDefinition(const ArsLexis::String& defTxt)
 {

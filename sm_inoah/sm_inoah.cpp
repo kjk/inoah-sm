@@ -10,6 +10,7 @@
 
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
+#include <WinSysUtils.hpp>
 #include <GenericTextElement.hpp>
 #include <BulletElement.hpp>
 #include <ParagraphElement.hpp>
@@ -107,9 +108,9 @@ bool GetSpecialFolderPath(String& pathOut)
 
 void DeleteFile(const String& fileName)
 {
-	String path;
-	if (!GetSpecialFolderPath(path))
-		return;
+    String path;
+    if (!GetSpecialFolderPath(path))
+        return;
     String fullPath = path + iNoahFolder + fileName;
     DeleteFile(fullPath.c_str());
 }
@@ -353,7 +354,7 @@ static void DoRecentLookups(HWND hwnd)
     ReleaseDC(hwnd, hdc);
     DrawProgressInfo(hwnd, TEXT("recent lookups list..."));
 
-    bool fOk = FGetWordList(g_wordList);
+    bool fOk = FGetRecentLookups(g_wordList);
     if (!fOk)
         return;
 
@@ -443,27 +444,12 @@ void static OnHotKey(WPARAM wp, LPARAM lp)
 }
 
 // Try to launch IE with a given url
-static bool GotoURL(LPCTSTR lpszUrl)
-{
-    SHELLEXECUTEINFO sei;
-    ZeroMemory(&sei, sizeof(sei));
-    sei.cbSize  = sizeof(SHELLEXECUTEINFO);
-    sei.fMask   = SEE_MASK_FLAG_NO_UI;
-    sei.lpVerb  = _T("open");
-    sei.lpFile  = lpszUrl;
-    sei.nShow   = SW_SHOWMAXIMIZED;
-
-    if (ShellExecuteEx(&sei))
-        return true;
-    return false;
-}
-
 static void OnRegister(HWND hwnd)
 {
     String newRegCode;
     String oldRegCode = GetRegCode();
 DoItAgain:
-    bool fOk = FGetRegCodeFromUser(oldRegCode, newRegCode);
+    bool fOk = FGetRegCodeFromUser(hwnd, oldRegCode, newRegCode);
     if (!fOk)
         return;
 

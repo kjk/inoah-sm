@@ -515,7 +515,7 @@ bool FGetWord(const String& word, String& defOut)
     return true;
 }
 
-bool FGetWordList(String& wordListOut)
+bool FGetRecentLookups(String& wordListOut)
 {
     String cookie;
     bool fOk = FGetCookie(cookie);

@@ -14,7 +14,7 @@ extern String g_wordList;
 
 String GetRegCode();
 String GetCookie();
-void SetCookie(const String& cookie);
+void   SetCookie(const String& cookie);
 
 #define APP_NAME      _T("iNoah")
 #define WINDOW_TITLE  _T("iNoah")

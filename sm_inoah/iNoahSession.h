@@ -8,7 +8,7 @@ using ArsLexis::String;
 String  getDeviceInfo();
 bool    FGetRandomDef(String& defOut);
 bool    FGetWord(const String& word, String& defOut);
-bool    FGetWordList(String& wordListOut);
+bool    FGetRecentLookups(String& wordListOut);
 bool    FCheckRegCode(const String& regCode, bool& fRegCodeValid);
 
 // those are ids representing all fields that a server can possibly send

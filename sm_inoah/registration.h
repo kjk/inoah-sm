@@ -3,8 +3,6 @@
 
 #include <BaseTypes.hpp>
 
-using ArsLexis::String;
-
-bool FGetRegCodeFromUser(const String& currentRegCode, String& newRegCode);
+bool FGetRegCodeFromUser(HWND hwnd, const ArsLexis::String& currentRegCode, ArsLexis::String& newRegCodeOut);
 
 #endif

@@ -1,34 +1,12 @@
+#include <aygshell.h>
+#include <WinSysUtils.hpp>
 #include "registration.h"
-#include "BaseTypes.hpp"
-#include "sm_inoah.h"
-#include "iNoahSession.h"
+#include "resource.h"
 
 #define REGISTER_PRESSED 1
 #define LATER_PRESSED    2
 
-static void GetEditWinText(HWND hwnd, ArsLexis::String &txtOut)
-{
-    // 128 should be enough for anybody
-    TCHAR buf[128];
-
-    ZeroMemory(buf,sizeof(buf));
-
-    int len = SendMessage(hwnd, EM_LINELENGTH, 0,0)+1;
-
-    if (len < sizeof(buf)/sizeof(buf[0]) )
-    {
-        len = SendMessage(hwnd, WM_GETTEXT, len, (LPARAM)buf);
-        txtOut.assign(buf);
-    }
-}
-
-static void SetEditWinText(HWND hwnd, String& txt)
-{
-    if (!txt.empty())
-    {
-        SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)txt.c_str());
-    }
-}
+using ArsLexis::String;
 
 static String g_oldRegCode;
 static String g_newRegCode;
@@ -46,7 +24,7 @@ static BOOL OnInitDialog(HWND hDlg)
     shmbi.cbSize     = sizeof(shmbi);
     shmbi.hwndParent = hDlg;
     shmbi.nToolBarId = IDR_REGISTER_MENUBAR;
-    shmbi.hInstRes   = g_hInst;
+    shmbi.hInstRes   = GetModuleHandle(NULL);
 
     if (!SHInitDialog(&shidi))
         return FALSE;
@@ -94,15 +72,15 @@ static BOOL CALLBACK RegCodeDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-bool FGetRegCodeFromUser(const String& currentRegCode, String& newRegCode)
+bool FGetRegCodeFromUser(HWND hwnd, const String& currentRegCode, String& newRegCodeOut)
 {
     g_oldRegCode.assign(currentRegCode);
 
-    int result = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), g_hwndMain, RegCodeDlgProc);
+    int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_REGISTER), hwnd, RegCodeDlgProc);
 
     if (REGISTER_PRESSED==result)
     {
-        newRegCode.assign(g_newRegCode);
+        newRegCodeOut.assign(g_newRegCode);
         return true;
     }
     else

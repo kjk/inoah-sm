@@ -95,7 +95,7 @@ static BOOL InitRecentLookups(HWND hDlg)
 
 BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
+    switch (msg)
     {
         case WM_INITDIALOG:
             return InitRecentLookups(hDlg);
