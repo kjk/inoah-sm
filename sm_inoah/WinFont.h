@@ -16,10 +16,6 @@ class FontWrapper
 {
     friend class WinFont;
     FontWrapper(HFONT fnt);
-    
-    
-
-
     virtual ~FontWrapper();
 
 private:

@@ -128,7 +128,7 @@ namespace ArsLexis
         //FontEffects fx=support_.font.effects();
         //if (fx.superscript() || fx.subscript())
         //    height*=1.333;
-        return fnt.lfHeight;
+        return -fnt.lfHeight;
     }
    
     uint_t Graphics::fontBaseline() const
@@ -150,10 +150,13 @@ namespace ArsLexis
             width, &len, NULL, &size);
         //length = len;
         width = size.cx;
-        for(int i=_tcslen(text);i>0;i--)
-            if (text[i]==TCHAR(" ")||text[i]==TCHAR("\t")||
-                text[i]==TCHAR("\n")) 
+        for(int i=len;i>0;i--)
+        {
+            if ( (text[i]==TCHAR(' '))||(text[i]==TCHAR('\t'))||
+                (text[i]==TCHAR('\n'))
+               ) 
                 return i;
+        }
         return _tcslen(text);
     }
 

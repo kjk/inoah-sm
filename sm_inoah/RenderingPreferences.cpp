@@ -10,13 +10,13 @@ using ArsLexis::FontEffects;
 using ArsLexis::Graphics;
 
 RenderingPreferences::RenderingPreferences():
-    standardIndentation_(16)
+    standardIndentation_(0)
 {
     styles_[styleHeader].font=WinFont((HFONT)GetStockObject(SYSTEM_FONT));
     int screenDepths=0;
     bool color=false;
     /*Err error=WinScreenMode(winScreenModeGet, NULL, NULL, &screenDepths, &color);*/
-    if (screenDepths>=8) // 16+ colors
+    /* (screenDepths>=8) // 16+ colors
     {
         hyperlinkDecorations_[hyperlinkTerm].textColor=40;
         hyperlinkDecorations_[hyperlinkExternal].textColor=35;
@@ -29,8 +29,8 @@ RenderingPreferences::RenderingPreferences():
     if (screenDepths>=2)
     {
         //for (uint_t i=0; i<stylesCount_; ++i)
-            //styles_[i].textColor=UIColorGetTableEntryIndex(UIObjectForeground);        
-    }
+          //styles_[i].textColor=UIColorGetTableEntryIndex(UIObjectForeground);        
+    }*/
     FontEffects fx;
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 

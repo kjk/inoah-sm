@@ -70,7 +70,7 @@ public:
         
         StyleFormatting():
             font(WinFont((HFONT)GetStockObject(SYSTEM_FONT))),
-            textColor(1)
+            textColor(RGB(0,0,0))
         {}
         
     };
@@ -91,7 +91,7 @@ public:
     {return standardIndentation_;}
     
     ArsLexis::Graphics::Color_t backgroundColor() const
-    {return 0;}
+    {return RGB(255,255,255);}
 
 private:
     

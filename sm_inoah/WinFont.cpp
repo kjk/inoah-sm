@@ -10,7 +10,7 @@
 
 WinFont::WinFont()
 {
-
+    this->fntWrapper = new FontWrapper((HFONT)GetStockObject(SYSTEM_FONT));
 }
 WinFont WinFont::getSymbolFont()
 {
@@ -33,10 +33,10 @@ WinFont& WinFont::operator=(const WinFont& r)
     if (this==&r) 
         return *this;
     fntWrapper->detach();
-    if (fntWrapper->getRefsCount())
-        delete fntWrapper;
-    fntWrapper = r.fntWrapper;
-    fntWrapper->attach();
+    //if (!fntWrapper->getRefsCount())
+    //    delete fntWrapper;
+    this->fntWrapper = r.fntWrapper;
+    this->fntWrapper->attach();
     return *this;
 }
 
@@ -44,6 +44,7 @@ HFONT WinFont::getHandle() const
 {
     return fntWrapper->font;
 }
+
 void WinFont::setEffects(ArsLexis::FontEffects& fx)
 {
 
@@ -63,8 +64,8 @@ ArsLexis::FontEffects& WinFont::effects() const
 WinFont::~WinFont()
 {
     fntWrapper->detach();
-    if (fntWrapper->getRefsCount())
-        delete fntWrapper;
+    //if (!fntWrapper->getRefsCount())
+    //    delete fntWrapper;
 }
 
 FontWrapper::FontWrapper(HFONT fnt):
