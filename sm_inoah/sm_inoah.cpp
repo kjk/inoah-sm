@@ -29,7 +29,31 @@ Definition *definition_ = NULL;
 
 RenderingPreferences* prefs= new RenderingPreferences();
 iNoahSession session;
+bool rec=false;
 
+void setScrollBar(Definition* definition_)
+{
+    int frst=0;
+    int total=0;
+    int shown=0;
+    if(definition_)
+    {
+        frst=definition_->firstShownLine();
+        total=definition_->totalLinesCount();
+        shown=definition_->shownLinesCount();
+    }
+    SetScrollPos(
+        hwndScroll, 
+        SB_CTL,
+        frst,
+        TRUE);
+    SetScrollRange(
+        hwndScroll,
+        SB_CTL,
+        0,
+        total-shown,
+        TRUE);
+}
 
 void setDefinition(ArsLexis::String& defs)
 {
@@ -39,6 +63,7 @@ void setDefinition(ArsLexis::String& defs)
         iNoahParser parser;
         definition_=parser.parse(defs);
         ArsLexis::Graphics gr(GetDC(hwndMain));
+        rec=true;
 }
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
@@ -99,26 +124,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_SCROLL,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
-            int frst=0;
-            int total=0;
-            int shown=0;
-            if(definition_)
-            {
-                frst=definition_->firstShownLine();
-                total=definition_->totalLinesCount();
-                shown=definition_->shownLinesCount();
-            }
-            SetScrollPos(
-                hwndScroll, 
-                SB_CTL,
-                frst,
-                TRUE);
-            SetScrollRange(
-                hwndScroll,
-                SB_CTL,
-                0,
-                total-shown,
-                TRUE);
+            setScrollBar(definition_);
             // In order to make Back work properly, it's necessary to 
 	        // override it and then call the appropriate SH API
 	        (void)SendMessage(
@@ -234,6 +240,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case VK_TDOWN:
                     if(definition_)
                         definition_->scroll(gr,*prefs,page);
+                    setScrollBar(definition_);
                     break;       
             }                    
             break;
@@ -264,6 +271,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             {
                 ArsLexis::Graphics gr(hdc);   
                 definition_->render(gr, rect, *prefs, true);
+            }
+            if(rec)
+            {
+                setScrollBar(definition_);
+                rec=false;
             }
 			EndPaint (hwnd, &ps);
 		}		
@@ -401,33 +413,11 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             {
                 case VK_DOWN:
                     definition_->scroll(gr,*prefs,page);
-                    SetScrollPos(
-                        hwndScroll, 
-                        SB_CTL, 
-                        definition_->firstShownLine(),
-                        FALSE);
-                    SetScrollRange(
-                        hwndScroll, 
-                        SB_CTL, 
-                        0,
-                        definition_->totalLinesCount()-
-                        definition_->shownLinesCount(), 
-                        TRUE);
+                    setScrollBar(definition_);
                     return 0;
                 case VK_UP:
                     definition_->scroll(gr,*prefs,-page);
-                    SetScrollPos(
-                        hwndScroll, 
-                        SB_CTL, 
-                        definition_->firstShownLine(),
-                        FALSE);
-                    SetScrollRange(
-                        hwndScroll, 
-                        SB_CTL, 
-                        0,
-                        definition_->totalLinesCount()-
-                        definition_->shownLinesCount(), 
-                        TRUE);
+                    setScrollBar(definition_);
                     return 0;
             }
             break;
@@ -435,4 +425,5 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
 }
+
 // end sm_inoah.cpp
