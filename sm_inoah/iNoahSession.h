@@ -30,7 +30,8 @@ public:
     void getRandomWord(ArsLexis::String& ret);
     void getWord(ArsLexis::String word, ArsLexis::String& ret);
     void getWordList(ArsLexis::String& ret);
-    
+    void registerNoah(ArsLexis::String registerCode, ArsLexis::String& ret);
+
     ArsLexis::String getLastResponse() { return content; }
     ResponseCode getLastResponseCode() { return responseCode; }
     
@@ -40,6 +41,8 @@ public:
 private:
     bool cookieReceived;
     void storeCookie(ArsLexis::String cookie);
+    ArsLexis::String loadString(ArsLexis::String fileName);
+    void iNoahSession::storeString(ArsLexis::String fileName, ArsLexis::String str);
     ArsLexis::String loadCookie();
     ArsLexis::String cookie;
     ArsLexis::String content;

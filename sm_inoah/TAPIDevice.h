@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 #include "TAPIDevice.h"
 #include "TAPILine.h"
-#include "..\ipedia\src\BaseTypes.hpp"
+#include "BaseTypes.hpp"
 #include <Tapi.h>
 #include <list>
 

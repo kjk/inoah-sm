@@ -4,12 +4,6 @@
 
 namespace ArsLexis
 {
-    /*Graphics::Graphics():
-        handle_(GetDC(hwndMain))
-    {
-        
-    }*/
-
     Graphics::Graphics(const NativeGraphicsHandle_t& handle):
         handle_(handle)
     {
@@ -157,14 +151,14 @@ namespace ArsLexis
 		int textLen = (int)_tcslen(text);
         if(textLen==len)
             return len;
-
-        for(int i=len;i>0;i--)
+        bool found=false;
+        for(int i=len;(i>0)&&(!found);i--)
         {
             if ((text[i]==TCHAR(' '))||
                 (text[i]==TCHAR('\t'))||
                 (text[i]==TCHAR('\n'))
                ) 
-                return i+1;
+                 return i+1;
         }
         return textLen;
     }

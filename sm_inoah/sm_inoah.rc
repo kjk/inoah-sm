@@ -37,6 +37,20 @@ BEGIN
 	IDS_CANCEL, 0, NOMENU,
 END
 
+IDR_REGISTER_MENUBAR RCDATA
+BEGIN
+	0,
+	2,
+	I_IMAGENONE, IDM_REGISTER, TBSTATE_ENABLED,
+	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+	IDS_REGISTER, 0, NOMENU,
+
+	I_IMAGENONE, ID_CANCEL, TBSTATE_ENABLED,
+	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+	IDS_CANCEL, 0, NOMENU,
+END
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -68,10 +82,12 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_LOOKUP              "Lookup"
-    IDS_MENU_BTN            "Menu"
+    IDS_LOOKUP          "Lookup"
+    IDS_MENU_BTN        "Menu"
     IDS_SELECT		    "Lookup"
     IDS_CANCEL		    "Cancel"
+    IDS_REGISTER		"Register"
+
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,7 +99,18 @@ IDD_RECENT DIALOG DISCARDABLE  4, 4, 80, 70
 STYLE WS_POPUP | WS_VISIBLE
 FONT 8, "System"
 BEGIN
-    LISTBOX         IDC_LIST_RECENT,0,4,100,88,
+    LISTBOX IDC_LIST_RECENT,0,2,100,88,
 		    LBS_NOTIFY | LBS_STANDARD | NOT LBS_SORT | 
 		    WS_TABSTOP | NOT WS_BORDER
 END
+
+IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
+STYLE WS_POPUP | WS_VISIBLE
+FONT 8, "System"
+BEGIN
+    CTEXT "Enter received registration",IDC_STATIC, 0, 25, 100, 10
+    CTEXT "code below:",IDC_STATIC, 0, 37, 100, 10
+    EDITTEXT IDC_EDIT_REGCODE, 2, 47, 96, 10,
+        ES_LEFT | WS_BORDER | WS_TABSTOP
+END
+

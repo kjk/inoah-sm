@@ -306,7 +306,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
     }
     if(last!=NULL)
     {
-        last->setText(last->text()+TEXT(" "));
+        last->setText(last->text()+TEXT("  "));
         DynamicNewLineElement *el=new DynamicNewLineElement(String(TEXT("Examples: ")));
         el->setStyle(styleExampleList);
         lst->push_front(el);

@@ -33,11 +33,17 @@
 #define IDS_CANCEL                      121
 #define IDR_RECENT_MENUBAR              122
 #define IDD_FONTLIST                    123
-#define IDM_MENU_RANDOM			124
-#define IDM_FNT_LARGE			125
-#define IDM_FNT_STANDARD		126
-#define IDM_FNT_SMALL			127
+#define IDM_MENU_RANDOM			        124
+#define IDM_FNT_LARGE			        125
+#define IDM_FNT_STANDARD		        126
+#define IDM_FNT_SMALL			        127
+#define IDM_REGISTER                    128
+#define IDS_REGISTER                    129
+#define IDD_REGISTER                    130
+#define IDR_REGISTER_MENUBAR            131
 #define IDC_LIST_RECENT                 1000
+#define IDC_EDIT_REGCODE                1001
+
 
 // Next default values for new objects
 // 

@@ -26,6 +26,8 @@ const String cookieStr=TEXT("COOKIE");
 const String messageStr=TEXT("MESSAGE");
 const String definitionStr=TEXT("DEF");
 const String wordListStr=TEXT("WORDLIST");
+const String registrationStr=TEXT("REGISTRATION");
+
 
 const String script = TEXT("/palm.php?");
 const String protocolVersion = TEXT("pv=1");
@@ -35,13 +37,17 @@ const String cookieRequest = TEXT("get_cookie");
 const String deviceInfoParam = TEXT("di=");
 
 const String cookieParam = TEXT("c=");
+const String registerParam = TEXT("register=");
+const String regCodeParam = TEXT("rc=");
+const String getWordParam = TEXT("get_word=");
+
 const String randomRequest = TEXT("get_random_word");
 const String recentRequest = TEXT("recent_lookups");
 
-const String getWordParam = TEXT("get_word=");
-
-const String cookieFolder = TEXT ("\\iNoah");
+const String iNoahFolder = TEXT ("\\iNoah");
 const String cookieFile = TEXT ("\\Cookie");
+const String regCodeFile = TEXT ("\\RegCode");
+
 
 iNoahSession::iNoahSession()
 : cookieReceived(false),
@@ -98,6 +104,38 @@ void iNoahSession::getRandomWord(String& ret)
     sendRequest(tmp,definitionStr,ret);
 }
 
+void iNoahSession::registerNoah(String registerCode, String& ret)
+{
+    if ((!cookieReceived)&&(getCookie()))
+    {
+        ret=content;
+        return;
+    }
+    
+    String tmp;
+    tmp.reserve(script.length()+protocolVersion.length()+
+        sep.length()+clientVersion.length()+sep.length()+
+        cookieParam.length()+cookie.length()+sep.length()+
+        registerParam.length()+registerCode.length());
+    
+    tmp+=script; tmp+=protocolVersion; tmp+=sep;
+    tmp+=clientVersion;tmp+=sep; tmp+=cookieParam;
+    tmp+=cookie;tmp+=sep;tmp+=registerParam;tmp+=registerCode;
+    
+    sendRequest(tmp,registrationStr,ret);
+    if(ret.compare(TEXT("OK\n"))==0)
+    {
+        ret.assign(TEXT("Registration successful."));
+        responseCode=srvmessage;
+        storeString(regCodeFile,registerCode);
+    }
+    else
+    {
+        ret.assign(TEXT("Registration unsuccessful."));
+        responseCode=srverror;
+    }
+}
+
 void iNoahSession::getWord(String word, String& ret)
 {
     if ((!cookieReceived)&&(getCookie()))
@@ -105,14 +143,20 @@ void iNoahSession::getWord(String word, String& ret)
         ret=content;
         return;
     }
+    String rc=loadString(regCodeFile);
     String tmp;
-    tmp.reserve(script.length()+protocolVersion.length()+sep.length()+
-        clientVersion.length()+sep.length()+cookieParam.length()+
-        cookie.length()+sep.length()+getWordParam.length()+word.length());
+    if(rc.compare(TEXT(""))!=0)
+        rc=sep+regCodeParam+rc;
+    tmp.reserve(script.length()+protocolVersion.length()+
+        sep.length()+clientVersion.length()+sep.length()+
+        cookieParam.length()+cookie.length()+sep.length()+
+        getWordParam.length()+word.length()+
+        rc.length());
     
     tmp+=script; tmp+=protocolVersion; tmp+=sep;
     tmp+=clientVersion;tmp+=sep; tmp+=cookieParam;
     tmp+=cookie;tmp+=sep;tmp+=getWordParam;tmp+=word;
+    tmp+=rc;
     
     sendRequest(tmp,definitionStr,ret);
 }
@@ -151,8 +195,8 @@ void iNoahSession::sendRequest(String url,
             content.assign(tmp,answer.length()+1,-1);
             this->responseCode=definition;
         }
-        ret=content;
-        return;
+    ret=content;
+    return;
 }
 
 bool iNoahSession::getCookie()
@@ -191,12 +235,22 @@ bool iNoahSession::getCookie()
 
 String iNoahSession::loadCookie()
 {
+    return loadString(cookieFile);
+}
+
+void iNoahSession::storeCookie(String cookie)
+{
+    storeString(cookieFile,cookie);
+}
+
+String iNoahSession::loadString(String fileName)
+{
     TCHAR szPath[MAX_PATH];
     // It doesn't help to have a path longer than MAX_PATH
     BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, CSIDL_APPDATA, FALSE);
     // Append directory separator character as needed
     
-    String fullPath = szPath +  cookieFolder + cookieFile;
+    String fullPath = szPath +  iNoahFolder + fileName;
     
     HANDLE fHandle = CreateFile(fullPath.c_str(), 
         GENERIC_READ, FILE_SHARE_READ, NULL, 
@@ -222,13 +276,13 @@ String iNoahSession::loadCookie()
     return ret;
 }
 
-void iNoahSession::storeCookie(String cookie)
+void iNoahSession::storeString(String fileName, String str)
 {
     TCHAR szPath[MAX_PATH];
     BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, CSIDL_APPDATA, FALSE);
-    String fullPath = szPath + cookieFolder;
+    String fullPath = szPath + iNoahFolder;
     CreateDirectory (fullPath.c_str(), NULL);    
-    fullPath+=cookieFile;
+    fullPath+=fileName;
     HANDLE fHandle = CreateFile(fullPath.c_str(), 
         GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL); 
@@ -236,16 +290,13 @@ void iNoahSession::storeCookie(String cookie)
     if(fHandle==INVALID_HANDLE_VALUE)
         return ;
     DWORD written;
-    WriteFile(fHandle, cookie.c_str(), cookie.length()*2,&written, NULL);
+    WriteFile(fHandle, str.c_str(), str.length()*2,&written, NULL);
     CloseHandle(fHandle);
 }
 
 String iNoahSession::getDeviceInfo()
 {
-    return TEXT("SP6172736c657869735f73696d");
-    // candidates to use: 
-    // TSPI_providerInit
-    // lineGetID
+    return TEXT("SP4546");
 }
 
 iNoahSession::~iNoahSession()
