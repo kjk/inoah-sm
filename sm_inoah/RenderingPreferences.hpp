@@ -76,10 +76,11 @@ public:
     {
         ArsLexis::Graphics::Font_t font;
         ArsLexis::Graphics::Color_t textColor;
-        
+        bool requiresNewLine;
         StyleFormatting():
             font(WinFont((HFONT)GetStockObject(SYSTEM_FONT))),
-            textColor(RGB(0,0,0))
+            textColor(RGB(0,0,0)),
+            requiresNewLine(false)
         {}
         
     };

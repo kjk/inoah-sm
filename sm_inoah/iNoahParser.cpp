@@ -86,16 +86,25 @@ Definition* iNoahParser::parse(String text)
     }
     Definition* def=new Definition;
     if(!def) return NULL;
-    
+    ParagraphElement* parent=0;
+    def->appendElement(parent=new ParagraphElement());
+    GenericTextElement *el=new GenericTextElement(word);
+    def->appendElement(el);
+    el->setStyle(styleWord);
+    el->setParent(parent);
     int cntPOS=0;
     for(int i=0;i<pOfSpeechCnt;i++)
     {
-        ParagraphElement* parent=0;
+        if (sorted[i].size() > 0)
+            def->appendElement(new HorizontalLineElement());
+        parent=0;
         int cntMeaning=1;
         if (sorted[i].size() > 0)
         {   
             GenericTextElement *pofsl=new GenericTextElement(arabNums[cntPOS] + TEXT(" "));
             GenericTextElement *pofs=new GenericTextElement(pOfSpeach[fullForm][i]);
+            pofsl->setStyle(stylePOfSpeechList);
+            pofs->setStyle(stylePOfSpeech);
             def->appendElement(parent=new ParagraphElement());
             def->appendElement(pofsl);
             def->appendElement(pofs);
@@ -115,7 +124,6 @@ Definition* iNoahParser::parse(String text)
                 //el->setParent(parent);
                 (*iter)->merge(*def);
             }
-            def->appendElement(new HorizontalLineElement());
         }
     }
     return def;
@@ -253,7 +261,13 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
         }
     }
     if(last)
+    {
         last->setText(last->text()+TEXT(". "));
+        GenericTextElement *el=new GenericTextElement(String(TEXT("Synonyms: ")));
+        el->setStyle(styleSynonymsList);
+        lst->push_front(el);
+
+    }
     return lst;
 }
 
@@ -286,10 +300,14 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
         lst->push_back(last);
     }
     if(last!=NULL)
+    {
         last->setText(last->text()+TEXT(". "));
+        GenericTextElement *el=new GenericTextElement(String(TEXT("Examples: ")));
+        el->setStyle(styleExampleList);
+        lst->push_front(el);
+    }
     return lst;
 }
-
 iNoahParser::ElementsList::~ElementsList()
 {
     std::for_each(lst.begin(), lst.end(), ObjectDeleter<DefinitionElement>());
@@ -299,3 +317,9 @@ void iNoahParser::ElementsList::push_back(DefinitionElement* el)
 {
     lst.push_back(el);
 }
+
+void iNoahParser::ElementsList::push_front(DefinitionElement* el)
+{
+    lst.push_front(el);
+}
+

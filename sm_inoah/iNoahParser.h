@@ -20,6 +20,7 @@ private:
         std::list<DefinitionElement*> lst;
     public:
         void push_back(DefinitionElement* el);
+        void push_front(DefinitionElement* el);
         ~ElementsList();
         int size() {return lst.size();}
         void merge(ElementsList& r)
