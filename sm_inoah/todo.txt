@@ -1,4 +1,7 @@
 TODO:
+24. handle sip on ppc
+23. change the menu on ppc
+21. fix progress text not displaying on ppc (bad location)
 20. release version on handango
 5.  pocket pc/pocket pc phone edition version
 13. do ConnMgr* calls dynamically via LoadLibrary() so that it works on PPC
@@ -14,6 +17,7 @@ For future versions:
     sends a list of spell-checking matches)
 
 DONE:
+22. scrollbar is broken on ppc (2004-08-19)
 4.  add an icon
 2.   test registration (2004-08-06)
 6.   re-write registration code (2004-08-06)

@@ -240,7 +240,16 @@ static void SetScrollBar(Definition* definition)
     SetScrollRange(g_hwndScroll, SB_CTL, 0, range, TRUE);
 }
 
-static void ScrollDefinition(int page)
+enum ScrollUnit
+{
+    scrollLine,
+    scrollPage,
+    scrollHome,
+    scrollEnd,
+    scrollPosition
+};
+
+static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 {
     RECT b;
     GetClientRect (g_hwndMain, &b);
@@ -248,6 +257,22 @@ static void ScrollDefinition(int page)
     ArsLexis::Rectangle defRect=bounds;
     defRect.explode(2, 22, -9, -24);
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
+
+    switch (unit)
+    {
+        case scrollPage:
+            units = units * GetDefinition()->shownLinesCount();
+            break;
+        case scrollEnd:
+            units = GetDefinition()->totalLinesCount();
+            break;
+        case scrollHome:
+            units = -(int)GetDefinition()->totalLinesCount();
+            break;
+        case scrollPosition:
+            units = units - GetDefinition()->firstShownLine();
+            break;
+    }
 
     bool fCouldDoubleBuffer = false;
     HDC  offscreenDc=::CreateCompatibleDC(gr.handle());
@@ -259,7 +284,7 @@ static void ScrollDefinition(int page)
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             {
                 ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                GetDefinition()->scroll(offscreen, renderingPrefs(), page);
+                GetDefinition()->scroll(offscreen, renderingPrefs(), units);
                 offscreen.copyArea(defRect, gr, defRect.topLeft);
             }
             ::SelectObject(offscreenDc, oldBitmap);
@@ -270,7 +295,7 @@ static void ScrollDefinition(int page)
     }
 
     if (!fCouldDoubleBuffer)
-        GetDefinition()->scroll(gr, renderingPrefs(), page);
+        GetDefinition()->scroll(gr, renderingPrefs(), units);
 
     SetScrollBar(GetDefinition());
 }
@@ -405,10 +430,10 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     RECT rect;
     HDC hdc=GetDC(hwnd);
     GetClientRect (hwnd, &rect);
-    rect.top+=22;
-    rect.left+=2;
-    rect.right-=7;
-    rect.bottom-=2;
+    rect.top     += 22;
+    rect.left    += 2;
+    rect.right   -= 7;
+    rect.bottom  -=2;
     LOGFONT logfnt;
     
     ::Rectangle(hdc, 18, 83, 152, 123);
@@ -419,14 +444,15 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     LOGPEN pen;
     HGDIOBJ hgdiobj = GetCurrentObject(hdc,OBJ_PEN);
     GetObject(hgdiobj, sizeof(pen), &pen);
-    for (p[0].x=20;p[0].x<150;p[0].x++)
+
+    for (p[0].x=20; p[0].x<150; p[0].x++)
     {                           
-        HPEN newPen=CreatePenIndirect(&pen);
+        HPEN newPen = CreatePenIndirect(&pen);
         pen.lopnColor = RGB(0,0,p[0].x+100);
         SelectObject(hdc,newPen);
         DeleteObject(hgdiobj);
         hgdiobj=newPen;
-        p[1].x=p[0].x;
+        p[1].x = p[0].x;
         Polyline(hdc, p, 2);
     }
     DeleteObject(hgdiobj);
@@ -654,7 +680,7 @@ static void OnHotKey(WPARAM wp, LPARAM lp)
     {
         if (NULL!=GetDefinition())
         {
-            ScrollDefinition(GetDefinition()->shownLinesCount());
+            ScrollDefinition(1, scrollPage, false);
         }
     }
 }
@@ -810,6 +836,41 @@ static void OnSize(HWND hwnd, LPARAM lp)
 
 }
 
+static void OnScroll(WPARAM wp)
+{
+    int code = LOWORD(wp);
+    switch (code)
+    {
+        case SB_TOP:
+            ScrollDefinition(0, scrollHome, false);
+            break;
+        case SB_BOTTOM:
+            ScrollDefinition(0, scrollEnd, false);
+            break;
+        case SB_LINEUP:
+            ScrollDefinition(-1, scrollLine, false);
+            break;
+        case SB_LINEDOWN:
+            ScrollDefinition(1, scrollLine, false);
+            break;
+        case SB_PAGEUP:
+            ScrollDefinition(-1, scrollPage, false);
+            break;
+        case SB_PAGEDOWN:
+            ScrollDefinition(1, scrollPage, false);
+            break;
+
+        case SB_THUMBPOSITION:
+        {
+            SCROLLINFO info = {0};
+            info.cbSize = sizeof(info);
+            info.fMask = SIF_TRACKPOS;
+            GetScrollInfo(g_hwndScroll, SB_CTL, &info);
+            ScrollDefinition(info.nTrackPos, scrollPosition, true);
+        }
+     }
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT      lResult = TRUE;
@@ -836,6 +897,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case WM_HOTKEY:
             OnHotKey(wp,lp);
+            break;
+
+        case WM_VSCROLL:
+            OnScroll(wp);
             break;
 
         case WM_PAINT:
@@ -877,13 +942,13 @@ static bool OnEditKeyDown(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     if (VK_DOWN==wp)
     {
-        ScrollDefinition(GetDefinition()->shownLinesCount());
+        ScrollDefinition(1, scrollPage, false);
         return true;
     }
 
     if (VK_UP==wp)
     {
-        ScrollDefinition(-static_cast<int>(GetDefinition()->shownLinesCount()));
+        ScrollDefinition(-1, scrollPage, false);
         return true;
     }
 
