@@ -736,7 +736,15 @@ void ArsLexis::handleBadAlloc()
     RaiseException(1,0,0,NULL);    
 }
 
-void ArsLexis::logAllocation(void* ptr, bool free, const char* file, int line)
+void* ArsLexis::allocate(size_t size)
 {
-
+    void* ptr=0;
+    if (size) 
+        ptr=malloc(size);
+    else
+        ptr=malloc(1);
+    if (!ptr)
+        handleBadAlloc();
+    return ptr;
 }
+
