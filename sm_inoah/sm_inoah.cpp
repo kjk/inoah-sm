@@ -10,11 +10,11 @@
 #include <SysUtils.hpp>
 #include <WinPrefsStore.hpp>
 #include <EnterRegCodeDialog.hpp>
+#include "StringListDialog.hpp"
 #include <Definition.hpp>
 
 #include "Transmission.h"
 #include "DefinitionParser.hpp"
-#include "reclookups.h"
 #include "sm_inoah.h"
 #include "resource.h"
 

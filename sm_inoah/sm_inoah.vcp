@@ -925,11 +925,9 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_ENTER=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1687,53 +1685,6 @@ DEP_CPP_PARAG=\
 # End Source File
 # Begin Source File
 
-SOURCE=.\reclookups.cpp
-
-!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
-
-DEP_CPP_RECLO=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	".\reclookups.h"\
-	".\sm_inoah.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_RECLO=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	".\reclookups.h"\
-	".\sm_inoah.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
-
-DEP_CPP_RECLO=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	".\reclookups.h"\
-	".\sm_inoah.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
-
-DEP_CPP_RECLO=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	".\reclookups.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\ars_framework\Src\Rendering.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
@@ -2083,20 +2034,61 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\DefinitionParser.hpp"\
-	".\reclookups.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_SM_IN=\
-	".\pcshell.h"\
+	{$(INCLUDE)}"tpcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2232,6 +2224,65 @@ DEP_CPP_SM_IN=\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
 	{$(INCLUDE)}"tpcshell.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\StringListDialog.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ENDIF 
@@ -2420,9 +2471,7 @@ DEP_CPP_TRANS=\
 	".\ServerResponseParser.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_TRANS=\
-	".\onnmgr.h"\
+	{$(INCLUDE)}"connmgr.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2522,10 +2571,8 @@ DEP_CPP_WINDE=\
 	"..\STLport\stlport\stl\_prolog.h"\
 	"..\STLport\stlport\stl\_site_config.h"\
 	"..\STLport\stlport\stl_user_config.h"\
-	
-NODEP_CPP_WINDE=\
-	".\ms.h"\
-	".\niqueid.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -2989,10 +3036,6 @@ SOURCE=..\ars_framework\Src\NativeGraphics.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\reclookups.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\ars_framework\Src\Rendering.hpp
 # End Source File
 # Begin Source File
@@ -3010,6 +3053,10 @@ SOURCE=.\ServerResponseParser.hpp
 # Begin Source File
 
 SOURCE=.\sm_inoah.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\StringListDialog.hpp
 # End Source File
 # Begin Source File
 
