@@ -11,28 +11,9 @@ using ArsLexis::FontEffects;
 using ArsLexis::Graphics;
 
 RenderingPreferences::RenderingPreferences()
-    //:standardIndentation_(16)
     :needSynch(noChange)
 {
     this->setFontSize(0);
-    //int screenDepths=0;
-    //bool color=false;
-    /*Err error=WinScreenMode(winScreenModeGet, NULL, NULL, &screenDepths, &color);*/
-    /* (screenDepths>=8) // 16+ colors
-    {
-        hyperlinkDecorations_[hyperlinkTerm].textColor=40;
-        hyperlinkDecorations_[hyperlinkExternal].textColor=35;
-    }
-    else if (screenDepths>=2) // 4 colors
-    {
-        hyperlinkDecorations_[hyperlinkTerm].textColor=2; // Dark gray
-        hyperlinkDecorations_[hyperlinkExternal].textColor=1; // Light gray
-    }
-    if (screenDepths>=2)
-    {
-        //for (uint_t i=0; i<stylesCount_; ++i)
-          //styles_[i].textColor=UIColorGetTableEntryIndex(UIObjectForeground);        
-    }*/
     setClassicView();
     FontEffects fx;
     fx.setUnderline(FontEffects::underlineDotted);
@@ -50,7 +31,6 @@ RenderingPreferences::RenderingPreferences()
     bullet[2]=TCHAR(' ');
     Graphics graphics(GetDC(g_hwndMain),g_hwndMain);
     Graphics::FontSetter setFont(graphics, font);
-    //standardIndentation_=graphics.textWidth(bullet, 2);
 }
 
 void RenderingPreferences::setCompactView()

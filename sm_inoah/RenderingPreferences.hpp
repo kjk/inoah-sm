@@ -1,13 +1,5 @@
-// RenderingPreferences.hpp: interface for the RenderingPreferences class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_RENDERINGPREFERENCES_HPP__7B18916C_BD53_4ED8_921A_F9A5E283862F__INCLUDED_)
-#define AFX_RENDERINGPREFERENCES_HPP__7B18916C_BD53_4ED8_921A_F9A5E283862F__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef _RENDERING_PREFERENCES_H_
+#define _RENDERING_PREFERENCES_H_
 
 #include "Debug.hpp"
 #include "BaseTypes.hpp"
@@ -120,4 +112,4 @@ private:
     StyleFormatting styles_[stylesCount_];
 };
 
-#endif // !defined(AFX_RENDERINGPREFERENCES_HPP__7B18916C_BD53_4ED8_921A_F9A5E283862F__INCLUDED_)
+#endif

@@ -45,7 +45,7 @@ static BOOL InitRecentLookups(HWND hDlg)
     shmbi.cbSize = sizeof(shmbi);
     shmbi.hwndParent = hDlg;
     shmbi.nToolBarId = IDR_RECENT_MENUBAR ;
-    shmbi.hInstRes = g_hInst;
+    shmbi.hInstRes = GetModuleHandle(NULL);
     
     // If we could not initialize the dialog box, return an error
     if (!SHInitDialog(&shidi))

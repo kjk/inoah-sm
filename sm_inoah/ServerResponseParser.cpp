@@ -1,11 +1,6 @@
-#include <windows.h>
-
-#include <DeviceInfo.hpp>
-#include <BaseTypes.hpp>
 #include <Debug.hpp>
 #include <Text.hpp>
 
-//#include "sm_inoah.h"
 #include "ServerResponseParser.hpp"
 
 using namespace ArsLexis;
