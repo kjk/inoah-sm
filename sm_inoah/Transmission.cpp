@@ -4,13 +4,9 @@
 #include <initguid.h>
 #include <connmgr.h>
 
-#include "Transmission.h"
-#include "winerror.h"
-#include "tchar.h"
 #include <BaseTypes.hpp>
-#include "sm_inoah.h"
+#include "Transmission.h"
 
-HINTERNET g_hInternet = NULL;
 HANDLE    g_hConnection = NULL;
 
 // try to establish internet connection.
@@ -56,48 +52,25 @@ void DeinitConnection()
     }
 }
 
-Transmission::Transmission(
-                           const ArsLexis::String& host,
-                           INTERNET_PORT           port,
-                           const ArsLexis::String& url)
-{
-    if (!g_hInternet)
-    {
-        g_hInternet = openInternet();
-        if (!g_hInternet)
-        {
-            lastError_ = GetLastError();
-            return;
-        }
-    }
-    this->host = host;
-    this->port = port;
-    this->url  = url;
-    hIConnect_ = NULL;
-    hIRequest_ = NULL;
-}
+HINTERNET g_hInternet = NULL;
 
-HINTERNET Transmission::openInternet()
+// Init WinINet and return handle (or NULL if failed). Must call DeinitWinet()
+// when done using it.
+static HINTERNET InitWinet()
 {
-    HINTERNET handle;
+    if (NULL!=g_hInternet)
+        return g_hInternet;
+
 #ifdef WIN32_PLATFORM_WFSP
-    handle = InternetOpen(_T("inoah-sm-client"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+    g_hInternet = InternetOpen(_T("inoah-sm-client"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 #else
-    handle = InternetOpen(_T("inoah-ppc-client"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+    g_hInternet = InternetOpen(_T("inoah-ppc-client"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 #endif
-    //INTERNET_FLAG_ASYNC in case of callback
-    //InternetSetStatusCallback(g_hInternet, dispatchCallback); 
 
-#ifdef DEBUG
-    // a mystery: on emulator, GetLastError() returns 87 (ERROR_INVALID_PARAMETER)
-    // even if we get a handle
-    DWORD error;
-    error = GetLastError();
-#endif
-    return handle;
+    return g_hInternet;
 }
 
-void Transmission::closeInternet()
+void DeinitWinet()
 {
     if (g_hInternet)
     {
@@ -106,150 +79,69 @@ void Transmission::closeInternet()
     }
 }
 
-DWORD Transmission::sendRequest()
-{
-    if (!g_hInternet)
-        return lastError_;
-
-    if (!FInitConnection())
-    {
-        return errConnectionFailed;
-    }
-
-    hIConnect_ = InternetConnect(
-        g_hInternet,host.c_str(),port,
-        TEXT(" "),TEXT(" "),
-        INTERNET_SERVICE_HTTP, 0, 0);
-    
-    if(!hIConnect_)
-        return setError();
-    //todo: No thread-safe change of static variable 
-    //todo: need change in case of multithreaded enviroment
-    //todo: check that HttpOpenRequest succeded
-    //InternetSetStatusCallback(hIConnect, dispatchCallback);
-    hIRequest_ = HttpOpenRequest(
-        hIConnect_, NULL , url.c_str(),
-        _T("HTTP/1.0"), NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE, 0);
-    DWORD dwordLen=sizeof(DWORD);
-
-    // add Host header so that it works with virtual hosting
-    ArsLexis::String hostHdr = TEXT("Host: ");
-    hostHdr.append( server );
-    hostHdr.append( TEXT("\r\n") );
-    if ( !HttpAddRequestHeaders(hIRequest_, hostHdr.c_str(), -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW) )
-        return setError();
-
-    DWORD buffSize=2048;
-    BOOL fOk = InternetSetOption(hIRequest_, 
-        INTERNET_OPTION_READ_BUFFER_SIZE, &buffSize, dwordLen);
-        /*std::wstring fullURL(server+url+TEXT(" HTTP/1.0"));
-        hIRequest = InternetOpenUrl(
-        g_hInternet,
-        fullURL.c_str(),
-    NULL,0,0, context=transContextCnt++);*/
-
-    if (!fOk)
-        return setError();
-    //InternetSetStatusCallback(hIRequest, dispatchCallback);
-    //if(!HttpSendRequestEx(hIRequest,NULL,NULL,HSR_ASYNC,context))
-    if (!HttpSendRequest(hIRequest_,NULL,0,NULL,0))
-        return setError();
-    
-    CHAR   sbcsbuffer[255]; 
-    TCHAR  wcsbuffer[255];
-    DWORD  dwRead;
-    content_.clear();
-    while (InternetReadFile( hIRequest_, sbcsbuffer, 255, &dwRead ) && (dwRead!=0))
-    {
-        sbcsbuffer[dwRead] = 0;
-        _stprintf( wcsbuffer , TEXT("%hs"), sbcsbuffer);
-        content_ += ArsLexis::String(wcsbuffer);
-    };
-    assert(NULL!=hIRequest_);
-    InternetCloseHandle(hIRequest_);
-    hIRequest_ = NULL;
-    assert(NULL!=hIConnect_);
-    InternetCloseHandle(hIConnect_);
-    hIConnect_ = NULL;
-    return errNone;
-}
-
-void Transmission::getResponse(ArsLexis::String& ret)
-{
-    ret=content_;
-}
-
-DWORD Transmission::setError()
-{    
-    //LPVOID lpMsgBuf;
-    lastError_ = GetLastError();
-    /*FormatMessage( 
-    FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-    FORMAT_MESSAGE_FROM_SYSTEM | 
-    FORMAT_MESSAGE_IGNORE_INSERTS,
-    NULL,
-    lastError_,
-    0, // Default language
-    (LPTSTR) &lpMsgBuf,
-    0,
-    NULL 
-    ); FUCK DOESN'T WORK AT ALL*/
-    //content=ArsLexis::String((TCHAR*)lpMsgBuf);
-    TCHAR buffer[20];
-    ZeroMemory(buffer,sizeof(buffer));
-    _itow(lastError_, buffer, 10);
-    
-    content_.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
-    content_ += buffer;
-
-    if (ERROR_INTERNET_CANNOT_CONNECT==lastError_)
-    {
-        content_ += TEXT(" (cannot connect to ");
-        content_ += host;
-        content_ += TEXT(":");
-        ZeroMemory(buffer,sizeof(buffer));
-        _itow(port, buffer, 10);
-        content_ += buffer;
-        content_ += TEXT(")");
-    }
-
-    if (ERROR_INTERNET_NAME_NOT_RESOLVED==lastError_)
-    {
-        content_ += TEXT(" (can't resolve name ");
-        content_ += host;
-        ZeroMemory(buffer,sizeof(buffer));
-        _itow(port, buffer, 10);
-        content_ += buffer;
-        content_ += TEXT(")");
-    }
-    content_ += TEXT(":");
-
-    //LocalFree( lpMsgBuf );
-    if (hIConnect_)
-    {
-        InternetCloseHandle(hIConnect_);
-        hIConnect_ = NULL;
-    }
-    if (hIRequest_)
-    {
-        InternetCloseHandle(hIRequest_);
-        hIRequest_ = NULL;
-    }
-    return lastError_;
-}
-
-Transmission::~Transmission()
-{
-    
-}
-
 DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& url, String& bodyOut)
 {
-    Transmission tr(host,port,url);
-    DWORD err = tr.sendRequest();
-    if (errNone != err)
-        return err;
-    tr.getResponse(bodyOut);
+    String  hostHdr = _T("Host: ");
+    DWORD   buffSize=2048;
+	BOOL    fOk;
+    String  content;
+    HANDLE  hConnect = NULL;
+    HANDLE  hRequest = NULL;
+
+    if (!FInitConnection())
+        return errConnectionFailed;
+
+    if (NULL==InitWinet())
+        goto Error;
+
+    hConnect = InternetConnect(g_hInternet, host.c_str(), port, _T(" "),
+        _T(" "), INTERNET_SERVICE_HTTP, 0, 0);
+    if (NULL == hConnect)
+        goto Error;
+
+    hRequest = HttpOpenRequest( hConnect, NULL , url.c_str(), _T("HTTP/1.0"),
+        NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+
+    // add Host header so that it works with virtual hosting
+    hostHdr.append( host );
+    hostHdr.append( _T("\r\n") );
+
+    fOk = HttpAddRequestHeaders(hRequest, hostHdr.c_str(), -1, HTTP_ADDREQ_FLAG_ADD_IF_NEW);
+    if (!fOk)
+        goto Error;
+
+    fOk = InternetSetOption(hRequest, INTERNET_OPTION_READ_BUFFER_SIZE, &buffSize, sizeof(buffSize));
+    if (!fOk)
+        goto Error;
+
+    fOk = HttpSendRequest(hRequest, NULL, 0, NULL, 0);
+    if (!fOk)
+        goto Error;
+    
+    char    sbcsbuffer[255]; 
+    WCHAR   wcsbuffer[255];
+    DWORD   dwRead;
+
+    while (InternetReadFile( hRequest, sbcsbuffer, 255, &dwRead ) && (dwRead!=0))
+    {
+        sbcsbuffer[dwRead] = 0;
+        _stprintf( wcsbuffer , _T("%hs"), sbcsbuffer);
+        content.append(String(wcsbuffer));
+    }
+
+    assert(NULL!=hRequest);
+    InternetCloseHandle(hRequest);
+    assert(NULL!=hConnect);
+    InternetCloseHandle(hConnect);
+
+    bodyOut.assign(content);
     return errNone;
+
+Error:
+    if (hRequest)
+        InternetCloseHandle(hRequest);
+    if (hConnect)
+        InternetCloseHandle(hConnect);
+    return GetLastError();
 }
 

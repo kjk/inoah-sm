@@ -682,7 +682,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     }
 
     DeinitConnection();
-    Transmission::closeInternet();
+    DeinitWinet();
 
     return msg.wParam;
 }
