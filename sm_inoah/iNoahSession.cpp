@@ -16,11 +16,11 @@
 
 const ArsLexis::String server=TEXT("arslex.no-ip.info");
 
-const ArsLexis::String errorStr=TEXT("ERROR\n");
-const ArsLexis::String cookieStr=TEXT("COOKIE\n");
-const ArsLexis::String messageStr=TEXT("MESSAGE\n");
-const ArsLexis::String definitionStr=TEXT("DEF\n");
-const ArsLexis::String wordListStr=TEXT("WORDLIST\n");
+const ArsLexis::String errorStr=TEXT("ERROR");
+const ArsLexis::String cookieStr=TEXT("COOKIE");
+const ArsLexis::String messageStr=TEXT("MESSAGE");
+const ArsLexis::String definitionStr=TEXT("DEF");
+const ArsLexis::String wordListStr=TEXT("WORDLIST");
 
 const ArsLexis::String script = TEXT("/palm.php?");
 const ArsLexis::String protocolVersion = TEXT("pv=1");
@@ -57,14 +57,14 @@ bool iNoahSession::checkErrors(Transmission &tr, ArsLexis::String &ret)
 	ret = tr.getResponse();
 
 	// Check whether server returned errror
-	if (ret.find_first_of(errorStr.c_str(), 0, errorStr.length()) == 0 )
+	if (ret.find(errorStr, 0) == 0 )
 	{
 		content = ret.substr(errorStr.length());
 		responseCode = srverror;
 		return true;
 	}
 	
-	if (ret.find_first_of(messageStr.c_str(), 0, messageStr.length()) == 0 )
+	if (ret.find(messageStr, 0) == 0 )
 	{
 		content = ret.substr(errorStr.length());
 		responseCode = srvmessage;
@@ -106,7 +106,7 @@ ArsLexis::String iNoahSession::sendRequest(ArsLexis::String url,
 	if(checkErrors(tr,tmp)) 
 		return content;
 	
-	if (tmp.find(answer.c_str(), 0, answer.length()) == 0 )
+	if (tmp.find(answer, 0) == 0 )
 	{
 		content = tmp.substr(errorStr.length());
 		return content;
@@ -121,8 +121,8 @@ bool iNoahSession::getCookie()
 		deviceInfo +sep+cookieRequest);
 	ArsLexis::String tmp;
 	if(checkErrors(tr,tmp)) return true;
-
-	if (tmp.find(cookieStr.c_str(), 0, cookieStr.length()) == 0 )
+    int pos = tmp.find(cookieStr);
+	if ( pos == 0 )
 	{
 		cookie = tmp.substr(errorStr.length()+1);
 		cookieReceived = true;

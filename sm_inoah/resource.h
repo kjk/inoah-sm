@@ -11,11 +11,11 @@
 
 #define IDC_STATIC						(-1)
 #define IDR_HELLO_MENUBAR               101
-#define IDS_HELLO_OK					102
+#define IDS_LOOKUP  					102
 #define ID_MENU_BTN						103
 #define IDM_EDIT_UNDO					104
 #define IDM_EDIT_CUT					105
-#define IDM_MAIN_MENU MENU				106
+#define IDM_MAIN_MENU   				106
 #define IDS_MENU_BTN					107
 #define IDM_MENU_UNCHECK				108
 #define IDM_MENU_QUIT					109
@@ -23,6 +23,8 @@
 #define IDM_MENU_REGULAR                111
 #define IDM_MENU_COMPACT                112
 #define IDM_MENU_RECENT                 113
+#define ID_EDIT                         114
+#define ID_LOOKUP                       115
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

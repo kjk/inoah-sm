@@ -12,9 +12,9 @@
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 
-TCHAR szAppName[] = TEXT("Smartphone 2002 Application");
-TCHAR szTitle[]   = TEXT("Smartphone 2002");
-TCHAR szMessage[] = TEXT("Hello Smartphone 2002!");
+TCHAR szAppName[] = TEXT("iNoah");
+TCHAR szTitle[]   = TEXT("iNoah");
+
 
 iNoahSession session;
 			
@@ -34,7 +34,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	HDC			hdc;
 	PAINTSTRUCT	ps;
 	RECT		rect;
-    
+    static HWND hwndEdit;
+    static ArsLexis::String text=TEXT("Enter word and press look up");
 	switch(msg)
 	{
 		case WM_CREATE:
@@ -46,7 +47,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			mbi.hwndParent = hwnd;
 			mbi.nToolBarId = IDR_HELLO_MENUBAR;
 			mbi.hInstRes = g_hInst;
-			ArsLexis::String res=session.getRandomWord();
 
 			//if (tr.sendRequest()==NO_ERROR);
 			//	tr.getResponse();
@@ -54,9 +54,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			if (!SHCreateMenuBar(&mbi)) {
 				PostQuitMessage(0);
 			}
-
+            hwndEdit = CreateWindow(
+                TEXT("edit"),
+                NULL,
+                WS_CHILD | WS_VISIBLE | WS_VSCROLL | 
+                WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
+                0,0,0,0,hwnd,
+                (HMENU) ID_EDIT,
+                ((LPCREATESTRUCT)lp)->hInstance,
+                NULL);
 			break;
 		}
+        case WM_SIZE:
+            MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
+            break;
+        case WM_SETFOCUS:
+            SetFocus(hwndEdit);
+            break;
 		case WM_COMMAND:
         {
 
@@ -89,6 +103,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
 				    break;
                 }
+                case ID_LOOKUP:
+                {
+                    int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+                    TCHAR *buf=new TCHAR[len+1];
+                    len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
+                    ArsLexis::String word(buf);
+        			text.assign(session.getWord(word));
+                    delete buf;
+                    InvalidateRect(hwnd,NULL,TRUE);
+                    break;
+                }
 			    default:
 				    return DefWindowProc(hwnd, msg, wp, lp);
 			}
@@ -98,12 +123,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			hdc = BeginPaint (hwnd, &ps);
 			GetClientRect (hwnd, &rect);
-			DrawText (hdc, szMessage, -1, &rect, 
+			DrawText (hdc, text.c_str(), -1, &rect, 
                 DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 			EndPaint (hwnd, &ps);
 		}		
 		break;
-
+        
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
 		break;
@@ -207,7 +232,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		{ 
 			return (FALSE); 
 		}
-
 	}
 	if ( !InitInstance( hInstance, CmdShow )  )
 	{
