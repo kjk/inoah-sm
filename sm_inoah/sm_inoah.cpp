@@ -286,17 +286,20 @@ static void PaintAbout(HDC hdc, RECT& rect)
     GetObject(fnt, sizeof(logfnt), &logfnt);
     logfnt.lfHeight += 1;
     int fontDy = -logfnt.lfHeight;
-    HFONT fnt2 = (HFONT)CreateFontIndirect(&logfnt);
-    if (NULL!=fnt2)
-        SelectObject(hdc, fnt2);
+    HFONT fntSmall = (HFONT)CreateFontIndirect(&logfnt);
+    if (NULL!=fntSmall)
+        SelectObject(hdc, fntSmall);
     else
         SelectObject(hdc, fnt);
+
+    logfnt.lfHeight += 2;
+    HFONT fntVerySmall = (HFONT)CreateFontIndirect(&logfnt);
 
     int lineSpace = fontDy+5;
 
     RECT tmpRect = rect;
     DrawText(hdc, _T("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    tmpRect.top += 46;
+    tmpRect.top += 36;
 
     DrawText(hdc, _T("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
     tmpRect.top += lineSpace;
@@ -320,11 +323,19 @@ static void PaintAbout(HDC hdc, RECT& rect)
 #endif
     }
 
-    if (NULL!=fnt2)
-    {
-        SelectObject(hdc,fnt);
-        DeleteObject(fnt2);
-    }
+    if (NULL!=fntVerySmall)
+        SelectObject(hdc, fntVerySmall);
+
+    tmpRect.top += (lineSpace+22);
+    DrawText(hdc, _T("Downloading uses data connection"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+
+    if (NULL!=fntSmall)
+        DeleteObject(fntSmall);
+
+    if (NULL!=fntVerySmall)
+        DeleteObject(fntVerySmall);
+
+    SelectObject(hdc,fnt);
 }
 
 static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
