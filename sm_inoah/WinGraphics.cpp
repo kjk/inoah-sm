@@ -75,9 +75,10 @@ namespace ArsLexis
     void Graphics::copyArea(const Rectangle& sourceArea, Graphics& targetSystem, const Point& targetTopLeft)
     {
         NativeRectangle_t nr=toNative(sourceArea);
-        BitBlt(handle_, targetTopLeft.x, targetTopLeft.y, 
-            sourceArea.width(), sourceArea.height(), targetSystem.handle_, 
-            nr.left, nr.top, PATCOPY);
+        BitBlt(handle_, targetTopLeft.x, targetTopLeft.y,
+            sourceArea.width(), sourceArea.height(), 
+            targetSystem.handle_,
+            nr.left, nr.top, SRCCOPY);
     }
     
     void Graphics::drawLine(Coord_t x0, Coord_t y0, Coord_t x1, Coord_t y1)
@@ -150,12 +151,16 @@ namespace ArsLexis
             width, &len, NULL, &size);
         //length = len;
         width = size.cx;
+        if(_tcslen(text)==len)
+            return len;
+
         for(int i=len;i>0;i--)
         {
-            if ( (text[i]==TCHAR(' '))||(text[i]==TCHAR('\t'))||
+            if ((text[i]==TCHAR(' '))||
+                (text[i]==TCHAR('\t'))||
                 (text[i]==TCHAR('\n'))
                ) 
-                return i;
+                return i+1;
         }
         return _tcslen(text);
     }

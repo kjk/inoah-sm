@@ -13,14 +13,19 @@
 #include <windows.h>
 #include <tpcshell.h>
 
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+
+WNDPROC oldEditWndProc;
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
+HWND hwndScroll;
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
-Definition definition_ = Definition();
+Definition definition_;
 
+RenderingPreferences* prefs= new RenderingPreferences();
 iNoahSession session;
 
 void initialize()
@@ -30,7 +35,7 @@ void initialize()
     //{
         ParagraphElement* parent=0;
         definition_.appendElement(parent=new ParagraphElement());
-        parent->setChildIndentation(16);
+        //parent->setChildIndentation(16);
         DefinitionElement* element=0;
         definition_.appendElement(element=new GenericTextElement(
             TEXT("For large UNIX projects, the traditional method of building the project is to use recursive ")
@@ -96,10 +101,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	PAINTSTRUCT	ps;
 	RECT		rect;
     static HWND hwndEdit;
-    static HWND hwndScroll;
+    
     static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("");
-    static RenderingPreferences* prefs= new RenderingPreferences();
+    
 
 	switch(msg)
 	{
@@ -129,53 +134,58 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_EDIT,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
-
+            oldEditWndProc=(WNDPROC)SetWindowLong(hwndEdit, GWL_WNDPROC, (LONG)EditWndProc);
             hwndScroll = CreateWindow(
                 TEXT("scrollbar"),
                 NULL,
-                WS_CHILD | WS_VISIBLE | SBS_VERT,
+                WS_CHILD | WS_VISIBLE | WS_TABSTOP| SBS_VERT,
                 0,0,0,0,hwnd,
                 (HMENU) ID_SCROLL,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
             
+            SetScrollPos(
+                hwndScroll, 
+                SB_CTL, 
+                definition_.firstShownLine(),
+                TRUE);
             SetScrollRange(
                 hwndScroll, 
                 SB_CTL, 
                 0,
                 definition_.totalLinesCount()-
                 definition_.shownLinesCount(), 
-                FALSE);
+                TRUE);
 
-            SetScrollPos(
-                hwndScroll, 
-                SB_CTL, 
-                0,
-                FALSE);
-            
             // In order to make Back work properly, it's necessary to 
 	        // override it and then call the appropriate SH API
-	        (void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
+	        (void)SendMessage(
+                mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
 		        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));            
-            
-            RegisterHotKey(hwndMain, 1, MOD_KEYUP, VK_TDOWN);
+		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
+                );
+            RegisterHotKey(hwndEdit, 0x0100, MOD_WIN, VK_THOME);
+            RegisterHotKey(hwndEdit, 0x0101, MOD_WIN, VK_TUP);
+            RegisterHotKey(hwndEdit, 0x0102, MOD_WIN, VK_TDOWN);
+
+            /*RegisterHotKey(hwndMain, 1, MOD_KEYUP, VK_UP);
+            RegisterHotKey(hwndMain, 2, MOD_KEYUP, VK_NEXT);
+            RegisterHotKey(hwndMain, 3, MOD_KEYUP, VK_PRIOR);
+            RegisterHotKey(hwndMain, 4, MOD_KEYUP, VK_DOWN);*/
             //(void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TDOWN,
 		    //    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-		    //    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));            
-
-            
+		    //    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
 			break;
 		}
         case WM_SIZE:
             MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
-            MoveWindow(hwndScroll,LOWORD(lp)-5, 24 , 5, HIWORD(lp)-24, TRUE);
+            MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
             break;
 
-        case WM_VSCROLL:
+        /*case WM_VSCROLL:
         {
             int page=definition_.shownLinesCount();
-            ArsLexis::Graphics gr=ArsLexis::Graphics(GetDC(hwndMain));   
+            ArsLexis::Graphics gr(GetDC(hwndMain));   
             
             switch(LOWORD(wp))
             {
@@ -193,7 +203,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     break;
             }
             break;
-        }
+        }*/
         
         case WM_SETFOCUS:
             SetFocus(hwndEdit);
@@ -239,7 +249,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         case WM_HOTKEY:
         {
-            ArsLexis::Graphics gr=ArsLexis::Graphics(GetDC(hwndMain));
+            ArsLexis::Graphics gr(GetDC(hwndMain));
             int page=definition_.shownLinesCount();
             switch(HIWORD(lp))
             {
@@ -262,8 +272,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             rect.left+=2;
             rect.right-=7;
             rect.bottom-=2;
-            ArsLexis::Graphics gr=ArsLexis::Graphics(hdc);   
-            RenderingPreferences* prefs= new RenderingPreferences();
+            ArsLexis::Graphics gr(hdc);   
+            //RenderingPreferences* prefs= new RenderingPreferences();
 			DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);            
             definition_.render(gr, rect, *prefs, true);
 			EndPaint (hwnd, &ps);
@@ -387,5 +397,51 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	return (msg.wParam);
 }
 
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch(msg)
+	{
+        case WM_KEYDOWN:
+        {
+            int page=definition_.shownLinesCount();
+            ArsLexis::Graphics gr(GetDC(hwndMain));
 
+            switch(wp)
+            {
+                case VK_DOWN:
+                    definition_.scroll(gr,*prefs,1);
+                    SetScrollPos(
+                        hwndScroll, 
+                        SB_CTL, 
+                        definition_.firstShownLine(),
+                        FALSE);
+                    SetScrollRange(
+                        hwndScroll, 
+                        SB_CTL, 
+                        0,
+                        definition_.totalLinesCount()-
+                        definition_.shownLinesCount(), 
+                        TRUE);
+                    return 0;
+                case VK_UP:
+                    definition_.scroll(gr,*prefs,-1);
+                    SetScrollPos(
+                        hwndScroll, 
+                        SB_CTL, 
+                        definition_.firstShownLine(),
+                        FALSE);
+                    SetScrollRange(
+                        hwndScroll, 
+                        SB_CTL, 
+                        0,
+                        definition_.totalLinesCount()-
+                        definition_.shownLinesCount(), 
+                        TRUE);
+                    return 0;
+            }
+            break;
+        }
+    }
+    return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
+}
 // end sm_inoah.cpp

@@ -35,8 +35,8 @@ namespace ArsLexis
         
     void Rectangle::toNative(NativeRectangle_t& nativeRect) const
     {
-        nativeRect.top=x();
-        nativeRect.left=y();
+        nativeRect.top=y();
+        nativeRect.left=x();
         nativeRect.right=nativeRect.left+width();
         nativeRect.bottom=nativeRect.top+height();
     }
