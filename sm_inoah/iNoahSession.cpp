@@ -36,7 +36,7 @@ const String script          = TEXT("/dict-2.php?");
 const String protocolVersion = TEXT("pv=2");
 const String clientVersion   = TEXT("cv=1.0");
 const String sep             = TEXT("&");
-const String cookieRequest   = TEXT("get_cookie");
+const String cookieRequest   = TEXT("get_cookie=");
 const String deviceInfoParam = TEXT("di=");
 
 const String cookieParam   = TEXT("c=");
@@ -44,8 +44,8 @@ const String registerParam = TEXT("register=");
 const String regCodeParam  = TEXT("rc=");
 const String getWordParam  = TEXT("get_word=");
 
-const String randomRequest = TEXT("get_random_word");
-const String recentRequest = TEXT("recent_lookups");
+const String randomRequest = TEXT("get_random_word=");
+const String recentRequest = TEXT("recent_lookups=");
 
 const String iNoahFolder = TEXT ("\\iNoah");
 const String cookieFile  = TEXT ("\\Cookie");
@@ -204,15 +204,16 @@ bool iNoahSession::getCookie()
 {
     String storedCookie = loadString(cookieFile);
 
-    if (0==storedCookie.length())
+    if (storedCookie.length()>0)
     {
         cookie = storedCookie;
         cookieReceived = true;
         return false;
     }
-    
-    String deviceInfo =deviceInfoParam + getDeviceInfo();
+
+    String deviceInfo = deviceInfoParam + getDeviceInfo();
     String tmp;
+
     tmp.reserve(script.length()+protocolVersion.length()+
         sep.length()+clientVersion.length()+sep.length()+
         deviceInfo.length()+sep.length()+cookieRequest.length());
@@ -232,7 +233,7 @@ bool iNoahSession::getCookie()
     if (checkErrors(tr,tmp2))
         return true;
 
-    if ( tmp2.find(cookieStr) == 0 )
+    if (0==tmp2.find(cookieStr))
     {
         cookie.assign(tmp2,cookieStr.length()+1,-1);
         cookieReceived = true;
@@ -254,55 +255,56 @@ String iNoahSession::loadString(String fileName)
 {
     TCHAR szPath[MAX_PATH];
     // It doesn't help to have a path longer than MAX_PATH
-    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, 
-        STORE_FOLDER,
-        FALSE);
+    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
     // Append directory separator character as needed
     
     String fullPath = szPath +  iNoahFolder + fileName;
     
-    HANDLE fHandle = CreateFile(fullPath.c_str(), 
+    HANDLE handle = CreateFile(fullPath.c_str(), 
         GENERIC_READ, FILE_SHARE_READ, NULL, 
         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
         NULL); 
-    
-    if(fHandle==INVALID_HANDLE_VALUE)
+
+    if (INVALID_HANDLE_VALUE==handle)
         return TEXT("");
     
     TCHAR cookie[254];
     DWORD nBytesRead = -1;
-    BOOL bResult = 1;
+    BOOL  bResult = 1;
     String ret;
+
     while (bResult && nBytesRead!=0)
     {
-        bResult = ReadFile(fHandle, &cookie, sizeof(TCHAR)*254, 
-            &nBytesRead, NULL);
+        bResult = ReadFile(handle, &cookie, sizeof(cookie), &nBytesRead, NULL);
+
         if (!bResult)
             break;
-        ret.append(cookie, nBytesRead/2);
+        ret.append(cookie, nBytesRead/sizeof(TCHAR));
     }   
-    CloseHandle(fHandle);
+
+    CloseHandle(handle);
     return ret;
 }
 
 void iNoahSession::storeString(String fileName, String str)
 {
     TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, 
-        STORE_FOLDER, 
-        FALSE);
+    BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+
     String fullPath = szPath + iNoahFolder;
     CreateDirectory (fullPath.c_str(), NULL);    
-    fullPath+=fileName;
-    HANDLE fHandle = CreateFile(fullPath.c_str(), 
+    fullPath += fileName;
+
+    HANDLE handle = CreateFile(fullPath.c_str(), 
         GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL); 
     
-    if(fHandle==INVALID_HANDLE_VALUE)
-        return ;
+    if (INVALID_HANDLE_VALUE==handle)
+        return;
+
     DWORD written;
-    WriteFile(fHandle, str.c_str(), str.length()*2,&written, NULL);
-    CloseHandle(fHandle);
+    WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
+    CloseHandle(handle);
 }
 
 TCHAR numToHex(TCHAR num)
@@ -329,8 +331,8 @@ void iNoahSession::clearCache()
     TCHAR szPath[MAX_PATH];
     BOOL f = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
     String fullPath = szPath + iNoahFolder;
-    CreateDirectory (fullPath.c_str(), NULL);
-    fullPath+=cookieFile;
+    CreateDirectory(fullPath.c_str(), NULL);
+    fullPath += cookieFile;
     f = DeleteFile(fullPath.c_str());
     fullPath = szPath + iNoahFolder + regCodeFile;
     f = DeleteFile(fullPath.c_str());
@@ -349,20 +351,21 @@ String iNoahSession::getDeviceInfo()
     TCHAR            buffer[INFO_BUF_SIZE];
 
     memset(&address,0,sizeof(SMS_ADDRESS));
-    #ifndef PPC
+#ifndef PPC
     HRESULT res = SmsGetPhoneNumber(&address); 
     if (SUCCEEDED(res))
     {
         text.assign(TEXT("PN"));
         stringAppendHexified(text, address.ptsAddress);
     }
-    #endif
+#endif
+
     memset(buffer,0,sizeof(buffer));
     if (SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0))
     {
         if (text.length()>0)
-            text+=TEXT(":");
-        text+=TEXT("OC");
+            text += TEXT(":");
+        text += TEXT("OC");
         stringAppendHexified(text,buffer);
     }
 
@@ -370,8 +373,8 @@ String iNoahSession::getDeviceInfo()
     if (SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0))
     {
         if (text.length()>0)
-            text+=TEXT(":");
-        text+=TEXT("OD");
+            text += TEXT(":");
+        text += TEXT("OD");
         stringAppendHexified(text,buffer);
     }
     return text;

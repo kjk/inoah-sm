@@ -46,7 +46,6 @@ bool rec=false;
 
 ArsLexis::String g_wordList;
 ArsLexis::String recentWord;
-ArsLexis::String regCode;
 ArsLexis::String g_text = TEXT("");
 iNoahSession     g_session;
 
@@ -172,12 +171,12 @@ static void setDefinition(ArsLexis::String& defs, HWND hwnd)
 #define MAX_WORD_LEN 64
 static void doLookup(HWND hwnd)
 {
-    if (!fInitConnection())
-        return;
-
     TCHAR buf[MAX_WORD_LEN+1];
     int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
     if (0==len)
+        return;
+
+    if (!fInitConnection())
         return;
 
     memset(buf,0,sizeof(buf));
