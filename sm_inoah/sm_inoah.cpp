@@ -921,7 +921,8 @@ static void OnSize(HWND hwnd, LPARAM lp)
 
 #ifdef WIN32_PLATFORM_PSPC
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+    // scrollDy-3 is a magic number - I don't really know why I have to substract 3
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy-3, FALSE);
 #else
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
     MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
