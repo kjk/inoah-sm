@@ -5,7 +5,6 @@
 
 using ArsLexis::String;
 
-String  getDeviceInfo();
 bool    FGetRandomDef(String& defOut);
 bool    FGetWord(const String& word, String& defOut);
 bool    FGetRecentLookups(String& wordListOut);

@@ -1,13 +1,6 @@
-#include <aygshell.h>
+#include <windows.h>
 
-#ifdef WIN32_PLATFORM_WFSP
-#include <tpcshell.h>
-#include <winuserm.h>
-#include <sms.h>
-#endif
-#include <shellapi.h>
-#include <winbase.h>
-
+#include <DeviceInfo.hpp>
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
 #include <Text.hpp>
@@ -64,8 +57,6 @@ static FieldDef fieldsDef[fieldsCount] = {
     { messageStr, fieldValueFollow },
     { definitionStr, fieldValueFollow },
     { wordListStr, fieldValueFollow },
-//    { requestsLeftStr, fieldValueInline },
-//    { pronunciationStr,fieldValueInline },
     { regFailedStr, fieldNoValue },
     { regOkStr, fieldNoValue }
 };
@@ -285,7 +276,7 @@ static String BuildCommonWithCookie(const String& cookie, const String& optional
 
 static String BuildGetCookieUrl()
 {
-    String deviceInfo = getDeviceInfo();
+    String deviceInfo = deviceInfoToken();
     String url;
     url.reserve(urlCommonLen +
                 cookieRequest.length() +
@@ -589,6 +580,9 @@ bool FCheckRegCode(const String& regCode, bool& fRegCodeValid)
     return true;
 }
 
+#if 0
+// not used anymore
+
 TCHAR numToHex(TCHAR num)
 {    
     if (num>=0 && num<=9)
@@ -596,6 +590,7 @@ TCHAR numToHex(TCHAR num)
     // assert (num<16);
     return TCHAR('A')+num-10;
 }
+
 
 // Append hexbinary-encoded string toHexify to the input/output string str
 void stringAppendHexified(String& str, const String& toHexify)
@@ -653,4 +648,4 @@ String getDeviceInfo()
     }
     return text;
 }
-
+#endif
