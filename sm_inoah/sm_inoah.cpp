@@ -340,10 +340,17 @@ static void PaintAbout(HDC hdc, RECT& rect)
 static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
 {
     ArsLexis::Graphics gr(hdc, hwnd);
-    RECT b;
-    GetClientRect(hwnd, &b);
-    ArsLexis::Rectangle bounds = b;
-    ArsLexis::Rectangle defRect = rect;
+    RECT clientRect;
+    GetClientRect(hwnd, &clientRect);
+    ArsLexis::Rectangle bounds = clientRect;
+
+    clientRect.top    += 22;
+    clientRect.left   += 2;
+    clientRect.right  -= 2 + GetScrollBarDx();
+    clientRect.bottom -= 2 + GetMenuDy();
+    ArsLexis::Rectangle defRect = clientRect;
+
+    // ArsLexis::Rectangle defRect = rect;
 
     bool fCouldDoubleBuffer = false;
     HDC  offscreenDc = ::CreateCompatibleDC(hdc);
@@ -599,11 +606,6 @@ static void OnCreate(HWND hwnd)
         PostQuitMessage(0);
         return;
     }
-
-/*    g_menuDy = 0;
-#ifdef WIN32_PLATFORM_PSPC
-    g_menuDy = GetSystemMetrics(SM_CYMENU);
-#endif*/
     
     g_hwndEdit = CreateWindow( _T("edit"), NULL,
         WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
@@ -753,7 +755,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 #ifdef WIN32_PLATFORM_WFSP
             GotoURL(_T("http://arslexis.com/pda/sm.html"));
 #endif
-#ifdef WIN32_PLATFORM_PSCP
+#ifdef WIN32_PLATFORM_PSPC
             GotoURL(_T("http://arslexis.com/pda/ppc.html"));
 #endif
             break;
@@ -762,7 +764,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 #ifdef WIN32_PLATFORM_WFSP
             GotoURL(_T("http://arslexis.com/updates/sm-inoah-1-0.html"));
 #endif
-#ifdef WIN32_PLATFORM_PSCP
+#ifdef WIN32_PLATFORM_PSPC
             GotoURL(_T("http://arslexis.com/updates/ppc-inoah-1-0.html"));      
 #endif
             break;
@@ -785,17 +787,25 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 static void OnSize(HWND hwnd, LPARAM lp)
 {
-
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
 
+    int menuDy = 0;
 #ifdef WIN32_PLATFORM_PSPC
-    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, true);
-    MoveWindow(g_hwndScroll, dx-5, 28 , 5, dy-28, false);
-#else
-    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, true);
-    MoveWindow(g_hwndScroll, dx-5, 28 , 5, dy-28, false);
+    menuDy = GetMenuDy();
 #endif
+
+    int scrollStartY = 24;
+    int scrollDy = dy - menuDy - scrollStartY - 2;
+
+#ifdef WIN32_PLATFORM_PSPC
+    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+#else
+    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+#endif
+
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
