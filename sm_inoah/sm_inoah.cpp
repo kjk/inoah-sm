@@ -6,6 +6,7 @@
 
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
+#include <Text.hpp>
 #include <SysUtils.hpp>
 #include <WinPrefsStore.hpp>
 #include <EnterRegCodeDialog.hpp>
@@ -35,7 +36,6 @@ static bool g_forceLayoutRecalculation=false;
 String      g_currentWord;
 bool        g_fUpdateScrollbars = false;
 
-String g_wordList;
 String g_recentWord;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -538,6 +538,19 @@ static void DoCompact(HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
+// note: caller needs to free memory with delete [[
+static const char_t *StringCopy(const String& str)
+{
+    const char_t *curStr = str.c_str();
+    int len = tstrlen(curStr);
+    char_t *newStr = new char_t[len+1];
+    if (NULL==newStr)
+        return NULL;
+
+    memcpy(newStr,curStr,(len+1)*sizeof(char_t));
+    return newStr;
+}
+
 static void DoRecentLookups(HWND hwnd)
 {
     HDC hdc = GetDC(hwnd);
@@ -545,30 +558,61 @@ static void DoRecentLookups(HWND hwnd)
     ReleaseDC(hwnd, hdc);
     DrawProgressInfo(hwnd, TEXT("recent lookups list..."));
 
-    bool fOk = FGetRecentLookups(g_wordList);
+    String recentLookups;
+    bool fOk = FGetRecentLookups(recentLookups);
     if (!fOk)
         return;
 
-    if (g_wordList.empty())
+    if (recentLookups.empty())
     {
-        MessageBox(g_hwndMain,
+        MessageBox(hwnd,
             _T("No lookups have been made so far."),
             _T("Information"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
         InvalidateRect(hwnd,NULL,TRUE);
+        return;
     }
-    else
+
+    StrList_t strList;
+    String word;
+
+    const char_t *wordTxt;
+    String::size_type curPos = 0;
+    bool fEnd;
+    int  wordCount = 0;
+    while (true)
     {
-        if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd, RecentLookupsDlgProc))
-        {
-            ArsLexis::String word(g_recentWord); 
-            DrawProgressInfo(hwnd, _T("definition..."));                
-            String def;
-            bool fOk = FGetWord(word,def);
-            if (!fOk)
-                return;
-            SetDefinition(def);
-        }
+        word = ArsLexis::GetNextLine(recentLookups, curPos, fEnd);
+        if (fEnd)
+            break;
+        wordTxt = StringCopy(word);
+        strList.push_back(wordTxt);
+        ++wordCount;
     }
+
+    if (0==wordCount)
+        return;
+
+    String selectedString;
+    bool fSelected = FGetStringFromList(hwnd, strList, selectedString);
+    if (!fSelected)
+        return;
+
+    StrList_t::iterator iter = strList.begin();
+    StrList_t::iterator iterEnd = strList.end();
+
+    const char_t *strToDelete;
+    do {
+        strToDelete = *iter;
+        delete [] (char_t*)strToDelete;
+        iter++;
+    } while (iter!=iterEnd);
+
+    DrawProgressInfo(hwnd, _T("definition..."));                
+    String def;
+    fOk = FGetWord(selectedString,def);
+    if (!fOk)
+        return;
+    SetDefinition(def);
 }
 
 static void OnCreate(HWND hwnd)

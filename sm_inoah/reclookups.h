@@ -1,9 +1,15 @@
-#ifndef _REC_LOOKUPS_H_
-#define _REC_LOOKUPS_H_
+#ifndef _STRING_LIST_DLG_H_
+#define _STRING_LIST_DLG_H_
 
-#include "resource.h"
+#include <list>
 #include <windows.h>
+#include <BaseTypes.hpp>
 
-BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+using ArsLexis::char_t;
+using ArsLexis::String;
+
+typedef std::list<const char_t *> StrList_t;
+
+bool FGetStringFromList(HWND hwnd, StrList_t strList, String& strOut);
 
 #endif

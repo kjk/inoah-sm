@@ -26,12 +26,12 @@
 #define ID_EDIT                         114
 #define ID_LOOKUP                       115
 #define ID_SCROLL                       116
-#define IDD_RECENT                      117
+#define IDD_STRING_LIST                 117
 #define ID_SELECT                       118
 #define IDS_SELECT                      119
 #define ID_CANCEL                       120
 #define IDS_CANCEL                      121
-#define IDR_RECENT_MENUBAR              122
+#define IDR_STRING_LIST_MENUBAR         122
 #define IDD_FONTLIST                    123
 #define IDM_MENU_RANDOM                 124
 #define IDM_FNT_LARGE                   125
@@ -48,7 +48,7 @@
 #define IDM_LATER                       136
 #define IDS_LATER                       137
 
-#define IDC_LIST_RECENT                 1000
+#define IDC_STRING_LIST                 1000
 #define IDC_EDIT_REGCODE                1001
 
 

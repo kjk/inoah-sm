@@ -9,9 +9,6 @@ using ArsLexis::String;
 extern HINSTANCE g_hInst;       // Local copy of hInstance
 extern HWND      g_hwndMain;    // Handle to Main window returned from CreateWindow
 
-extern String g_recentWord;
-extern String g_wordList;
-
 String GetRegCode();
 String GetCookie();
 void   SetCookie(const String& cookie);
