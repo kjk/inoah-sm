@@ -731,3 +731,12 @@ void setDefinition(ArsLexis::String& defs, HWND hwnd)
     }
 }
 
+void ArsLexis::handleBadAlloc()
+{
+    RaiseException(1,0,0,NULL);    
+}
+
+void ArsLexis::logAllocation(void* ptr, bool free, const char* file, int line)
+{
+
+}
