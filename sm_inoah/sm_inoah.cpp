@@ -3,6 +3,7 @@
 
 #include "resource.h"
 #include "iNoahSession.h"
+#include "TAPIDevice.h"
 #include "..\ipedia\src\BaseTypes.hpp"
 #include <windows.h>
 #include <tpcshell.h>
@@ -181,6 +182,7 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
 	}
 	ShowWindow(hwndMain, CmdShow );
 	UpdateWindow(hwndMain);
+    TAPIDevice::initInstance();    
 	return TRUE;
 }
 

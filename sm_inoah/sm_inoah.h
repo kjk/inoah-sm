@@ -8,8 +8,8 @@
 
 #include "resource.h"
 
-HINSTANCE g_hInst;  // Local copy of hInstance
-HWND hwndMain;    // Handle to Main window returned from CreateWindow
+extern HINSTANCE g_hInst;  // Local copy of hInstance
+extern HWND hwndMain;    // Handle to Main window returned from CreateWindow
 
 TCHAR szAppName[];
 TCHAR szTitle[];

@@ -215,13 +215,15 @@ DEP_CPP_INOAH=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INOAH=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\pcshell.h"\
+	".\stdint"\
+	".\tdint.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 
@@ -275,9 +277,89 @@ DEP_CPP_SM_IN=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\pcshell.h"\
+	".\stdint"\
+	".\tdint.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\TAPI.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_TAPI_=\
+	"..\ipedia\src\BaseTypes.hpp"\
+	".\sm_inoah.h"\
+	".\TAPI.h"\
+	{$(INCLUDE)}"Tapi.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_TAPI_=\
+	"..\ipedia\src\BaseTypes.hpp"\
+	".\sm_inoah.h"\
+	".\TAPI.h"\
+	{$(INCLUDE)}"Tapi.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_TAPI_=\
+	"..\ipedia\src\BaseTypes.hpp"\
+	".\sm_inoah.h"\
+	".\TAPI.h"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"Tpcshell.h"\
+	{$(INCLUDE)}"Tapi.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_TAPI_=\
+	"..\ipedia\src\BaseTypes.hpp"\
+	".\sm_inoah.h"\
+	".\TAPI.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Tapi.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\TAPILine.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_TAPIL=\
+	".\TAPILine.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_TAPIL=\
+	".\TAPILine.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_TAPIL=\
+	".\TAPILine.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_TAPIL=\
+	".\TAPILine.h"\
 	
 
 !ENDIF 
@@ -317,8 +399,10 @@ NODEP_CPP_TRANS=\
 DEP_CPP_TRANS=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"stdint.h"\
+	
+NODEP_CPP_TRANS=\
+	".\stdint"\
+	".\tdint.h"\
 	
 
 !ENDIF 
@@ -339,6 +423,14 @@ SOURCE=.\resource.h
 # Begin Source File
 
 SOURCE=.\sm_inoah.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TAPI.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TAPILine.h
 # End Source File
 # Begin Source File
 
