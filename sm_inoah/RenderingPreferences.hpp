@@ -36,6 +36,7 @@ class RenderingPreferences
     };        
     
     uint_t standardIndentation_;
+    uint_t bulletIndentation_;
     
 public:
 
@@ -89,7 +90,10 @@ public:
     
     uint_t standardIndentation() const
     {return standardIndentation_;}
-    
+
+    uint_t bulletIndentation() const
+    {return bulletIndentation_;}
+
     ArsLexis::Graphics::Color_t backgroundColor() const
     {return RGB(255,255,255);}
 
