@@ -5,7 +5,7 @@
 #include "iNoahSession.h"
 #include "iNoahParser.h"
 #include "TAPIDevice.h"
-#include "BaseTypes.hpp"
+#include <BaseTypes.hpp>
 #include "GenericTextElement.hpp"
 #include "BulletElement.hpp"
 #include "ParagraphElement.hpp"
@@ -38,6 +38,9 @@ bool rec=false;
 
 BOOL InitRecentLookups(HWND hDlg);
 
+ArsLexis::String wordList;
+ArsLexis::String recentWord;
+
 bool initializeConnection()
 {
     // Establish a synchronous connection
@@ -56,10 +59,10 @@ bool initializeConnection()
     if(ConnMgrMapURL(tchRemoteUrl, &guidNetworkObject, &dwIndex)
         == E_FAIL) 
         /*MessageBox(
-            NULL,
-            TEXT("Could not map the request to a network identifier."),
-            TEXT("Error"),
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);*/
+        NULL,
+        TEXT("Could not map the request to a network identifier."),
+        TEXT("Error"),
+        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);*/
         return false;
     
     // Now that we've got the network address, set up the
@@ -106,14 +109,15 @@ void setScrollBar(Definition* definition_)
 
 void setDefinition(ArsLexis::String& defs)
 {
-        delete definition_;
-        ParagraphElement* parent=0;
-        int start=0;
-        iNoahParser parser;
-        definition_=parser.parse(defs);
-        ArsLexis::Graphics gr(GetDC(hwndMain));
-        rec=true;
+    delete definition_;
+    ParagraphElement* parent=0;
+    int start=0;
+    iNoahParser parser;
+    definition_=parser.parse(defs);
+    ArsLexis::Graphics gr(GetDC(hwndMain));
+    rec=true;
 }
+
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
 //
@@ -127,19 +131,18 @@ void setDefinition(ArsLexis::String& defs)
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT		lResult = TRUE;
-	HDC			hdc;
-	PAINTSTRUCT	ps;
-	RECT		rect;
+    HDC			hdc;
+    PAINTSTRUCT	ps;
+    RECT		rect;
     static HWND hwndEdit;
     
     static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("");
     
-
-	switch(msg)
-	{
-		case WM_CREATE:
-		{
+    switch(msg)
+    {
+        case WM_CREATE:
+        {
             //if (
             if (!initializeConnection())
             {
@@ -148,29 +151,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     TEXT("Can't establish connection."),
                     TEXT("Error"),
                     MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
-                );
+                    );
                 //SetFocus(hwndEdit);
-				//PostQuitMessage(0);
+                //PostQuitMessage(0);
                 //break;
             }
             //)break;
-			//initialize();
+            //initialize();
             // create the menu bar
-			SHMENUBARINFO mbi;
-			ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
-			mbi.cbSize = sizeof(SHMENUBARINFO);
-			mbi.hwndParent = hwnd;
-			mbi.nToolBarId = IDR_HELLO_MENUBAR;
-			mbi.hInstRes = g_hInst;
-
-			//if (tr.sendRequest()==NO_ERROR);
-			//	tr.getResponse();
-			
-			if (!SHCreateMenuBar(&mbi)) 
+            SHMENUBARINFO mbi;
+            ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
+            mbi.cbSize = sizeof(SHMENUBARINFO);
+            mbi.hwndParent = hwnd;
+            mbi.nToolBarId = IDR_HELLO_MENUBAR;
+            mbi.hInstRes = g_hInst;
+            
+            //if (tr.sendRequest()==NO_ERROR);
+            //	tr.getResponse();
+            
+            if (!SHCreateMenuBar(&mbi)) 
             {
-				PostQuitMessage(0);
+                PostQuitMessage(0);
                 break;
-			}
+            }
             
             hwndEdit = CreateWindow(
                 TEXT("edit"),
@@ -192,88 +195,88 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 NULL);
             setScrollBar(definition_);
             // In order to make Back work properly, it's necessary to 
-	        // override it and then call the appropriate SH API
-	        (void)SendMessage(
+            // override it and then call the appropriate SH API
+            (void)SendMessage(
                 mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
-		        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
+                MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
+                SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
                 );
-/*            RegisterHotKey(hwndEdit, 0x0100, MOD_WIN, VK_THOME);
-            RegisterHotKey(hwndEdit, 0x0101, MOD_WIN, VK_TUP);
+                /*            RegisterHotKey(hwndEdit, 0x0100, MOD_WIN, VK_THOME);
+                RegisterHotKey(hwndEdit, 0x0101, MOD_WIN, VK_TUP);
             RegisterHotKey(hwndEdit, 0x0102, MOD_WIN, VK_TDOWN);*/
-
+            
             /*RegisterHotKey(hwndMain, 1, MOD_KEYUP, VK_UP);
             RegisterHotKey(hwndMain, 2, MOD_KEYUP, VK_NEXT);
             RegisterHotKey(hwndMain, 3, MOD_KEYUP, VK_PRIOR);
             RegisterHotKey(hwndMain, 4, MOD_KEYUP, VK_DOWN);*/
             //(void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TDOWN,
-		    //    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-		    //    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-			break;
-		}
+            //    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
+            //    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+            break;
+        }
         case WM_SIZE:
             MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
             MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
             break;
-
+        
         /*case WM_VSCROLL:
         {
-            int page=definition_.shownLinesCount();
-            ArsLexis::Graphics gr(GetDC(hwndMain));   
-            
-            switch(LOWORD(wp))
-            {
-                case SB_PAGEDOWN:
-                    definition_.scroll(gr,*prefs,page);
-                    break;
-                case SB_LINEDOWN:
-                    definition_.scroll(gr,*prefs,1);
-                    break;
-                case SB_PAGEUP:
-                    definition_.scroll(gr,*prefs,-page);
-                    break;
-                case SB_LINEUP:
-                    definition_.scroll(gr,*prefs,-1);
-                    break;
-            }
-            break;
-        }*/
+        int page=definition_.shownLinesCount();
+        ArsLexis::Graphics gr(GetDC(hwndMain));   
+        
+          switch(LOWORD(wp))
+          {
+          case SB_PAGEDOWN:
+          definition_.scroll(gr,*prefs,page);
+          break;
+          case SB_LINEDOWN:
+          definition_.scroll(gr,*prefs,1);
+          break;
+          case SB_PAGEUP:
+          definition_.scroll(gr,*prefs,-page);
+          break;
+          case SB_LINEUP:
+          definition_.scroll(gr,*prefs,-1);
+          break;
+          }
+          break;
+    }*/
         
         case WM_SETFOCUS:
             SetFocus(hwndEdit);
             break;
-		
+        
         case WM_COMMAND:
         {
-			switch (wp)
-			{
-			    case IDOK:
-    				SendMessage(hwnd,WM_CLOSE,0,0);
-	    			break;
+            switch (wp)
+            {
+                case IDOK:
+                    SendMessage(hwnd,WM_CLOSE,0,0);
+                    break;
                 case IDM_MENU_COMPACT:
                 {
-				    HWND hwndMB = SHFindMenuBar (hwnd);
+                    HWND hwndMB = SHFindMenuBar (hwnd);
                     if (hwndMB) 
                     {
-                       HMENU hMenu;
-                       hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
-                       compactView=!compactView;
-                       if(compactView)
-                       {
-                           CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
-    				       prefs->setCompactView();
-                       }
-                       else
-                       {
-                           CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
+                        HMENU hMenu;
+                        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+                        compactView=!compactView;
+                        if(compactView)
+                        {
+                            CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
+                            prefs->setCompactView();
+                        }
+                        else
+                        {
+                            CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
                             prefs->setClassicView();
-
-                       }
-					   g_forceLayoutRecalculation=true;
-                       rec=true;
-                       InvalidateRect(hwnd,NULL,TRUE);
+                            
+                        }
+                        g_forceLayoutRecalculation=true;
+                        rec=true;
+                        InvalidateRect(hwnd,NULL,TRUE);
                     }
-				    break;
+                    break;
                 }
                 case ID_LOOKUP:
                 {
@@ -281,7 +284,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     TCHAR *buf=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     SendMessage(hwndEdit, EM_SETSEL, 0,len);
-                    ArsLexis::String word(buf);
+                    ArsLexis::String word(buf); 
                     drawProgressInfo(hwnd);
                     session.getWord(word,text);
                     iNoahSession::ResponseCode code=session.getLastResponseCode();
@@ -296,15 +299,46 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;
                 }
-                case IDM_MENU_RECENT:
-                {
-                    DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc);
+                case IDM_MENU_RANDOM:
+                {         
+                    ArsLexis::String word;
+                    session.getRandomWord(word);
+                    iNoahSession::ResponseCode code=session.getLastResponseCode();
+                    if( (code==iNoahSession::srvmessage)||
+                        (code==iNoahSession::srverror)||
+                        (code==iNoahSession::error))
+                        MessageBox(hwnd,text.c_str(),TEXT("Error"), 
+                        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
+                    else
+                        setDefinition(word);
+                    InvalidateRect(hwnd,NULL,TRUE);
                     break;
                 }
-			    default:
-				    return DefWindowProc(hwnd, msg, wp, lp);
-			}
-			break;
+                case IDM_MENU_RECENT:
+                {
+                    wordList.assign(TEXT(""));
+                    session.getWordList(wordList);
+                    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
+                    {
+                        
+                        drawProgressInfo(hwnd);
+                        session.getWord(recentWord,text);
+                        iNoahSession::ResponseCode code=session.getLastResponseCode();
+                        if( (code==iNoahSession::srvmessage)||
+                            (code==iNoahSession::srverror)||
+                            (code==iNoahSession::error))
+                            MessageBox(hwnd,text.c_str(),TEXT("Error"), 
+                            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
+                        else
+                            setDefinition(text);
+                        InvalidateRect(hwnd,NULL,TRUE);
+                    }
+                    break;
+                }
+                default:
+                    return DefWindowProc(hwnd, msg, wp, lp);
+            }
+            break;
         }
         case WM_HOTKEY:
         {
@@ -326,19 +360,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }    
-		case WM_PAINT:
-		{
-			hdc = BeginPaint (hwnd, &ps);
-			GetClientRect (hwnd, &rect);
+        case WM_PAINT:
+        {
+            hdc = BeginPaint (hwnd, &ps);
+            GetClientRect (hwnd, &rect);
             rect.top+=22;
             rect.left+=2;
             rect.right-=7;
             rect.bottom-=2;
             //RenderingPreferences* prefs= new RenderingPreferences();
-			if (!definition_)
+            if (!definition_)
             {
                 LOGFONT logfnt;
-        
+                
                 HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
                 GetObject(fnt, sizeof(logfnt), &logfnt);
                 logfnt.lfHeight+=1;
@@ -351,55 +385,55 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             else
             {
                 ArsLexis::Graphics gr(hdc);
-				RECT b;
-				GetClientRect(hwnd, &b);
-				ArsLexis::Rectangle bounds=b;
-				ArsLexis::Rectangle defRect=rect;
-				bool doubleBuffer=true;
-				HDC offscreenDc=::CreateCompatibleDC(hdc);
-				if (offscreenDc) {
-					HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-					if (bitmap) {
-						HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-						{
-							ArsLexis::Graphics offscreen(offscreenDc);
-							definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
-							offscreen.copyArea(defRect, gr, defRect.topLeft);
-						}
-						::SelectObject(offscreenDc, oldBitmap);
-						::DeleteObject(bitmap);
-					}
-					else
-						doubleBuffer=false;
-					::DeleteDC(offscreenDc);
-				}
-				else
-					doubleBuffer=false;
-				if (!doubleBuffer)
-					definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
-				g_forceLayoutRecalculation=false;
+                RECT b;
+                GetClientRect(hwnd, &b);
+                ArsLexis::Rectangle bounds=b;
+                ArsLexis::Rectangle defRect=rect;
+                bool doubleBuffer=true;
+                HDC offscreenDc=::CreateCompatibleDC(hdc);
+                if (offscreenDc) {
+                    HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+                    if (bitmap) {
+                        HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+                        {
+                            ArsLexis::Graphics offscreen(offscreenDc);
+                            definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                            offscreen.copyArea(defRect, gr, defRect.topLeft);
+                        }
+                        ::SelectObject(offscreenDc, oldBitmap);
+                        ::DeleteObject(bitmap);
+                    }
+                    else
+                        doubleBuffer=false;
+                    ::DeleteDC(offscreenDc);
+                }
+                else
+                    doubleBuffer=false;
+                if (!doubleBuffer)
+                    definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+                g_forceLayoutRecalculation=false;
             }
             if(rec)
             {
                 setScrollBar(definition_);
                 rec=false;
             }
-			EndPaint (hwnd, &ps);
-		}		
-		break;
+            EndPaint (hwnd, &ps);
+        }		
+        break;
         
-		case WM_CLOSE:
-			DestroyWindow(hwnd);
-		    break;
-		case WM_DESTROY:
-			PostQuitMessage(0);
-		    break;
-
-		default:
-			lResult = DefWindowProc(hwnd, msg, wp, lp);
-		    break;
-	}
-	return (lResult);
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
+            break;
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+        
+        default:
+            lResult = DefWindowProc(hwnd, msg, wp, lp);
+            break;
+    }
+    return (lResult);
 }
 
 
@@ -415,25 +449,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 //
 BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
 {
-
-	g_hInst = hInstance;
-	hwndMain = CreateWindow(szAppName,						
-                	szTitle,
-					WS_VISIBLE,
-					CW_USEDEFAULT,
-					CW_USEDEFAULT,
-					CW_USEDEFAULT,
-					CW_USEDEFAULT,
-					NULL, NULL, hInstance, NULL );
-
-	if ( !hwndMain )		
-	{
-		return FALSE;
-	}
-	ShowWindow(hwndMain, CmdShow );
-	UpdateWindow(hwndMain);
+    
+    g_hInst = hInstance;
+    hwndMain = CreateWindow(szAppName,						
+        szTitle,
+        WS_VISIBLE,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        NULL, NULL, hInstance, NULL );
+    
+    if ( !hwndMain )		
+    {
+        return FALSE;
+    }
+    ShowWindow(hwndMain, CmdShow );
+    UpdateWindow(hwndMain);
     TAPIDevice::initInstance();    
-	return TRUE;
+    return TRUE;
 }
 
 //
@@ -443,23 +477,23 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
 //
 BOOL InitApplication ( HINSTANCE hInstance )
 {
-	WNDCLASS wc;
-	BOOL f;
-
-	wc.style = CS_HREDRAW | CS_VREDRAW ;
-	wc.lpfnWndProc = (WNDPROC)WndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hIcon = NULL;
-	wc.hInstance = hInstance;
-	wc.hCursor = NULL;
-	wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = szAppName;
-	
-	f = (RegisterClass(&wc));
-
-	return f;
+    WNDCLASS wc;
+    BOOL f;
+    
+    wc.style = CS_HREDRAW | CS_VREDRAW ;
+    wc.lpfnWndProc = (WNDPROC)WndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hIcon = NULL;
+    wc.hInstance = hInstance;
+    wc.hCursor = NULL;
+    wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = szAppName;
+    
+    f = (RegisterClass(&wc));
+    
+    return f;
 }
 
 
@@ -472,93 +506,93 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPWSTR     lpCmdLine,
                    int        CmdShow)
-
+                   
 {
-	MSG msg;
-	HWND hHelloWnd = NULL;	
+    MSG msg;
+    HWND hHelloWnd = NULL;	
     
-	//Check if Hello.exe is running. If it's running then focus on the window
-	hHelloWnd = FindWindow(szAppName, szTitle);	
-	if (hHelloWnd) 
-	{
-		SetForegroundWindow (hHelloWnd);    
-		return 0;
-	}
-
-	if ( !hPrevInstance )
-	{
-		if ( !InitApplication ( hInstance ) )
-		{ 
-			return (FALSE); 
-		}
-	}
-	if ( !InitInstance( hInstance, CmdShow )  )
-	{
-		return (FALSE);
-	}
-	
-	while ( GetMessage( &msg, NULL, 0,0 ) == TRUE )
-	{
-		TranslateMessage (&msg);
-		DispatchMessage(&msg);
-	}
-	return (msg.wParam);
+    //Check if Hello.exe is running. If it's running then focus on the window
+    hHelloWnd = FindWindow(szAppName, szTitle);	
+    if (hHelloWnd) 
+    {
+        SetForegroundWindow (hHelloWnd);    
+        return 0;
+    }
+    
+    if ( !hPrevInstance )
+    {
+        if ( !InitApplication ( hInstance ) )
+        { 
+            return (FALSE); 
+        }
+    }
+    if ( !InitInstance( hInstance, CmdShow )  )
+    {
+        return (FALSE);
+    }
+    
+    while ( GetMessage( &msg, NULL, 0,0 ) == TRUE )
+    {
+        TranslateMessage (&msg);
+        DispatchMessage(&msg);
+    }
+    return (msg.wParam);
 }
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	switch(msg)
-	{
-        case WM_KEYDOWN:
-            if(definition_)
-			{
-				int page=0;
-				switch (wp) 
-				{
-					case VK_DOWN:
-						page=definition_->shownLinesCount();
-						break;
-					case VK_UP:
-						page=-static_cast<int>(definition_->shownLinesCount());
-						break;
-				}
-				if (0!=page)
-				{
-					RECT b;
-					GetClientRect (hwndMain, &b);
-					ArsLexis::Rectangle bounds=b;
-					ArsLexis::Rectangle defRect=bounds;
-					defRect.explode(2, 22, -9, -24);
-					ArsLexis::Graphics gr(GetDC(hwndMain));
-					bool doubleBuffer=true;
-
-					HDC offscreenDc=::CreateCompatibleDC(gr.handle());
-					if (offscreenDc) {
-						HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
-						if (bitmap) {
-							HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-							{
-								ArsLexis::Graphics offscreen(offscreenDc);
-								definition_->scroll(offscreen,*prefs, page);
-								offscreen.copyArea(defRect, gr, defRect.topLeft);
-							}
-							::SelectObject(offscreenDc, oldBitmap);
-							::DeleteObject(bitmap);
-						}
-						else
-							doubleBuffer=false;
-						::DeleteDC(offscreenDc);
-					}
-					else
-						doubleBuffer=false;
-					if (!doubleBuffer)
-						definition_->scroll(gr,*prefs, page);
-
-					setScrollBar(definition_);
-					return 0;
-				}
-			}
-            break;
+    switch(msg)
+    {
+    case WM_KEYDOWN:
+        if(definition_)
+        {
+            int page=0;
+            switch (wp) 
+            {
+            case VK_DOWN:
+                page=definition_->shownLinesCount();
+                break;
+            case VK_UP:
+                page=-static_cast<int>(definition_->shownLinesCount());
+                break;
+            }
+            if (0!=page)
+            {
+                RECT b;
+                GetClientRect (hwndMain, &b);
+                ArsLexis::Rectangle bounds=b;
+                ArsLexis::Rectangle defRect=bounds;
+                defRect.explode(2, 22, -9, -24);
+                ArsLexis::Graphics gr(GetDC(hwndMain));
+                bool doubleBuffer=true;
+                
+                HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+                if (offscreenDc) {
+                    HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
+                    if (bitmap) {
+                        HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+                        {
+                            ArsLexis::Graphics offscreen(offscreenDc);
+                            definition_->scroll(offscreen,*prefs, page);
+                            offscreen.copyArea(defRect, gr, defRect.topLeft);
+                        }
+                        ::SelectObject(offscreenDc, oldBitmap);
+                        ::DeleteObject(bitmap);
+                    }
+                    else
+                        doubleBuffer=false;
+                    ::DeleteDC(offscreenDc);
+                }
+                else
+                    doubleBuffer=false;
+                if (!doubleBuffer)
+                    definition_->scroll(gr,*prefs, page);
+                
+                setScrollBar(definition_);
+                return 0;
+            }
+        }
+        break;
     }
     return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
 }
@@ -567,46 +601,84 @@ BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch(msg)
     {
-        case WM_INITDIALOG:
-            return InitRecentLookups(hDlg);
-        
+    case WM_INITDIALOG:
+        return InitRecentLookups(hDlg);
+    case WM_COMMAND:
+        {
+            switch (wp)
+            {
+                case ID_CANCEL:
+                    EndDialog(hDlg, 0);
+                    break;
+                case ID_SELECT:
+                {
+                    HWND ctrl = GetDlgItem(hDlg, IDC_LIST_RECENT);
+                    int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
+                    int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
+                    TCHAR *buf = new TCHAR[len+1];
+                    SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
+                    recentWord.assign(buf);
+                    delete buf;
+                    EndDialog(hDlg, 1);
+                    break;
+                }
+            }
+        }
     }
     return FALSE;
 }
 
 BOOL InitRecentLookups(HWND hDlg)
 {
-	// Specify that the dialog box should stretch full screen
-	SHINITDLGINFO shidi;
-	ZeroMemory(&shidi, sizeof(shidi));
+    // Specify that the dialog box should stretch full screen
+    SHINITDLGINFO shidi;
+    ZeroMemory(&shidi, sizeof(shidi));
     shidi.dwMask = SHIDIM_FLAGS;
     shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
     shidi.hDlg = hDlg;
-            
-	// Set up the menu bar
-	SHMENUBARINFO shmbi;
-	ZeroMemory(&shmbi, sizeof(shmbi));
+    
+    // Set up the menu bar
+    SHMENUBARINFO shmbi;
+    ZeroMemory(&shmbi, sizeof(shmbi));
     shmbi.cbSize = sizeof(shmbi);
     shmbi.hwndParent = hDlg;
-    shmbi.nToolBarId = IDR_RECENT_MENUBAR;
+    shmbi.nToolBarId = IDR_RECENT_MENUBAR ;
     shmbi.hInstRes = g_hInst;
-
-    //if (!SHCreateMenuBar(&shmbi))
-	//	return FALSE;
-	// If we could not initialize the dialog box, return an error
-	if (!SHInitDialog(&shidi))
-		return FALSE;
-
+    
+    // If we could not initialize the dialog box, return an error
+    if (!SHInitDialog(&shidi))
+        return FALSE;
+    
+    if (!SHCreateMenuBar(&shmbi))
+        return FALSE;
+    
     (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-			  MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-	            SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-
-	return TRUE;
+        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+    HWND ctrl=GetDlgItem(hDlg, IDC_LIST_RECENT);
+    int last=wordList.find_first_of(TCHAR('\n'));
+    int first=0;
+    while((last!=-1)&&(last!=wordList.length()))
+    {
+        ArsLexis::String tmp=wordList.substr(first,last-first);
+        TCHAR *str=new TCHAR [tmp.length()+1];
+        wcscpy(str,tmp.c_str());
+        SendMessage(
+            ctrl,
+            LB_ADDSTRING,
+            0,
+            (LPARAM)str);
+        first=last+1;
+        last=wordList.find_first_of(TCHAR('\n'),first);
+    }
+    SendMessage (ctrl, LB_SETCURSEL, 1, 0);
+    //UpdateWindow(ctrl);
+    return TRUE;
 }
 
 void drawProgressInfo(HWND hwnd)
 {
-	RECT		rect;
+    RECT rect;
     HDC hdc=GetDC(hwnd);
     GetClientRect (hwnd, &rect);
     rect.top+=22;

@@ -31,7 +31,7 @@ BEGIN
 	IDS_SELECT, 0, NOMENU,
 
 	I_IMAGENONE, ID_CANCEL, TBSTATE_ENABLED,
-	TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
 	IDS_CANCEL, 0, NOMENU,
 END
 
@@ -45,6 +45,7 @@ IDR_MENU_MENU1 MENU DISCARDABLE
 BEGIN
     POPUP "&Dummy"
     BEGIN
+        MENUITEM "Random word",              	IDM_MENU_RANDOM
         MENUITEM "Recent lookups",              IDM_MENU_RECENT
         MENUITEM "Compact View",                IDM_MENU_COMPACT
         MENUITEM "Register",                    IDM_MENU_REGISTER
@@ -59,9 +60,9 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_LOOKUP              "Look up"
+    IDS_LOOKUP              "Lookup"
     IDS_MENU_BTN            "Menu"
-    IDS_SELECT		    "Select"
+    IDS_SELECT		    "Lookup"
     IDS_CANCEL		    "Cancel"
 END
 
@@ -70,30 +71,11 @@ END
 // Dialog
 //
 
-IDD_RECENT DIALOG DISCARDABLE  0, 0, 250, 62
-STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+IDD_RECENT DIALOG DISCARDABLE  4, 4, 80, 70
+STYLE WS_POPUP | WS_VISIBLE
+FONT 8, "System"
 BEGIN
-    LISTBOX         IDC_LIST_RECENT,7,7,236,48,LBS_SORT | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST_RECENT,0,2,100,86,
+		    LBS_NOTIFY | LBS_STANDARD | NOT LBS_SORT | 
+		    WS_TABSTOP | NOT WS_BORDER
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_RECENT, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 243
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 55
-    END
-END
-#endif    // APSTUDIO_INVOKED
-

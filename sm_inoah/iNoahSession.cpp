@@ -44,55 +44,55 @@ const String cookieFolder = TEXT ("\\iNoah");
 const String cookieFile = TEXT ("\\Cookie");
 
 iNoahSession::iNoahSession()
-	: cookieReceived(false),
-	  responseCode(error),
-	  content(TEXT("No request."))
+: cookieReceived(false),
+responseCode(error),
+content(TEXT("No request."))
 {
-
+    
 }
 
 bool iNoahSession::checkErrors(Transmission &tr, String &ret)
 {
-	if(tr.sendRequest() != NO_ERROR)
-	{
-		//TODO: Better error handling
-		responseCode = error;
-		tr.getResponse(content);
-		return true;
-	}
-	
-	tr.getResponse(ret);
-
-	// Check whether server returned errror
-	if (ret.find(errorStr, 0) == 0 )
-	{
-		content.assign(ret,errorStr.length()+1,-1);
-		responseCode = srverror;
-		return true;
-	}
-	
-	if (ret.find(messageStr, 0) == 0 )
-	{
-		content.assign(ret,messageStr.length()+1,-1);
-		responseCode = srvmessage;
-		return true;
-	}
-	return false;
+    if(tr.sendRequest() != NO_ERROR)
+    {
+        //TODO: Better error handling
+        responseCode = error;
+        tr.getResponse(content);
+        return true;
+    }
+    
+    tr.getResponse(ret);
+    
+    // Check whether server returned errror
+    if (ret.find(errorStr, 0) == 0 )
+    {
+        content.assign(ret,errorStr.length()+1,-1);
+        responseCode = srverror;
+        return true;
+    }
+    
+    if (ret.find(messageStr, 0) == 0 )
+    {
+        content.assign(ret,messageStr.length()+1,-1);
+        responseCode = srvmessage;
+        return true;
+    }
+    return false;
 }
 
 void iNoahSession::getRandomWord(String& ret)
 {
-	if ((!cookieReceived)&&(getCookie()))
+    if ((!cookieReceived)&&(getCookie()))
     {
-			ret=content;
-            return;
+        ret=content;
+        return;
     }
     String tmp;
     tmp.reserve(script.length()+protocolVersion.length()+
         sep.length()+clientVersion.length()+sep.length()+
-		cookieParam.length()+cookie.length()+sep.length()+
+        cookieParam.length()+cookie.length()+sep.length()+
         randomRequest.length()); 
-	tmp+=script;tmp+=protocolVersion;tmp+=sep; tmp+=clientVersion;
+    tmp+=script;tmp+=protocolVersion;tmp+=sep; tmp+=clientVersion;
     tmp+=sep; tmp+=cookieParam; tmp+=cookie;
     tmp+=sep; tmp+=randomRequest;
     sendRequest(tmp,definitionStr,ret);
@@ -100,9 +100,9 @@ void iNoahSession::getRandomWord(String& ret)
 
 void iNoahSession::getWord(String word, String& ret)
 {
-	if ((!cookieReceived)&&(getCookie()))
+    if ((!cookieReceived)&&(getCookie()))
     {
-		ret=content;
+        ret=content;
         return;
     }
     String tmp;
@@ -113,46 +113,46 @@ void iNoahSession::getWord(String word, String& ret)
     tmp+=script; tmp+=protocolVersion; tmp+=sep;
     tmp+=clientVersion;tmp+=sep; tmp+=cookieParam;
     tmp+=cookie;tmp+=sep;tmp+=getWordParam;tmp+=word;
-	
+    
     sendRequest(tmp,definitionStr,ret);
 }
 
 void iNoahSession::getWordList(String& ret )
 {
-	if ((!cookieReceived)&&(getCookie()))
+    if ((!cookieReceived)&&(getCookie()))
     {
-		ret=content;
+        ret=content;
         return;
     }
     String tmp;
     tmp.reserve(script.length()+protocolVersion.length()+sep.length()+
         clientVersion.length()+sep.length()+cookieParam.length()+
         cookie.length()+sep.length()+recentRequest.length());
-
+    
     tmp+=script;tmp+=protocolVersion;tmp+=sep;tmp+=clientVersion;
     tmp+=sep; tmp+=cookieParam; tmp+=cookie;
     tmp+=sep;tmp+=recentRequest;
-	sendRequest(tmp,wordListStr,ret);
+    sendRequest(tmp,wordListStr,ret);
 }
 
 void iNoahSession::sendRequest(String url,
-							String answer,
-                            String& ret)
+                               String answer,
+                               String& ret)
 {
-
-	Transmission tr(server, url);
-	String tmp;
+    
+    Transmission tr(server, url);
+    String tmp;
     tr.getResponse(tmp);
-	if(checkErrors(tr,tmp))
+    if(checkErrors(tr,tmp))
         ; 
-	else 
+    else 
         if (tmp.find(answer, 0) == 0 )
         {
-		    content.assign(tmp,answer.length()+1,-1);
+            content.assign(tmp,answer.length()+1,-1);
             this->responseCode=definition;
         }
-	ret=content;
-    return;
+        ret=content;
+        return;
 }
 
 bool iNoahSession::getCookie()
@@ -164,29 +164,29 @@ bool iNoahSession::getCookie()
         cookieReceived = true;
         return false;
     }
-
-	String deviceInfo =deviceInfoParam + getDeviceInfo();
+    
+    String deviceInfo =deviceInfoParam + getDeviceInfo();
     String tmp;
     tmp.reserve(script.length()+protocolVersion.length()+
         sep.length()+clientVersion.length()+sep.length()+
         deviceInfo.length()+sep.length()+cookieRequest.length());
-	tmp+=script; tmp+=protocolVersion; tmp+=sep; tmp+=clientVersion;
+    tmp+=script; tmp+=protocolVersion; tmp+=sep; tmp+=clientVersion;
     tmp+=sep; tmp+=deviceInfo; tmp+=sep; tmp+=cookieRequest;
     
     Transmission tr(server,tmp);
-	String tmp2;
-	if(checkErrors(tr,tmp2)) return true;
-	if ( tmp2.find(cookieStr) == 0 )
-	{
-		cookie.assign(tmp2,cookieStr.length()+1,-1);
-		cookieReceived = true;
+    String tmp2;
+    if(checkErrors(tr,tmp2)) return true;
+    if ( tmp2.find(cookieStr) == 0 )
+    {
+        cookie.assign(tmp2,cookieStr.length()+1,-1);
+        cookieReceived = true;
         storeCookie(cookie);
-		return false;
-	}
-
-	content = TEXT("Bad answer received.");
-	responseCode = error;
-	return true;
+        return false;
+    }
+    
+    content = TEXT("Bad answer received.");
+    responseCode = error;
+    return true;
 }
 
 String iNoahSession::loadCookie()
@@ -197,7 +197,7 @@ String iNoahSession::loadCookie()
     // Append directory separator character as needed
     
     String fullPath = szPath +  cookieFolder + cookieFile;
-
+    
     HANDLE fHandle = CreateFile(fullPath.c_str(), 
         GENERIC_READ, FILE_SHARE_READ, NULL, 
         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
@@ -213,7 +213,7 @@ String iNoahSession::loadCookie()
     while (bResult && nBytesRead!=0)
     {
         bResult = ReadFile(fHandle, &cookie, sizeof(TCHAR)*254, 
-                            &nBytesRead, NULL);
+            &nBytesRead, NULL);
         if (!bResult)
             break;
         ret.append(cookie, nBytesRead/2);
@@ -242,13 +242,13 @@ void iNoahSession::storeCookie(String cookie)
 
 String iNoahSession::getDeviceInfo()
 {
-	return TEXT("SP6172736c657869735f73696d");
-	// candidates to use: 
-	// TSPI_providerInit
-	// lineGetID
+    return TEXT("SP6172736c657869735f73696d");
+    // candidates to use: 
+    // TSPI_providerInit
+    // lineGetID
 }
 
 iNoahSession::~iNoahSession()
 {
-	
+    
 }

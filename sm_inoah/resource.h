@@ -32,6 +32,8 @@
 #define ID_CANCEL                       120
 #define IDS_CANCEL                      121
 #define IDR_RECENT_MENUBAR              122
+#define IDD_FONTLIST                    123
+#define IDM_MENU_RANDOM			124
 #define IDC_LIST_RECENT                 1000
 // Next default values for new objects
 // 

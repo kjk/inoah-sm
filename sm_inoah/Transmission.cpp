@@ -52,7 +52,7 @@ DWORD Transmission::sendRequest()
     //InternetSetStatusCallback(hIConnect, dispatchCallback);
     hIRequest = HttpOpenRequest(
 		hIConnect, NULL , localInfo.c_str(),
-        NULL, NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION, 0);
+        NULL, NULL, NULL, INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE, 0);
 	DWORD dwordLen=sizeof(DWORD);
 	/*DWORD status;	
 	HttpQueryInfo(hIRequest ,HTTP_QUERY_FLAG_NUMBER |

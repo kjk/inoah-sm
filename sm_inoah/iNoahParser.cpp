@@ -9,10 +9,10 @@ using namespace ArsLexis;
 const String iNoahParser::arabNums[] = 
 { 
     TEXT("I"), 
-    TEXT("II"), 
-    TEXT("III"), 
-    TEXT("IV"), 
-    TEXT("V")
+        TEXT("II"), 
+        TEXT("III"), 
+        TEXT("IV"), 
+        TEXT("V")
 };
 
 const iNoahParser::pOfSpeechCnt = 5;
@@ -22,13 +22,13 @@ const String iNoahParser::pOfSpeach[2][5] =
 { 
     {
         TEXT("v"), TEXT("a"), 
-        TEXT("r"), TEXT("n"), 
-        TEXT("s") 
+            TEXT("r"), TEXT("n"), 
+            TEXT("s") 
     }, 
     {
-        TEXT("verb. "), TEXT("adj. "), 
-        TEXT("adv. "), TEXT("noun. "), 
-        TEXT("adj. ")}
+            TEXT("verb. "), TEXT("adj. "), 
+                TEXT("adv. "), TEXT("noun. "), 
+                TEXT("adj. ")}
 };
 
 Definition* iNoahParser::parse(String text)
@@ -95,10 +95,10 @@ Definition* iNoahParser::parse(String text)
     int cntPOS=0;
     for(int i=0;i<pOfSpeechCnt;i++)
     {
-        #ifdef HORLINES
+#ifdef HORLINES
         if (sorted[i].size() > 0)
             appendElement(new HorizontalLineElement());
-        #endif
+#endif
         parent=0;
         int cntMeaning=1;
         if (sorted[i].size() > 0)
@@ -140,7 +140,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
     explanation = NULL;
     examples = NULL;
     synonyms = NULL;
-
+    
     int currIndx = 0;
     while (currIndx < text.length())
     {
@@ -151,8 +151,8 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
             currIndx = text.length();
         switch (c)
         {
-            case '!' :
-            case '#' :
+        case '!' :
+        case '#' :
             {
                 while ((currIndx < text.length() - 2)
                     && (currIndx != -1)
@@ -164,29 +164,29 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
                 if (c != '!')
                 {
                     if(!(examples = this->parseExamplesList(
-                            char_t('\n') + 
-                            text.substr(start, currIndx - start))))
+                        char_t('\n') + 
+                        text.substr(start, currIndx - start))))
                         return false;
                 }
                 // Create examples subtoken on the basis of
                 else
                 {
                     if (!(synonyms = this->parseSynonymsList(
-                            char_t('\n') + 
-                            text.substr(start, currIndx - start),word)))
-                       return false;
+                        char_t('\n') + 
+                        text.substr(start, currIndx - start),word)))
+                        return false;
                 }
                 break;
             }
-            case '@' :
+        case '@' :
             {
                 // Create Explanation subtoken
                 explanation =
                     new DynamicNewLineElement(text.substr(start + 1, 
-                    currIndx-start-1)+TEXT(". "));
+                    currIndx-start-1)+TEXT(" "));
                 break;
             }
-            case '$' :
+        case '$' :
             { 
                 if (start + 1 > text.length())
                 {
@@ -203,7 +203,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
                         break;
                     }
                 }
-
+                
                 if (i == pOfSpeechCnt)
                 {
                     error.assign(TEXT("Part of speach badly defined."));
@@ -216,7 +216,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
     }
     if (partOfSpeach < 0)
     {
-	    error.assign(TEXT("Part of speach not defined."));
+        error.assign(TEXT("Part of speach not defined."));
         return false;
     }
     if(explanation==NULL)
@@ -226,9 +226,9 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
         return false;
     }
     /*if(examples!=null)
-        this.addSubToken(examples);
+    this.addSubToken(examples);
     if((synonyms!=null)&&(synonyms.getSynonymsCount()>0))
-        this.addSubToken(synonyms);*/
+    this.addSubToken(synonyms);*/
     return true;
 }
 
@@ -238,7 +238,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
     int currIndx = 0;
     ElementsList* lst=new ElementsList();
     DynamicNewLineElement* last=NULL;
-
+    
     while ((currIndx < text.length() - 2)
         && (text[currIndx+1] == '!'))
     {
@@ -253,7 +253,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
             error.assign(TEXT("Synonym malformed."));
             return NULL;
         }
-
+        
         String newSynonym=text.substr(start + 2, currIndx-start-2);
         if(word.compare(newSynonym)!=0)
         {
@@ -266,11 +266,11 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
     }
     if(last)
     {
-        last->setText(last->text());//+TEXT(". "));
+        last->setText(last->text()+TEXT(" "));
         DynamicNewLineElement *el=new DynamicNewLineElement(String(TEXT("Synonyms: ")));
         el->setStyle(styleSynonymsList);
         lst->push_front(el);
-
+        
     }
     return lst;
 }
@@ -280,7 +280,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
     int currIndx = 0;
     ElementsList* lst=new ElementsList();
     DynamicNewLineElement* last=NULL;
-
+    
     while ((currIndx < text.length() - 2)
         && (text[currIndx+1] == '#'))
     {
@@ -305,7 +305,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
     }
     if(last!=NULL)
     {
-        last->setText(last->text()+TEXT(". "));
+        last->setText(last->text()+TEXT(" "));
         DynamicNewLineElement *el=new DynamicNewLineElement(String(TEXT("Examples: ")));
         el->setStyle(styleExampleList);
         lst->push_front(el);
