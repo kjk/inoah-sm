@@ -694,6 +694,8 @@ static void DoRecentLookups(HWND hwnd)
     if (0==wordCount)
         return;
 
+    std::reverse( strList.begin(), strList.end() );
+
     String selectedString;
     bool fSelected = FGetStringFromList(hwnd, strList, selectedString);
     if (!fSelected)
