@@ -1,21 +1,23 @@
 TODO:
 9. word font is small at the beginnign, changes to correct after refresh. fix it
 10. menu About/About doesn't work
-11. don't re-download the word if it's the same as current word
-7. after random lookup put the word into the edit text field and select it
 12. changing font to large is broken
 3. scripts to create a cab and setup file
 4. add an icon
 5. pocket pc/pocket pc phone edition version
-8. fix compact mode (need spaces to separate)
 13. do ConnMgr* calls dynamically via LoadLibrary() so that it works on PPC
 Phone Edition as well. Move those to a common library so iPedia can re-use.
 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnppcgen/html
 /conmgrdtac.asp
+8. fix compact mode (need spaces to separate)
+14. Use PrefsStore.* for storing preferences, like iPedia
 
 DONE:
 2. test registration (2004-08-06)
 6. re-write registration code (2004-08-06)
 1.1. Improve formatting: group by pos (2004-08-06)
 1.2. Improve formatting: add numbers (2004-08-06)
+11. don't re-download the word if it's the same as current word (04-08-07)
+7. after random lookup put the word into the edit text field and select it 
+(04-08-07)
 

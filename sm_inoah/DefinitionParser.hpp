@@ -4,6 +4,8 @@
 #include <BaseTypes.hpp>
 #include <DefinitionElement.hpp>
 
-Definition *ParseAndFormatDefinition(const ArsLexis::String& def);
+using ArsLexis::String;
+
+Definition *ParseAndFormatDefinition(const String& def, String& wordOut);
 
 #endif

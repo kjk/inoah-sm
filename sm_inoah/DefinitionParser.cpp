@@ -1,5 +1,3 @@
-#include <list>
-
 #include <Text.hpp>
 
 #include <DefinitionElement.hpp>
@@ -287,7 +285,7 @@ static void AddSynsetDef(AllSynsetDefs_t& allSynsets, const String& posAbbrev, c
 
 // how we work: first we collect all synsets grouped by part of speech
 // for each pos we have a list of: definition text, list of examples, list of synonyms
-Definition *ParseAndFormatDefinition(const ArsLexis::String& defTxt)
+Definition *ParseAndFormatDefinition(const String& defTxt, String& wordOut)
 {
     String          curPosAbbrev;
     SynsetDef_t     curSynset;
@@ -369,6 +367,8 @@ Definition *ParseAndFormatDefinition(const ArsLexis::String& defTxt)
     if (NULL==def)
         return NULL;
     def->replaceElements(elements);
+
+    wordOut.assign(word);
     return def;
 }
 

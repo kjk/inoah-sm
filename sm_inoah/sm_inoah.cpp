@@ -31,6 +31,7 @@ WNDPROC   g_oldEditWndProc = NULL;
 
 static bool g_forceLayoutRecalculation=false;
 
+String      g_currentWord;
 Definition *g_definition = NULL;
 bool        g_fRec=false;
 
@@ -64,13 +65,18 @@ static RenderingPreferences& renderingPrefs(void)
 
 static void SetDefinition(ArsLexis::String& defTxt)
 {
-    Definition * newDef = ParseAndFormatDefinition(defTxt);
+    String word;
+    Definition * newDef = ParseAndFormatDefinition(defTxt, word);
 
     if (NULL==newDef)
         return;
 
     delete g_definition;
     g_definition = newDef;
+    g_currentWord = word;
+
+    SetEditWinText(g_hwndEdit, word);
+    SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
 
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     g_fRec = true;
@@ -254,16 +260,12 @@ static void ScrollDefinition(int page)
 #define MAX_WORD_LEN 64
 static void DoLookup(HWND hwnd)
 {
-    TCHAR buf[MAX_WORD_LEN+1];
-    int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
-    if (0==len)
+    String word;
+    GetEditWinText(g_hwndEdit, word);
+
+    if (word==g_currentWord)
         return;
 
-    ZeroMemory(buf,sizeof(buf));
-    len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-    SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
-
-    ArsLexis::String word(buf); 
     DrawProgressInfo(hwnd, _T("definition..."));
 
     String def;
