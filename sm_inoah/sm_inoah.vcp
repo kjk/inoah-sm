@@ -1254,6 +1254,7 @@ NODEP_CPP_INOAHS=\
 
 DEP_CPP_INOAHS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
@@ -2208,6 +2209,10 @@ DEP_CPP_WINGR=\
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\Application.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\BaseTypes.hpp
 # End Source File
 # Begin Source File
@@ -2229,6 +2234,14 @@ SOURCE=..\ars_framework\Src\DefinitionElement.hpp
 # Begin Source File
 
 SOURCE=.\DynamicNewLineElement.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\ErrBase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\FontEffects.hpp
 # End Source File
 # Begin Source File
 
@@ -2257,6 +2270,14 @@ SOURCE=.\iNoahParser.h
 # Begin Source File
 
 SOURCE=.\iNoahSession.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\LineBreakElement.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\Logging.hpp
 # End Source File
 # Begin Source File
 
@@ -2297,6 +2318,10 @@ SOURCE=.\TAPIDevice.h
 # Begin Source File
 
 SOURCE=.\TAPILine.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\Text.hpp
 # End Source File
 # Begin Source File
 

@@ -1,7 +1,3 @@
-// DynamicNewLineElement.cpp: implementation of the DynamicNewLineElement class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "DynamicNewLineElement.h"
 
 DynamicNewLineElement::DynamicNewLineElement(const ArsLexis::String& text)

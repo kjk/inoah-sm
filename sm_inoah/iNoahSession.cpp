@@ -32,24 +32,24 @@ const char_t * pronunciationStr= _T("PRON");
 const char_t * regFailedStr    = _T("REGISTRATION_FAILED");
 const char_t * regOkStr        = _T("REGISTRATION_OK");
 
-const String script          = TEXT("/dict-2.php?");
-const String protocolVersion = TEXT("pv=2");
-const String clientVersion   = TEXT("cv=1.0");
-const String sep             = TEXT("&");
-const String cookieRequest   = TEXT("get_cookie=");
-const String deviceInfoParam = TEXT("di=");
+#define urlCommon _T("/dict-2.php?pv=2&cv=1.0&")
+#define urlCommonLen sizeof(urlCommon)/sizeof(urlCommon[0])
 
-const String cookieParam     = TEXT("c=");
-const String registerParam   = TEXT("register=");
-const String regCodeParam    = TEXT("rc=");
-const String getWordParam    = TEXT("get_word=");
+const String sep             = _T("&");
+const String cookieRequest   = _T("get_cookie=");
+const String deviceInfoParam = _T("di=");
 
-const String randomRequest   = TEXT("get_random_word=");
-const String recentRequest   = TEXT("recent_lookups=");
+const String cookieParam     = _T("c=");
+const String registerParam   = _T("register=");
+const String regCodeParam    = _T("rc=");
+const String getWordParam    = _T("get_word=");
 
-const String iNoahFolder     = TEXT ("\\iNoah");
-const String cookieFile      = TEXT ("\\Cookie");
-const String regCodeFile     = TEXT ("\\RegCode");
+const String randomRequest   = _T("get_random_word=");
+const String recentRequest   = _T("recent_lookups=");
+
+const String iNoahFolder     = _T("\\iNoah");
+const String cookieFile      = _T("\\Cookie");
+const String regCodeFile     = _T("\\RegCode");
 
 enum eFieldType {
     fieldNoValue,     // field has no value e.g. "REGISTRATION_OK\n"
@@ -62,7 +62,6 @@ typedef struct _fieldDef {
     const char_t *  fieldName;
     eFieldType      fieldType;
 } FieldDef;
-    
 
 // those must be in the same order as fieldId. They describe the format
 // of each field
@@ -398,15 +397,11 @@ void iNoahSession::getRandomWord(String& ret)
         return;
     }
     String tmp;
-    tmp.reserve(script.length()+protocolVersion.length()+
-        sep.length()+clientVersion.length()+sep.length()+
+    tmp.reserve(urlCommonLen+
         cookieParam.length()+cookie.length()+sep.length()+
         randomRequest.length()); 
-    tmp += script;
-    tmp += protocolVersion;
-    tmp += sep;
-    tmp += clientVersion;
-    tmp += sep;
+
+    tmp.assign(urlCommon);
     tmp += cookieParam;
     tmp += cookie;
     tmp += sep;
@@ -424,16 +419,11 @@ void iNoahSession::registerNoah(String registerCode, String& ret)
     }
     
     String tmp;
-    tmp.reserve(script.length()+protocolVersion.length()+
-        sep.length()+clientVersion.length()+sep.length()+
+    tmp.reserve(urlCommonLen+
         cookieParam.length()+cookie.length()+sep.length()+
         registerParam.length()+registerCode.length());
     
-    tmp += script;
-    tmp += protocolVersion; 
-    tmp += sep;
-    tmp += clientVersion;
-    tmp += sep;
+    tmp.assign(urlCommon);
     tmp += cookieParam;
     tmp += cookie;
     tmp += sep;
@@ -468,17 +458,12 @@ void iNoahSession::getWord(String word, String& ret)
         regCode = sep+regCodeParam+regCode;
 
     String url;
-    url.reserve(script.length()+protocolVersion.length()+
-        sep.length()+clientVersion.length()+sep.length()+
+    url.reserve(urlCommonLen+
         cookieParam.length()+cookie.length()+sep.length()+
         getWordParam.length()+word.length()+
         regCode.length());
 
-    url += script;
-    url += protocolVersion;
-    url += sep;
-    url += clientVersion;
-    url += sep;
+    url.assign(urlCommon);
     url += cookieParam;
     url += cookie;
     url += sep;
@@ -498,15 +483,10 @@ void iNoahSession::getWordList(String& ret )
     }
 
     String tmp;
-    tmp.reserve(script.length()+protocolVersion.length()+sep.length()+
-        clientVersion.length()+sep.length()+cookieParam.length()+
+    tmp.reserve(urlCommonLen+sep.length()+cookieParam.length()+
         cookie.length()+sep.length()+recentRequest.length());
     
-    tmp += script;
-    tmp += protocolVersion;
-    tmp += sep;
-    tmp += clientVersion;
-    tmp += sep;
+    tmp.assign(urlCommon);
     tmp += cookieParam;
     tmp += cookie;
     tmp += sep;
@@ -548,15 +528,10 @@ bool iNoahSession::getCookie()
     String deviceInfo = deviceInfoParam + getDeviceInfo();
     String tmp;
 
-    tmp.reserve(script.length()+protocolVersion.length()+
-        sep.length()+clientVersion.length()+sep.length()+
+    tmp.reserve(urlCommonLen+
         deviceInfo.length()+sep.length()+cookieRequest.length());
 
-    tmp += script; 
-    tmp += protocolVersion; 
-    tmp += sep; 
-    tmp += clientVersion;
-    tmp += sep; 
+    tmp.assign(urlCommon);
     tmp += deviceInfo; 
     tmp += sep; 
     tmp += cookieRequest;
