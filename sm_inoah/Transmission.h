@@ -16,9 +16,9 @@ const TCHAR HTTPver[]=TEXT("HTTP/1.0");
 
 class Transmission
 {
-    static  HINTERNET   hInternet;
-    static  DWORD       openInternet();
-    DWORD               lastError;
+    static  HINTERNET   hInternet_;
+    static  HINTERNET   openInternet();
+    DWORD               lastError_;
     ArsLexis::String    localInfo;
     ArsLexis::String    host;
     INTERNET_PORT       port;

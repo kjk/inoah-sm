@@ -8,17 +8,22 @@
 #include <BaseTypes.hpp>
 #include "sm_inoah.h"
 
-HINTERNET Transmission::hInternet = NULL;
+HINTERNET Transmission::hInternet_ = NULL;
 
 Transmission::Transmission(
                            const ArsLexis::String& host,
                            INTERNET_PORT           port,
                            const ArsLexis::String& localInfo)
 {
-    if (!hInternet)
-        lastError = openInternet();
-    if (!hInternet)
-        return;
+    if (!hInternet_)
+    {
+        hInternet_ = openInternet();
+        if (!hInternet_)
+        {
+            lastError_ = GetLastError();
+            return;
+        }
+    }
     this->host = host;
     this->port = port;
     this->localInfo = localInfo;
@@ -26,33 +31,39 @@ Transmission::Transmission(
     hIRequest_ = NULL;
 }
 
-DWORD Transmission::openInternet()
+HINTERNET Transmission::openInternet()
 {
-    hInternet = InternetOpen(TEXT("inoah-client"),
+    HINTERNET handle;
+    handle = InternetOpen(TEXT("inoah-client"),
         INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     //INTERNET_FLAG_ASYNC in case of callback
-    //InternetSetStatusCallback(hInternet, dispatchCallback); 
-    if (hInternet)
-        assert( 0==GetLastError() );
-    return GetLastError();
+    //InternetSetStatusCallback(hInternet_, dispatchCallback); 
+
+#ifdef DEBUG
+    // a mystery: on emulator, GetLastError() returns 87 (ERROR_INVALID_PARAMETER)
+    // even if we get a handle
+    DWORD error;
+    error = GetLastError();
+#endif
+    return handle;
 }
 
 void Transmission::closeInternet()
 {
-    if (hInternet)
+    if (hInternet_)
     {
-        InternetCloseHandle(hInternet);
-        hInternet = NULL;
+        InternetCloseHandle(hInternet_);
+        hInternet_ = NULL;
     }
 }
 
 DWORD Transmission::sendRequest()
 {
-    if (!hInternet)
-        return lastError;
+    if (!hInternet_)
+        return lastError_;
 
     hIConnect_ = InternetConnect(
-        hInternet,host.c_str(),port,
+        hInternet_,host.c_str(),port,
         TEXT(" "),TEXT(" "),
         INTERNET_SERVICE_HTTP, 0, 0);
     
@@ -87,7 +98,7 @@ DWORD Transmission::sendRequest()
         INTERNET_OPTION_READ_BUFFER_SIZE, &buffSize, dwordLen);
         /*std::wstring fullURL(server+url+TEXT(" HTTP/1.0"));
         hIRequest = InternetOpenUrl(
-        hInternet,
+        hInternet_,
         fullURL.c_str(),
     NULL,0,0, context=transContextCnt++);*/
 
@@ -126,13 +137,13 @@ void Transmission::getResponse(ArsLexis::String& ret)
 DWORD Transmission::setError()
 {    
     //LPVOID lpMsgBuf;
-    lastError = GetLastError();
+    lastError_ = GetLastError();
     /*FormatMessage( 
     FORMAT_MESSAGE_ALLOCATE_BUFFER | 
     FORMAT_MESSAGE_FROM_SYSTEM | 
     FORMAT_MESSAGE_IGNORE_INSERTS,
     NULL,
-    lastError,
+    lastError_,
     0, // Default language
     (LPTSTR) &lpMsgBuf,
     0,
@@ -141,11 +152,11 @@ DWORD Transmission::setError()
     //content=ArsLexis::String((TCHAR*)lpMsgBuf);
     TCHAR buffer[20];
     memset(buffer,0,sizeof(buffer));
-    _itow(lastError, buffer, 10);
+    _itow(lastError_, buffer, 10);
     
     content.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
     content+=buffer;
-    if (ERROR_INTERNET_CANNOT_CONNECT==lastError)
+    if (ERROR_INTERNET_CANNOT_CONNECT==lastError_)
     {
         content += TEXT(" (cannot connect to ");
         content += host;
@@ -167,7 +178,7 @@ DWORD Transmission::setError()
         InternetCloseHandle(hIRequest_);
         hIRequest_ = NULL;
     }
-    return lastError;
+    return lastError_;
 }
 
 Transmission::~Transmission()

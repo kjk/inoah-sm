@@ -28,6 +28,8 @@ TCHAR szTitle[];
 #ifdef KJK_BUILD
 #define server     TEXT("dict-pc.arslex.com")
 #define serverPort 4080
+//#define server     TEXT("dict.arslex.com")
+//#define serverPort 80
 #else
 #define server     TEXT("arslex.no-ip.info")
 #define serverPort 80
