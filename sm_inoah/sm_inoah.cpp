@@ -41,13 +41,14 @@ ArsLexis::String wordList;
 ArsLexis::String recentWord;
 ArsLexis::String regCode;
 iNoahSession session;
+HANDLE hConnection = NULL;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 WNDPROC oldEditWndProc;
 void drawProgressInfo(HWND hwnd, TCHAR* text);
 void setFontSize(int diff,HWND hwnd);
 void paint(HWND hwnd, HDC hdc);
-void displayPhoneInfo();
+//void displayPhoneInfo();
 bool initConnection();
 void setScrollBar(Definition* definition_);
 void setDefinition(ArsLexis::String& defs, HWND hwnd);
@@ -222,11 +223,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     ReleaseDC(hwnd, hdc);
                     drawProgressInfo(hwnd, TEXT("recent lookups list..."));
                     session.getWordList(wordList);
-                    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
-                    {                        
-                        drawProgressInfo(hwnd, TEXT("definition..."));
-                        session.getWord(recentWord,text);
-                        setDefinition(text,hwnd);
+                    iNoahSession::ResponseCode code=session.getLastResponseCode();
+                    switch(code)
+                    {   
+                        case iNoahSession::srvmessage:
+                        {
+                            MessageBox(hwnd,wordList.c_str(),TEXT("Information"), 
+                                MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
+                            break;
+                        }
+                        case iNoahSession::srverror:
+                        case iNoahSession::error:
+                        {
+                            MessageBox(hwnd,wordList.c_str(),TEXT("Error"), 
+                                MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
+                            break;
+                        }
+                        default:
+                        {
+                            if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
+                            {                        
+                                drawProgressInfo(hwnd, TEXT("definition..."));
+                                session.getWord(recentWord,text);
+                                setDefinition(text,hwnd);
+                            }
+                            break;
+                        }
                     }
                     break;
                 }
@@ -235,10 +257,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc);
                     break;
                 }
-                case IDM_PHONEINFO:
-                    displayPhoneInfo();
+                case IDM_CACHE:
+                    session.clearCache();
                     break;
-
+                /*case IDM_PHONEINFO:
+                    displayPhoneInfo();
+                    break;*/
                 default:
                     return DefWindowProc(hwnd, msg, wp, lp);
             }
@@ -274,6 +298,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
         
         case WM_CLOSE:
+            if(hConnection)
+                ConnMgrReleaseConnection(hConnection,1);
             DestroyWindow(hwnd);
             break;
         case WM_DESTROY:
@@ -590,57 +616,10 @@ void setFontSize(int diff, HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
-
-void displayPhoneInfo()
-{
-    SMS_ADDRESS address;
-    ArsLexis::String text;
-    text.assign(TEXT("Phone number "));
-    memset(&address,0,sizeof(SMS_ADDRESS)); 
-    HRESULT res = SmsGetPhoneNumber(&address); 
-    TCHAR buffer[1000];
-    if(SUCCEEDED(res))
-    {
-        text+=address.ptsAddress;
-    }
-    else
-    {
-        _itow( res, buffer, 16 );
-        text+=TEXT("can't be retrived (error code: 0x");
-        text+=buffer;
-        text+=TEXT(")");
-    }
-    SystemParametersInfo(SPI_GETOEMINFO, 1000, buffer, 0);
-    text+=TEXT(", OEM info: ");
-    text+=buffer;
-    SystemParametersInfo(SPI_GETPLATFORMTYPE, 1000, buffer, 0);
-    text+=TEXT(", Platform type: ");
-    text+=buffer;
-    DWORD dwOutBytes;
-    text+=TEXT(", Unique device ID ");
-    if (KernelIoControl(IOCTL_HAL_GET_DEVICEID, 0, 0, buffer, 1000, &dwOutBytes))
-    {
-        text+=TEXT("succesfully obtained");
-        //DEVICE_ID *devID=(PDEVICE_ID)buffer;
-    }
-    else
-    {
-        text+=TEXT("can't be obtained (error code: 0x");
-        DWORD errCode=GetLastError();
-        _itow( errCode, buffer, 16 );
-        text+=buffer;
-        text+=TEXT(")");
-    }
-        
-
-    MessageBox(hwndMain,text.c_str(),TEXT("Information"), 
-        MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
-}
-
 bool initConnection()
 {
     // Establish a synchronous connection
-    HANDLE hConnection = NULL;
+    
     DWORD dwStatus = 0;
     DWORD dwTimeout = 5000;
     

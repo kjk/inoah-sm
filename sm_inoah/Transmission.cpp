@@ -100,7 +100,7 @@ void Transmission::getResponse(ArsLexis::String& ret)
 DWORD Transmission::setError()
 {
     
-    LPVOID lpMsgBuf;
+    //LPVOID lpMsgBuf;
     lastError = GetLastError();
     /*FormatMessage( 
     FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -117,9 +117,9 @@ DWORD Transmission::setError()
     TCHAR buffer[20];
     _itow(lastError, buffer, 10 );
     
-    content.assign(TEXT("Network connection unavailable. iNoah cannot retrieve the definition. Error code:"));
+    content.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
     content+=buffer;
-    LocalFree( lpMsgBuf );
+    //LocalFree( lpMsgBuf );
     InternetCloseHandle(hIConnect);
     InternetCloseHandle(hIRequest);
     return lastError;

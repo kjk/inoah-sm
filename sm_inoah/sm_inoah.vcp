@@ -51,7 +51,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 CPP=clarm.exe
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
-# ADD CPP /nologo /W3 /I "..\ars_framework\Src" /I "./" /I "..\ars_framework\Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /I "..\ars_framework\Src" /I "./" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -83,7 +83,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 CPP=clarm.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
-# ADD CPP /nologo /W3 /Zi /Od /I "..\ars_framework\Src" /I "./" /I "..\ars_framework\Src" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
+# ADD CPP /nologo /W3 /Zi /Od /I "..\ars_framework\Src" /I "./" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -115,7 +115,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
-# ADD CPP /nologo /W3 /I "..\ars_framework\Src" /I "./" /I "..\ars_framework\Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
+# ADD CPP /nologo /W3 /I "..\ars_framework\Src" /I "./" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -148,7 +148,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
-# ADD CPP /nologo /W3 /Zi /Od /I "./" /I "..\ars_framework\Src" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /I "./" /I "..\ars_framework\Src" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "CACHE" /FR /YX /Gs8192 /GF /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -157,7 +157,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib wininet.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ENDIF 
 
@@ -186,16 +186,16 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_BULLE=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -212,16 +212,16 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_BULLE=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -257,21 +257,21 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\BulletElement.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -330,9 +330,9 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_COMMON=\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -350,9 +350,9 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_COMMON=\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -381,6 +381,7 @@ NODEP_CPP_COMMON=\
 DEP_CPP_COMMON=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
@@ -390,7 +391,6 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -412,16 +412,16 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFIN=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -437,16 +437,16 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFIN=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -481,21 +481,21 @@ NODEP_CPP_DEFIN=\
 DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -517,15 +517,15 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFINI=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -541,15 +541,15 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFINI=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -582,20 +582,20 @@ NODEP_CPP_DEFINI=\
 DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -618,16 +618,18 @@ DEP_CPP_DYNAM=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	
+NODEP_CPP_DYNAM=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -642,16 +644,18 @@ DEP_CPP_DYNAM=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	
+NODEP_CPP_DYNAM=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -666,18 +670,20 @@ DEP_CPP_DYNAM=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
-	{$(INCLUDE)}"stdint.h"\
+	
+NODEP_CPP_DYNAM=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
+	".\stdint"\
+	".\tdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -685,23 +691,23 @@ DEP_CPP_DYNAM=\
 DEP_CPP_DYNAM=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -717,9 +723,9 @@ SOURCE=..\ars_framework\Src\FontEffects.cpp
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_FONTE=\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -729,9 +735,9 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_FONTE=\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -741,9 +747,9 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_FONTE=\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -753,8 +759,9 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -822,22 +829,22 @@ NODEP_CPP_FORMA=\
 DEP_CPP_FORMA=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -859,17 +866,17 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\cctype"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_GENER=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -885,17 +892,17 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\cctype"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_GENER=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\enericTextElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -930,22 +937,22 @@ NODEP_CPP_GENER=\
 DEP_CPP_GENER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\cctype"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -968,15 +975,15 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_HORIZ=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -993,15 +1000,15 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_HORIZ=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1035,6 +1042,9 @@ NODEP_CPP_HORIZ=\
 DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\HorizontalLineElement.hpp"\
@@ -1042,14 +1052,11 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1109,27 +1116,27 @@ NODEP_CPP_INOAH=\
 DEP_CPP_INOAH=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\iNoahParser.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1186,6 +1193,7 @@ DEP_CPP_INOAHS=\
 	{$(INCLUDE)}"ceutil.h"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
 	{$(INCLUDE)}"stdint.h"\
 	{$(INCLUDE)}"tpcshell.h"\
 	{$(INCLUDE)}"vibrate.h"\
@@ -1210,16 +1218,16 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_LINEB=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\ineBreakElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1235,16 +1243,16 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_LINEB=\
+	"..\ars_framework\Src\RenderingPreferences.hpp"\
 	".\efinition.hpp"\
 	".\efinitionElement.hpp"\
 	".\endering.hpp"\
 	".\ineBreakElement.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1278,21 +1286,123 @@ NODEP_CPP_LINEB=\
 DEP_CPP_LINEB=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\reclookups.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_RECLO=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\reclookups.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_RECLO=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\reclookups.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_RECLO=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\reclookups.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_RECLO=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\reclookups.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\registration.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_REGIS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\registration.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_REGIS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\registration.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_REGIS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\registration.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_REGIS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
+	".\registration.h"\
+	".\sm_inoah.h"\
+	".\Transmission.h"\
+	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1316,10 +1426,10 @@ DEP_CPP_RENDE=\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_RENDE=\
 	".\endering.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1337,10 +1447,10 @@ DEP_CPP_RENDE=\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_RENDE=\
 	".\endering.hpp"\
+	".\ontEffects.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1370,17 +1480,17 @@ NODEP_CPP_RENDE=\
 DEP_CPP_RENDE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1437,6 +1547,7 @@ NODEP_CPP_RENDER=\
 DEP_CPP_RENDER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
@@ -1444,11 +1555,12 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	".\iNoahSession.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
+	".\Transmission.h"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1503,34 +1615,39 @@ DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\BulletElement.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\iNoahParser.h"\
 	".\iNoahSession.h"\
+	".\reclookups.h"\
+	".\registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
 	".\WinFont.h"\
+	{$(INCLUDE)}"connmgr.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
 	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"FontEffects.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"sms.h"\
 	{$(INCLUDE)}"stdint.h"\
 	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ENDIF 
@@ -1582,9 +1699,11 @@ NODEP_CPP_TAPID=\
 
 DEP_CPP_TAPID=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
+	".\Transmission.h"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"stdint.h"\
@@ -1702,9 +1821,9 @@ DEP_CPP_WINFO=\
 DEP_CPP_WINFO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1792,6 +1911,7 @@ NODEP_CPP_WINGR=\
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
@@ -1799,10 +1919,11 @@ DEP_CPP_WINGR=\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	".\iNoahSession.h"\
 	".\sm_inoah.h"\
+	".\Transmission.h"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1872,6 +1993,14 @@ SOURCE=..\ars_framework\Src\NativeGeometry.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\NativeGraphics.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\reclookups.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\registration.h
 # End Source File
 # Begin Source File
 

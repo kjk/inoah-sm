@@ -36,6 +36,7 @@ public:
     ResponseCode getLastResponseCode() { return responseCode; }
     
     ArsLexis::String getDeviceInfo();
+    void clearCache();
     virtual ~iNoahSession();
     
 private:
@@ -50,8 +51,10 @@ private:
     bool checkErrors(Transmission &tr, ArsLexis::String &ret);
     int CreateAppFolder (HWND hWnd, TCHAR *pszAppFolder, int nMax);
     bool getCookie();
-    
+    void text2Hex(const ArsLexis::String& text, ArsLexis::String& hex);    
+
     ResponseCode responseCode;
+
 };
 
 #endif // !defined(AFX_INOAHTRANSMISSION_H__2E89FAF6_91F8_46A0_8AB5_7C2397EEC8DB__INCLUDED_)

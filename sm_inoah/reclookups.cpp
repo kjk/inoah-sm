@@ -1,8 +1,16 @@
 #include "reclookups.h"
 #include "sm_inoah.h"
+#include <list.h>
+#include <windows.h>
+
+using namespace ArsLexis;
 
 WNDPROC oldListWndProc;
 HWND hRecentLookupaDlg=NULL;
+
+list<TCHAR*> words;
+
+const int hotKeyCode=0x32;
 
 LRESULT CALLBACK ListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -13,7 +21,7 @@ LRESULT CALLBACK ListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         {
             switch(wp)
             {
-                case 0x32:
+                case hotKeyCode:
                     SendMessage(hRecentLookupaDlg, WM_COMMAND, ID_SELECT, 0);
                     break;
             }
@@ -85,11 +93,16 @@ BOOL InitRecentLookups(HWND hDlg)
 
     HWND ctrl=GetDlgItem(hDlg, IDC_LIST_RECENT);
     oldListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ListWndProc);
-    RegisterHotKey( ctrl, 50, 0, VK_TACTION);
+    RegisterHotKey( ctrl, hotKeyCode, 0, VK_TACTION);
+
+    
+    std::list<TCHAR*>::iterator iter;
+    for (iter=words.begin();!(iter==words.end());iter++) 
+        delete [] (*iter);
 
     int last=wordList.find_first_of(TCHAR('\n'));
     int first=0;
-    while((last!=-1)&&(last!=wordList.length()))
+    while((last!=-1)&&(last-wordList.length()!=0))
     {
         ArsLexis::String tmp=wordList.substr(first,last-first);
         if (tmp.compare(TEXT(""))!=0)
@@ -101,6 +114,7 @@ BOOL InitRecentLookups(HWND hDlg)
                 LB_ADDSTRING,
                 0,
                 (LPARAM)str);
+            words.push_back(str);
         }
         first=last+1;
         last=wordList.find_first_of(TCHAR('\n'),first);

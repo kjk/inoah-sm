@@ -10,6 +10,7 @@
 #include <tpcshell.h>
 #include <winuserm.h>
 #include <winbase.h>
+#include <sms.h>
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -294,9 +295,61 @@ void iNoahSession::storeString(String fileName, String str)
     CloseHandle(fHandle);
 }
 
+void iNoahSession::text2Hex(const String& text, String& hex)
+{
+    TCHAR c;
+    for(int i=0; 0<text.length()-i;i++)
+    {
+        c=(text[i]&0xF0)>>4;
+        hex+=c>9?c-10+TCHAR('A'):c+TCHAR('0');
+        c=(text[i]&0x0F);
+        hex+=c>9?c-10+TCHAR('A'):c+TCHAR('0');
+    }
+}
+
+void iNoahSession::clearCache()
+{
+    TCHAR szPath[MAX_PATH];
+    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, CSIDL_APPDATA, FALSE);
+    String fullPath = szPath + iNoahFolder;
+    CreateDirectory (fullPath.c_str(), NULL);
+    fullPath+=cookieFile;
+    f = DeleteFile(fullPath.c_str());
+    fullPath = szPath + iNoahFolder + regCodeFile;
+    f = DeleteFile(fullPath.c_str());
+    cookieReceived = false;
+}
+
 String iNoahSession::getDeviceInfo()
 {
-    return TEXT("SP4546");
+    SMS_ADDRESS address;
+    ArsLexis::String regsInfo;
+    ArsLexis::String text;
+    
+    memset(&address,0,sizeof(SMS_ADDRESS));
+    HRESULT res = SmsGetPhoneNumber(&address); 
+    //No idea how to obtain length from SystemParametersInfo
+    //but 1000 should be enough for a quite long strings I hope
+    TCHAR buffer[1000];
+    if(SUCCEEDED(res))
+    {
+        text.assign(TEXT("PN"));
+        text2Hex(address.ptsAddress,text);
+    }
+
+    if(SystemParametersInfo(SPI_GETOEMINFO, 1000, buffer, 0))
+    {
+        if(text.length()) text+=TEXT(":");
+        text+=TEXT("OC");
+        text2Hex(buffer,text);
+    }
+    if(SystemParametersInfo(SPI_GETPLATFORMTYPE, 1000, buffer, 0))
+    {
+        if(text.length()) text+=TEXT(":");
+        text+=TEXT("OD");
+        text2Hex(buffer,text);
+    }
+    return text;
 }
 
 iNoahSession::~iNoahSession()

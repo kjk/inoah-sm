@@ -50,7 +50,7 @@ Definition* iNoahParser::parse(String text)
             do
             {
                 nextIdx = meanings.find_first_of(char_t('\n'), nextIdx+1);
-                if ((nextIdx != -1)&&(meanings.length()>nextIdx+2))
+                if ((nextIdx != -1)&&(meanings.length() - nextIdx - 2 > 0 ))
                     nextBeg = meanings[nextIdx+1];
             } while ((nextBeg==currBeg) && (nextIdx != -1));
             if ((nextIdx == -1)||(metBegs.find_first_of(nextBeg) != -1))
@@ -143,7 +143,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
     synonyms = NULL;
     
     int currIndx = 0;
-    while (currIndx < text.length())
+    while (currIndx < static_cast<int>(text.length()))
     {
         int start = currIndx;
         char_t c = text[currIndx];
@@ -155,7 +155,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
         case '!' :
         case '#' :
             {
-                while ((currIndx < text.length() - 2)
+                while ((currIndx < static_cast<int>(text.length()) - 2)
                     && (currIndx != -1)
                     && (text[currIndx + 1] == c))
                     currIndx = text.find_first_of(char_t('\n'), currIndx + 1);
@@ -189,7 +189,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
             }
         case '$' :
             { 
-                if (start + 1 > text.length())
+                if (start + 1 > static_cast<int>(text.length()))
                 {
                     error.assign(TEXT("No part of speach description"));
                     return false;
@@ -240,7 +240,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
     ElementsList* lst=new ElementsList();
     DynamicNewLineElement* last=NULL;
     
-    while ((currIndx < text.length() - 2)
+    while ((currIndx < static_cast<int>(text.length()) - 2)
         && (text[currIndx+1] == '!'))
     {
         int start = currIndx;
@@ -282,7 +282,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
     ElementsList* lst=new ElementsList();
     DynamicNewLineElement* last=NULL;
     
-    while ((currIndx < text.length() - 2)
+    while ((currIndx < static_cast<int>(text.length()) - 2)
         && (text[currIndx+1] == '#'))
     {
         int start = currIndx;
