@@ -312,36 +312,50 @@ static void DrawFancyRectangle(HDC hdc, RECT *rect)
     p[1].y = endY;
 
     LOGPEN pen;
-    HGDIOBJ prevPen = GetCurrentObject(hdc,OBJ_PEN);
-
-    GetObject(prevPen, sizeof(pen), &pen);
+    HGDIOBJ origPen = GetCurrentObject(hdc,OBJ_PEN);
+    GetObject(origPen, sizeof(pen), &pen);
 
     int dx = endX - startX;
 
-    int startBlueCol = 255;
-    int endBlueCol = 80;
+    float startBlueCol = 255;
+    float endBlueCol = 80;
 
-    int blueColSpread = startBlueCol - endBlueCol;
+    float blueColSpread = startBlueCol - endBlueCol;
 
-    int spread = blueColSpread/dx;
+    float spread = blueColSpread/(float)dx;
 
-    int blueColor = startBlueCol;
+    float blueColorFlt = startBlueCol;
+
+    int prevBlueColor = -1;
+    int curBlueColor = (int)blueColorFlt;
+
+    HPEN newPen;
 
     for (int x=startX; x<endX; x++)
     {
         p[0].x = x;
 
-        HPEN newPen = CreatePenIndirect(&pen);
-        pen.lopnColor = RGB(0,0,blueColor);
-        SelectObject(hdc,newPen);
+        if (curBlueColor!=prevBlueColor)
+        {
+            pen.lopnColor = RGB(0,0,curBlueColor);
+            newPen = CreatePenIndirect(&pen);
+            SelectObject(hdc,newPen);
+        }
 
-        DeleteObject(prevPen);
-        prevPen = newPen;
         p[1].x = p[0].x;
         Polyline(hdc, p, 2);
-        blueColor -= spread;
+
+        if (curBlueColor!=prevBlueColor)
+        {
+            DeleteObject(newPen);
+            prevBlueColor = curBlueColor;
+        }
+
+        blueColorFlt -= spread;
+        curBlueColor = (int)blueColorFlt;
     }
-    DeleteObject(prevPen);
+
+    SelectObject(hdc,origPen);
 }
 
 static void DrawRectangle(HDC hdc, RECT *rect)
@@ -398,6 +412,17 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
 
     HDC hdc=GetDC(hwnd);
     HFONT prevFnt = (HFONT)SelectObject(hdc, fnt);
+
+/*    rect.top -= 1;
+    rect.bottom += 1;
+    rect.left -= 1;
+    rect.right += 1;
+    DrawRectangle(hdc, &rect);
+
+    rect.top += 1;
+    rect.bottom -= 1;
+    rect.left += 1;
+    rect.right -= 1; */
 
     DrawFancyRectangle(hdc, &rect);
 
