@@ -202,10 +202,10 @@ DEP_CPP_INOAH=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"stdint.h"\
 	
 NODEP_CPP_INOAH=\
+	".\stdint"\
+	".\tdint.h"\
 	".\Tranmission.h"\
 	
 
@@ -215,8 +215,13 @@ DEP_CPP_INOAH=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\iNoahSession.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"stdint.h"\
+	{$(INCLUDE)}"Tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ENDIF 
@@ -231,9 +236,11 @@ SOURCE=.\sm_inoah.cpp
 DEP_CPP_SM_IN=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -241,9 +248,11 @@ DEP_CPP_SM_IN=\
 DEP_CPP_SM_IN=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -251,23 +260,24 @@ DEP_CPP_SM_IN=\
 DEP_CPP_SM_IN=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\stdint"\
+	".\tdint.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_SM_IN=\
 	"..\ipedia\src\BaseTypes.hpp"\
+	".\iNoahSession.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"stdint.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"Tpcshell.h"\
 	
 
 !ENDIF 
@@ -296,8 +306,10 @@ DEP_CPP_TRANS=\
 DEP_CPP_TRANS=\
 	"..\ipedia\src\BaseTypes.hpp"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"cstdint"\
-	{$(INCLUDE)}"stdint.h"\
+	
+NODEP_CPP_TRANS=\
+	".\stdint"\
+	".\tdint.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -352,9 +364,5 @@ SOURCE=.\sm_inoah.rc
 
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\ReadMe.txt
-# End Source File
 # End Target
 # End Project

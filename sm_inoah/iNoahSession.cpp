@@ -4,6 +4,7 @@
 
 #include "iNoahSession.h"
 #include "Transmission.h"
+#include <ceutil.h>
 #include <aygshell.h>
 #include <tpcshell.h>
 #include <winuserm.h>
@@ -184,3 +185,4 @@ iNoahSession::~iNoahSession()
 {
 	
 }
+
