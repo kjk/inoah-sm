@@ -103,7 +103,7 @@ DWORD Transmission::sendRequest()
     NULL,0,0, context=transContextCnt++);*/
 
     /* todo: is it a bug? should we check succ instead? */
-    if(!hIRequest_)
+    if(!succ)
         return setError();
     //InternetSetStatusCallback(hIRequest, dispatchCallback);
     //if(!HttpSendRequestEx(hIRequest,NULL,NULL,HSR_ASYNC,context))

@@ -1,4 +1,4 @@
-#include "Graphics.hpp"
+#include <WinGraphics.hpp>
 #include <Wingdi.h>
 
 namespace ArsLexis

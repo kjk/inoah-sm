@@ -253,6 +253,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
@@ -260,11 +261,12 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -365,15 +367,17 @@ NODEP_CPP_COMMON=\
 DEP_CPP_COMMON=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -457,6 +461,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
@@ -464,11 +469,12 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -548,17 +554,19 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -649,6 +657,7 @@ DEP_CPP_DYNAM=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
@@ -657,12 +666,13 @@ DEP_CPP_DYNAM=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\DynamicNewLineElement.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -707,6 +717,7 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	
@@ -795,6 +806,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
@@ -803,11 +815,12 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -893,6 +906,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
@@ -900,12 +914,14 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\cctype"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -988,6 +1004,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
@@ -995,11 +1012,12 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -1096,6 +1114,7 @@ DEP_CPP_INOAH=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\FormattedTextElement.hpp"\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
@@ -1106,7 +1125,7 @@ DEP_CPP_INOAH=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
@@ -1114,6 +1133,7 @@ DEP_CPP_INOAH=\
 	".\iNoahParser.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -1130,13 +1150,15 @@ DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"ceutil.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INOAHS=\
+	".\eutil.h"\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1146,13 +1168,15 @@ DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"ceutil.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INOAHS=\
+	".\eutil.h"\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1172,18 +1196,16 @@ NODEP_CPP_INOAHS=\
 
 DEP_CPP_INOAHS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_INOAHS=\
-	".\eutil.h"\
-	".\ibrate.h"\
-	".\inuserm.h"\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ENDIF 
@@ -1266,6 +1288,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
@@ -1273,11 +1296,12 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -1325,6 +1349,7 @@ NODEP_CPP_RECLO=\
 
 DEP_CPP_RECLO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	".\iNoahSession.h"\
 	".\reclookups.h"\
 	".\sm_inoah.h"\
@@ -1376,6 +1401,7 @@ NODEP_CPP_REGIS=\
 
 DEP_CPP_REGIS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	".\iNoahSession.h"\
 	".\registration.h"\
 	".\sm_inoah.h"\
@@ -1448,16 +1474,18 @@ NODEP_CPP_RENDE=\
 DEP_CPP_RENDE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -1533,19 +1561,21 @@ NODEP_CPP_RENDER=\
 DEP_CPP_RENDER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	".\iNoahSession.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -1587,67 +1617,16 @@ DEP_CPP_SM_IN=\
 	".\TAPILine.h"\
 	".\Transmission.h"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\onnmgr.h"\
+	".\pcshell.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
-
-DEP_CPP_SM_IN=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\BulletElement.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\Definition.hpp"\
-	"..\ars_framework\Src\DefinitionElement.hpp"\
-	"..\ars_framework\Src\FontEffects.hpp"\
-	"..\ars_framework\Src\FormattedTextElement.hpp"\
-	"..\ars_framework\Src\GenericTextElement.hpp"\
-	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
-	"..\ars_framework\Src\HorizontalLineElement.hpp"\
-	"..\ars_framework\Src\LineBreakElement.hpp"\
-	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
-	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
-	"..\ars_framework\Src\ParagraphElement.hpp"\
-	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Utility.hpp"\
-	".\DynamicNewLineElement.h"\
-	".\iNoahParser.h"\
-	".\iNoahSession.h"\
-	".\reclookups.h"\
-	".\registration.h"\
-	".\RenderingPreferences.hpp"\
-	".\TAPIDevice.h"\
-	".\TAPILine.h"\
-	".\Transmission.h"\
-	".\WinFont.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
-
-DEP_CPP_SM_IN=\
-	".\Transmission.h"\
-	
-NODEP_CPP_SM_IN=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ipedia\src\BaseTypes.hpp"\
-	".\stdint"\
-	".\tdint.h"\
-	".\ygshell.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
 
 DEP_CPP_SM_IN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1688,6 +1667,62 @@ NODEP_CPP_SM_IN=\
 	".\xTAPI.h"\
 	
 
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_SM_IN=\
+	".\Transmission.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ipedia\src\BaseTypes.hpp"\
+	".\stdint"\
+	".\tdint.h"\
+	".\ygshell.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_SM_IN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\BulletElement.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmFont.hpp"\
+	"..\ars_framework\Src\PalmGraphics.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
+	".\iNoahParser.h"\
+	".\iNoahSession.h"\
+	".\reclookups.h"\
+	".\registration.h"\
+	".\RenderingPreferences.hpp"\
+	".\sm_inoah.h"\
+	".\TAPIDevice.h"\
+	".\TAPILine.h"\
+	".\Transmission.h"\
+	".\WinFont.h"\
+	".\WinGraphics.hpp"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
+	
+
 !ENDIF 
 
 # End Source File
@@ -1704,7 +1739,9 @@ DEP_CPP_TAPID=\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
+	
+NODEP_CPP_TAPID=\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1716,7 +1753,9 @@ DEP_CPP_TAPID=\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
+	
+NODEP_CPP_TAPID=\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1737,14 +1776,13 @@ NODEP_CPP_TAPID=\
 
 DEP_CPP_TAPID=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_TAPID=\
-	".\xTAPI.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
 	
 
 !ENDIF 
@@ -1760,8 +1798,10 @@ DEP_CPP_TAPIL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"tsp.h"\
+	
+NODEP_CPP_TAPIL=\
+	".\sp.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1770,8 +1810,10 @@ DEP_CPP_TAPIL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"tsp.h"\
+	
+NODEP_CPP_TAPIL=\
+	".\sp.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1784,12 +1826,11 @@ DEP_CPP_TAPIL=\
 
 DEP_CPP_TAPIL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	
-NODEP_CPP_TAPIL=\
-	".\sp.h"\
-	".\xTAPI.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"tsp.h"\
 	
 
 !ENDIF 
@@ -1828,6 +1869,9 @@ NODEP_CPP_TRANS=\
 
 DEP_CPP_TRANS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	".\iNoahSession.h"\
+	".\sm_inoah.h"\
 	".\Transmission.h"\
 	
 
@@ -1867,6 +1911,7 @@ DEP_CPP_WINFO=\
 DEP_CPP_WINFO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	".\WinFont.h"\
 	
@@ -1918,18 +1963,15 @@ SOURCE=.\WinGraphics.cpp
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
-	".\iNoahSession.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1937,37 +1979,31 @@ DEP_CPP_WINGR=\
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
-	".\iNoahSession.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
 
 DEP_CPP_WINGR=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmFont.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
 	".\WinFont.h"\
-	
-NODEP_CPP_WINGR=\
-	".\almFont.hpp"\
-	".\almGraphicsInline.hpp"\
-	".\aseTypes.hpp"\
-	".\ativeGeometry.hpp"\
-	".\ativeGraphics.hpp"\
-	".\ebug.hpp"\
-	".\eometry.hpp"\
-	".\ontEffects.hpp"\
-	".\raphics.hpp"\
-	".\stdint"\
-	".\tdint.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
@@ -1975,18 +2011,15 @@ NODEP_CPP_WINGR=\
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
-	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
-	".\iNoahSession.h"\
-	".\sm_inoah.h"\
-	".\Transmission.h"\
 	".\WinFont.h"\
+	".\WinGraphics.hpp"\
 	
 
 !ENDIF 
@@ -2099,6 +2132,10 @@ SOURCE=..\ars_framework\Src\Utility.hpp
 # Begin Source File
 
 SOURCE=.\WinFont.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\WinGraphics.hpp
 # End Source File
 # End Group
 # Begin Group "Resource Files"
