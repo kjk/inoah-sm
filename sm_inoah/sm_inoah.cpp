@@ -251,69 +251,6 @@ enum ScrollUnit
     scrollPosition
 };
 
-static void DrawFancyRectangle(HDC hdc, RECT *rect)
-{
-    int startX = rect->left;
-    int endX   = rect->right;
-    int startY = rect->top;
-    int endY   = rect->bottom;
-
-    POINT p[2];
-    p[0].y = startY;
-    p[1].y = endY;
-
-    LOGPEN pen;
-    HGDIOBJ origPen = GetCurrentObject(hdc,OBJ_PEN);
-    GetObject(origPen, sizeof(pen), &pen);
-
-    int dx = endX - startX;
-
-    float startBlueCol = 255;
-    float endBlueCol = 80;
-
-    float blueColSpread = startBlueCol - endBlueCol;
-
-    float spread = blueColSpread/(float)dx;
-
-    float blueColorFlt = startBlueCol;
-
-    int prevBlueColor = -1;
-    int curBlueColor = (int)blueColorFlt;
-
-    HPEN newPen;
-
-    for (int x=startX; x<endX; x++)
-    {
-        p[0].x = x;
-
-        if (curBlueColor!=prevBlueColor)
-        {
-            pen.lopnColor = RGB(0,0,curBlueColor);
-            newPen = CreatePenIndirect(&pen);
-            SelectObject(hdc,newPen);
-        }
-
-        p[1].x = p[0].x;
-        Polyline(hdc, p, 2);
-
-        if (curBlueColor!=prevBlueColor)
-        {
-            DeleteObject(newPen);
-            prevBlueColor = curBlueColor;
-        }
-
-        blueColorFlt -= spread;
-        curBlueColor = (int)blueColorFlt;
-    }
-
-    SelectObject(hdc,origPen);
-}
-
-static void DrawRectangle(HDC hdc, RECT *rect)
-{
-    ::Rectangle(hdc, rect->left, rect->top, rect->right, rect->bottom);
-}
-
 // we draw a text inside a rectangle
 // rectangle size depends on the text size
 // i.e. dy must be font's dy + good spacing
@@ -699,65 +636,6 @@ static void DoRecentLookups(HWND hwnd)
 
 HWND g_hwndMenuBar = NULL;
 
-static void OverrideBackButton(HWND hwndMenuBar)
-{
-#ifdef WIN32_PLATFORM_WFSP
-    // In order to make Back work properly, it's necessary to 
-    // override it and then call the appropriate SH API
-    // Only needed on smartphone
-    (void)SendMessage(
-        hwndMenuBar, SHCMBM_OVERRIDEKEY, VK_TBACK,
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
-        );
-#else
-    // do nothing on Pocket PC
-#endif
-}
-
-static int RectDx(RECT *rect)
-{
-    int dx = rect->right - rect->left;
-    return dx;
-}
-
-static int RectDy(RECT *rect)
-{
-    int dy = rect->bottom - rect->top;
-    return dy;
-}
-
-// doesn't make much sense to me but this piece of magic comes
-// Programmin Windows CE 3rd ed page 841
-// the logic seems to be the opposite of the description
-// Comment from the book:
-// "If the sip is not shown, or showing but not docked, the desktop
-// rect deosn't include the height (dy) of the menu bar"
-static bool FDesktopIncludesMenuBar(SIPINFO *si)
-{
-    if (!(si->fdwFlags & SIPF_ON) ||
-        ((si->fdwFlags & SIPF_ON) && !(si->fdwFlags & SIPF_DOCKED)))
-    {
-        return true;
-    }
-    return false;
-}
-
-#if 0
-static bool FDesktopIncludesMenuBarAlternate(SIPINFO *si)
-{
-    // sip is not on
-    if (!(si->fdwFlags & SIPF_ON))
-        return true;
-
-    // SIP is on but not docked
-    if ( !(si->fdwFlags & SIPF_DOCKED))
-        return true;
-
-    return false;
-}
-#endif
-
 static void OnSettingChange(HWND hwnd, WPARAM wp, LPARAM lp)
 {
     SHHandleWMSettingChange(hwnd, wp, lp, &g_sai);
@@ -990,7 +868,6 @@ static void OnSize(HWND hwnd, LPARAM lp)
     // should that depend on the size of edit window?
     int scrollStartY = 24;
     int scrollDy = dy - scrollStartY - 2;
-
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
     MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 }
