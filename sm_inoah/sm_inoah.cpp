@@ -550,7 +550,12 @@ static void SetFontSize(int fontSize, HWND hwnd)
     if (NULL==hwndMB) 
         return;
 
+#ifdef WIN32_PLATFORM_PSPC
+    HMENU hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_OPTIONS_MENU_BTN);
+#else
     HMENU hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+#endif
+
     CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_UNCHECKED | MF_BYCOMMAND);
     CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
     CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
