@@ -11,7 +11,7 @@ static void GetEditWinText(HWND hwnd, ArsLexis::String &txtOut)
     // 128 should be enough for anybody
     TCHAR buf[128];
 
-	memset(&buf,0,sizeof(buf));
+    ZeroMemory(buf,sizeof(buf));
 
     int len = SendMessage(hwnd, EM_LINELENGTH, 0,0)+1;
 

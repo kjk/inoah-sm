@@ -24,7 +24,7 @@ bool FInitConnection()
         return true;
 
     CONNMGR_CONNECTIONINFO ccInfo;
-    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
+    ZeroMemory(&ccInfo,sizeof(ccInfo));
     ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
     ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
     ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
@@ -196,7 +196,7 @@ DWORD Transmission::setError()
     ); FUCK DOESN'T WORK AT ALL*/
     //content=ArsLexis::String((TCHAR*)lpMsgBuf);
     TCHAR buffer[20];
-    memset(buffer,0,sizeof(buffer));
+    ZeroMemory(buffer,sizeof(buffer));
     _itow(lastError_, buffer, 10);
     
     content_.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
@@ -207,7 +207,7 @@ DWORD Transmission::setError()
         content_ += TEXT(" (cannot connect to ");
         content_ += host;
         content_ += TEXT(":");
-        memset(buffer,0,sizeof(buffer));
+        ZeroMemory(buffer,sizeof(buffer));
         _itow(port, buffer, 10);
         content_ += buffer;
         content_ += TEXT(")");
@@ -217,7 +217,7 @@ DWORD Transmission::setError()
     {
         content_ += TEXT(" (can't resolve name ");
         content_ += host;
-        memset(buffer,0,sizeof(buffer));
+        ZeroMemory(buffer,sizeof(buffer));
         _itow(port, buffer, 10);
         content_ += buffer;
         content_ += TEXT(")");

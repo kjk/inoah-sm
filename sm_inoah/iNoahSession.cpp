@@ -1,11 +1,12 @@
 #include <aygshell.h>
-#ifndef WIN32_PLATFORM_PSPC
+
+#ifdef WIN32_PLATFORM_WFSP
 #include <tpcshell.h>
 #include <winuserm.h>
+#include <sms.h>
 #endif
 #include <shellapi.h>
 #include <winbase.h>
-#include <sms.h>
 
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
@@ -659,8 +660,8 @@ String getDeviceInfo()
     TCHAR            buffer[INFO_BUF_SIZE];
     BOOL             fOk;
 
-    memset(&address,0,sizeof(SMS_ADDRESS));
-#ifndef WIN32_PLATFORM_PSPC
+    ZeroMemory(&address, sizeof(address));
+#ifdef WIN32_PLATFORM_WFSP
     HRESULT res = SmsGetPhoneNumber(&address); 
     if (SUCCEEDED(res))
     {
@@ -669,8 +670,7 @@ String getDeviceInfo()
     }
 #endif
 
-    memset(buffer,0,sizeof(buffer));
-
+    ZeroMemory(buffer,sizeof(buffer));
     fOk = SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0);
 
     if (fOk)
@@ -681,7 +681,7 @@ String getDeviceInfo()
         stringAppendHexified(text,buffer);
     }
 
-    memset(buffer,0,sizeof(buffer));
+    ZeroMemory(buffer,sizeof(buffer));
     fOk = SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0);
 
     if (fOk)

@@ -1,11 +1,12 @@
 #include <windows.h>
-#ifndef WIN32_PLATFORM_PSPC
-#include <tpcshell.h>
-#endif
 #include <wingdi.h>
 #include <fonteffects.hpp>
-#include <sms.h>
 #include <uniqueid.h>
+#include <sms.h>
+
+#ifdef WIN32_PLATFORM_WFSP
+#include <tpcshell.h>
+#endif
 
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
@@ -24,12 +25,6 @@
 #include "reclookups.h"
 #include "registration.h"
 
-#ifndef WIN32_PLATFORM_PSPC
-  #define STORE_FOLDER CSIDL_APPDATA
-#else
-  #define STORE_FOLDER CSIDL_PROGRAMS
-#endif
-
 const String iNoahFolder  = _T("\\iNoah");
 const String cookieFile   = _T("\\Cookie");
 const String regCodeFile  = _T("\\RegCode");
@@ -42,9 +37,6 @@ HWND      g_hwndEdit   = NULL;
 WNDPROC   g_oldEditWndProc = NULL;
 
 static bool g_forceLayoutRecalculation=false;
-
-TCHAR szAppName[] = TEXT("iNoah");
-TCHAR szTitle[]   = TEXT("iNoah");
 
 Definition *g_definition = NULL;
 bool        g_fRec=false;
@@ -93,26 +85,44 @@ static void SetDefinition(ArsLexis::String& defTxt)
     InvalidateRect(g_hwndMain,NULL,TRUE);
 }
 
+// return false on failure, true if ok
+bool GetSpecialFolderPath(String& pathOut)
+{
+#ifdef CSIDL_APPDATA
+    TCHAR szPath[MAX_PATH];
+    BOOL  fOk = SHGetSpecialFolderPath(NULL, szPath, CSIDL_APPDATA, FALSE);
+    if (!fOk)
+        return false;
+    pathOut.assign(szPath);
+    return true;
+#else
+    // Pocket PC doesn't have this defined so put our directory 
+    // at the root. This will likely change 
+    // in the future and this code should still work.
+    // TODO: see if SHGetSpecialFolderPath return path that ends with '\'
+    // pathOut.assign(_T("\\");
+    pathOut.assign(_T("");
+    return true;
+#endif
+}
+
 void DeleteFile(const String& fileName)
 {
-    TCHAR szPath[MAX_PATH];
-    // TODO: do we need to pass g_hwndMain? docs are unclear
-    BOOL  fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-    if (!fOk)
-        return;
-    String fullPath = szPath + iNoahFolder + fileName;
+	String path;
+	if (!GetSpecialFolderPath(path))
+		return;
+    String fullPath = path + iNoahFolder + fileName;
     DeleteFile(fullPath.c_str());
 }
 
 static void SaveStringToFile(const String& fileName, const String& str)
 {
-    TCHAR szPath[MAX_PATH];
-
-    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
+    String path;
+    BOOL fOk = GetSpecialFolderPath(path);
     if (!fOk)
         return;
 
-    String fullPath = szPath + iNoahFolder;
+    String fullPath = path + iNoahFolder;
     fOk = CreateDirectory (fullPath.c_str(), NULL);  
     if (!fOk)
         return;
@@ -132,14 +142,12 @@ static void SaveStringToFile(const String& fileName, const String& str)
 
 static String LoadStringFromFile(String fileName)
 {
-    TCHAR szPath[MAX_PATH];
-    // It doesn't help to have a path longer than MAX_PATH
-    BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
-    // Append directory separator character as needed
+    String path;
+    BOOL fOk = GetSpecialFolderPath(path);
     if (!fOk)
         return _T("");
-    
-    String fullPath = szPath +  iNoahFolder + fileName;
+
+    String fullPath = path + iNoahFolder + fileName;
     
     HANDLE handle = CreateFile(fullPath.c_str(), 
         GENERIC_READ, FILE_SHARE_READ, NULL, 
@@ -147,7 +155,7 @@ static String LoadStringFromFile(String fileName)
         NULL); 
 
     if (INVALID_HANDLE_VALUE==handle)
-        return TEXT("");
+        return _T("");
     
     TCHAR  buf[254];
     DWORD  bytesRead;
@@ -222,6 +230,42 @@ static void ClearCache()
     DeleteRegCode();
 }
 
+static void ScrollDefinition(int page)
+{
+    RECT b;
+    GetClientRect (g_hwndMain, &b);
+    ArsLexis::Rectangle bounds=b;
+    ArsLexis::Rectangle defRect=bounds;
+    defRect.explode(2, 22, -9, -24);
+    ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
+
+    bool fCouldDoubleBuffer = false;
+    HDC  offscreenDc=::CreateCompatibleDC(gr.handle());
+    if (offscreenDc)
+    {
+        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
+        if (bitmap)
+        {
+            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+            {
+                ArsLexis::Graphics offscreen(offscreenDc, NULL);
+                g_definition->scroll(offscreen, renderingPrefs(), page);
+                offscreen.copyArea(defRect, gr, defRect.topLeft);
+            }
+            ::SelectObject(offscreenDc, oldBitmap);
+            ::DeleteObject(bitmap);
+            fCouldDoubleBuffer = true;
+        }
+        ::DeleteDC(offscreenDc);
+    }
+
+    if (!fCouldDoubleBuffer)
+        g_definition->scroll(gr, renderingPrefs(), page);
+
+    SetScrollBar(g_definition);
+}
+
+
 #define MAX_WORD_LEN 64
 static void DoLookup(HWND hwnd)
 {
@@ -230,7 +274,7 @@ static void DoLookup(HWND hwnd)
     if (0==len)
         return;
 
-    memset(buf,0,sizeof(buf));
+    ZeroMemory(buf,sizeof(buf));
     len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
     SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
 
@@ -336,26 +380,17 @@ static void OnCreate(HWND hwnd)
         return;
     }
     
-    g_hwndEdit = CreateWindow(
-        TEXT("edit"),
-        NULL,
-        WS_CHILD | WS_VISIBLE | WS_VSCROLL | 
-        WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
-        0,0,0,0,hwnd,
-        (HMENU) ID_EDIT,
-        g_hInst,
-        NULL);
+    g_hwndEdit = CreateWindow( _T("edit"), NULL,
+        WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
+        0, 0, 0, 0, hwnd,
+        (HMENU) ID_EDIT, g_hInst, NULL);
 
     g_oldEditWndProc = (WNDPROC)SetWindowLong(g_hwndEdit, GWL_WNDPROC, (LONG)EditWndProc);
 
-    g_hwndScroll = CreateWindow(
-        TEXT("scrollbar"),
-        NULL,
+    g_hwndScroll = CreateWindow( _T("scrollbar"), NULL,
         WS_CHILD | WS_VISIBLE | WS_TABSTOP| SBS_VERT,
-        0,0,0,0,hwnd,
-        (HMENU) ID_SCROLL,
-        g_hInst,
-        NULL);
+        0, 0, 0, 0, hwnd,
+        (HMENU) ID_SCROLL, g_hInst, NULL);
 
     SetScrollBar(g_definition);
 
@@ -373,26 +408,24 @@ static void OnCreate(HWND hwnd)
 
 void static OnHotKey(WPARAM wp, LPARAM lp)
 {
-    ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
+    int keyCode = HIWORD(lp);
 
-    int page=0;
-    if (NULL!=g_definition)
-        page=g_definition->shownLinesCount();
-
-    switch(HIWORD(lp))
+#ifdef WIN32_PLATFORM_WFSP
+    if (VK_TBACK==keyCode)
     {
-        case VK_TBACK:
-#ifndef WIN32_PLATFORM_PSPC
-            if (0 != (MOD_KEYUP & LOWORD(lp)))
-                SHSendBackToFocusWindow(WM_HOTKEY, wp, lp);
+        if (0 != (MOD_KEYUP & LOWORD(lp)))
+        {
+            SHSendBackToFocusWindow(WM_HOTKEY, wp, lp);
+        }
+        return;
+    }
 #endif
-            break;
-        case VK_TDOWN:
-            if(NULL!=g_definition)
-                g_definition->scroll(gr, renderingPrefs(), page);
-
-            SetScrollBar(g_definition);
-            break;
+    if (VK_TBACK==keyCode)
+    {
+        if (NULL!=g_definition)
+        {
+            ScrollDefinition(g_definition->shownLinesCount());
+        }
     }
 }
 
@@ -400,7 +433,7 @@ void static OnHotKey(WPARAM wp, LPARAM lp)
 static bool GotoURL(LPCTSTR lpszUrl)
 {
     SHELLEXECUTEINFO sei;
-    memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
+    ZeroMemory(&sei, sizeof(sei));
     sei.cbSize  = sizeof(SHELLEXECUTEINFO);
     sei.fMask   = SEE_MASK_FLAG_NO_UI;
     sei.lpVerb  = _T("open");
@@ -580,8 +613,8 @@ bool InitInstance (HINSTANCE hInstance, int CmdShow )
 {
     g_hInst = hInstance;
 
-    g_hwndMain = CreateWindow(szAppName,
-        szTitle,
+    g_hwndMain = CreateWindow(APP_NAME,
+        WINDOW_TITLE,
         WS_VISIBLE,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -611,7 +644,7 @@ BOOL InitApplication ( HINSTANCE hInstance )
     wc.hCursor       = NULL;
     wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
     wc.lpszMenuName  = NULL;
-    wc.lpszClassName = szAppName;
+    wc.lpszClassName = APP_NAME;
 
     BOOL fOk = RegisterClass(&wc);
     return fOk;
@@ -624,7 +657,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    
 {
     // if we're already running, then just bring our window to front
-    HWND hwndPrev = FindWindow(szAppName, szTitle);
+    HWND hwndPrev = FindWindow(APP_NAME, WINDOW_TITLE);
     if (hwndPrev) 
     {
         SetForegroundWindow(hwndPrev);    
@@ -683,8 +716,8 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
     ArsLexis::Rectangle bounds = b;
     ArsLexis::Rectangle defRect = rect;
 
-    bool fCouldntDoubleBuffer = false;
-    HDC offscreenDc = ::CreateCompatibleDC(hdc);
+    bool fCouldDoubleBuffer = false;
+    HDC  offscreenDc = ::CreateCompatibleDC(hdc);
     if (offscreenDc) 
     {
         HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
@@ -698,15 +731,12 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
             }
             ::SelectObject(offscreenDc, oldBitmap);
             ::DeleteObject(bitmap);
+            fCouldDoubleBuffer = true;
         }
-        else
-            fCouldntDoubleBuffer = true;
         ::DeleteDC(offscreenDc);
     }
-    else
-        fCouldntDoubleBuffer = true;
 
-    if (fCouldntDoubleBuffer)
+    if (!fCouldDoubleBuffer)
         g_definition->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
     g_forceLayoutRecalculation=false;
 }
@@ -734,71 +764,44 @@ void Paint(HWND hwnd, HDC hdc)
     }
 }
 
+// return true if no more processing is needed, false otherwise
+bool OnEditKeyDown(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    if (VK_TACTION==wp)
+    {
+        DoLookup(GetParent(hwnd));
+        return true;
+    }
+
+    // check for up/down to see if we should do scrolling
+    if (NULL==g_definition)
+    {
+        // no definition => no need for scrolling
+        return false;
+    }
+
+    if (VK_DOWN==wp)
+    {
+        ScrollDefinition(g_definition->shownLinesCount());
+        return true;
+    }
+
+    if (VK_UP==wp)
+    {
+        ScrollDefinition(-static_cast<int>(g_definition->shownLinesCount()));
+        return true;
+    }
+
+    return false;
+}
+
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
+    if (WM_KEYDOWN==msg)
     {
-        case WM_KEYDOWN:
-        {
-
-            if (VK_TACTION==wp)
-            {
-                DoLookup(GetParent(hwnd));
-                return 0;
-            }
-
-            if (NULL!=g_definition)
-            {
-                int page=0;
-                switch (wp) 
-                {
-                    case VK_DOWN:
-                        page=g_definition->shownLinesCount();
-                        break;
-                    case VK_UP:
-                        page=-static_cast<int>(g_definition->shownLinesCount());
-                        break;
-                }
-                if (0!=page)
-                {
-                    RECT b;
-                    GetClientRect (g_hwndMain, &b);
-                    ArsLexis::Rectangle bounds=b;
-                    ArsLexis::Rectangle defRect=bounds;
-                    defRect.explode(2, 22, -9, -24);
-                    ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-                    bool doubleBuffer=true;
-                    
-                    HDC offscreenDc=::CreateCompatibleDC(gr.handle());
-                    if (offscreenDc)
-                    {
-                        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
-                        if (bitmap)
-                        {
-                            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-                            {
-                                ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                                g_definition->scroll(offscreen, renderingPrefs(), page);
-                                offscreen.copyArea(defRect, gr, defRect.topLeft);
-                            }
-                            ::SelectObject(offscreenDc, oldBitmap);
-                            ::DeleteObject(bitmap);
-                        }
-                        else
-                            doubleBuffer=false;
-                        ::DeleteDC(offscreenDc);
-                    }
-                    else
-                        doubleBuffer=false;
-                    if (!doubleBuffer)
-                        g_definition->scroll(gr, renderingPrefs(), page);
-                    
-                    SetScrollBar(g_definition);
-                    return 0;
-                }
-            }
-            break;
-       }
+        bool fDone = OnEditKeyDown(hwnd, msg, wp, lp);
+        if (fDone)
+            return 0;
     }
 
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
@@ -886,28 +889,17 @@ void SetFontSize(int diff, HWND hwnd)
 
 void SetScrollBar(Definition* definition)
 {
-    int frst=0;
-    int total=0;
-    int shown=0;
+    int first=0;
+    int range=0;
+
     if (definition)
     {
-        frst=definition->firstShownLine();
-        total=definition->totalLinesCount();
-        shown=definition->shownLinesCount();
+        first = definition->firstShownLine();
+        range = definition->totalLinesCount() - definition->shownLinesCount();
     }
     
-    SetScrollPos(
-        g_hwndScroll, 
-        SB_CTL,
-        frst,
-        TRUE);
-    
-    SetScrollRange(
-        g_hwndScroll,
-        SB_CTL,
-        0,
-        total-shown,
-        TRUE);
+    SetScrollPos(g_hwndScroll, SB_CTL, first, TRUE);
+    SetScrollRange(g_hwndScroll, SB_CTL, 0, range, TRUE);
 }
 
 void ArsLexis::handleBadAlloc()

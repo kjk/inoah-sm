@@ -16,8 +16,8 @@ String GetRegCode();
 String GetCookie();
 void SetCookie(const String& cookie);
 
-TCHAR szAppName[];
-TCHAR szTitle[];
+#define APP_NAME      _T("iNoah")
+#define WINDOW_TITLE  _T("iNoah")
 
 #define MENU_HEIGHT 26
 

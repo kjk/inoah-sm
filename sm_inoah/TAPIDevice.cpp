@@ -1,7 +1,3 @@
-// Device.cpp: implementation of the Device class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "TAPIDevice.h"
 #include "sm_inoah.h"
 
@@ -37,7 +33,7 @@ TAPIDevice::TAPIDevice()
     while ( (dwReturn = lineInitialize (&g_hLineApp, 
         g_hInst, 
         (LINECALLBACK) TAPIDevice::lineCallbackFunc, 
-        szAppName, 
+        APP_NAME, 
         &g_dwNumDevs)) == LINEERR_REINIT)
     {
         // Display the message box if five seconds have passed.

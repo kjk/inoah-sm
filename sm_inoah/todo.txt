@@ -1,4 +1,4 @@
-Things to do in sm_inoah:
+TODO:
 1. Improve formatting
 1.1. group by pos
 1.2. add numbers
@@ -7,3 +7,6 @@ Things to do in sm_inoah:
 3. scripts to create a cab and setup file
 4. add an icon
 5. pocket pc/pocket pc phone edition version
+
+DONE:
+
