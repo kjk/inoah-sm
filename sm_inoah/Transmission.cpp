@@ -7,15 +7,11 @@
 #include "tchar.h"
 #include <BaseTypes.hpp>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 HINTERNET Transmission::hInternet = NULL;
 
-// TODO: Here port should be added
 Transmission::Transmission(
                            const ArsLexis::String& host,
+                           INTERNET_PORT           port,
                            const ArsLexis::String& localInfo)
 {
     if (!hInternet)
@@ -23,6 +19,7 @@ Transmission::Transmission(
     if (!hInternet)
         return;
     this->host = host;
+    this->port = port;
     this->localInfo = localInfo;
 }
 
@@ -41,8 +38,8 @@ DWORD Transmission::sendRequest()
         return lastError;
     
     HINTERNET hIConnect = InternetConnect(
-        hInternet,host.c_str(),
-        INTERNET_DEFAULT_HTTP_PORT,TEXT(" "),TEXT(" "),
+        hInternet,host.c_str(),port,
+        TEXT(" "),TEXT(" "),
         INTERNET_SERVICE_HTTP, 0, 0);
     
     if(!hIConnect)

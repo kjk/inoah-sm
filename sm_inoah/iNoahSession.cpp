@@ -11,42 +11,46 @@
 #include <winuserm.h>
 #include <winbase.h>
 #include <sms.h>
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+
 using ArsLexis::String;
 
-
-// TODO: It should be clear text(for a while just some objects)
+// TODO: It should be clear text (for a while just some objects)
 // It's really intresting how they will be expanded
 
-const String server=TEXT("arslex.no-ip.info");
+// KJK_BUILD is defined in sm_inoah_kjk.vcp project so that my builds
+// always go against my server
+#ifdef KJK_BUILD
+const String server     = TEXT("dict-pc.arslex.com");
+const INTERNET_PORT serverPort = 4080;
+#else
+const String server     = TEXT("arslex.no-ip.info");
+const INTERNET_PORT serverPort = INTERNET_DEFAULT_HTTP_PORT;
+#endif
 
-const String errorStr=TEXT("ERROR");
-const String cookieStr=TEXT("COOKIE");
-const String messageStr=TEXT("MESSAGE");
-const String definitionStr=TEXT("DEF");
-const String wordListStr=TEXT("WORDLIST");
-const String registrationStr=TEXT("REGISTRATION");
+const String errorStr        = TEXT("ERROR");
+const String cookieStr       = TEXT("COOKIE");
+const String messageStr      = TEXT("MESSAGE");
+const String definitionStr   = TEXT("DEF");
+const String wordListStr     = TEXT("WORDLIST");
+const String registrationStr = TEXT("REGISTRATION");
 
-
-const String script = TEXT("/palm.php?");
+const String script          = TEXT("/palm.php?");
 const String protocolVersion = TEXT("pv=1");
-const String clientVersion = TEXT("cv=0.5");
-const String sep = TEXT("&");
-const String cookieRequest = TEXT("get_cookie");
+const String clientVersion   = TEXT("cv=0.5");
+const String sep             = TEXT("&");
+const String cookieRequest   = TEXT("get_cookie");
 const String deviceInfoParam = TEXT("di=");
 
-const String cookieParam = TEXT("c=");
+const String cookieParam   = TEXT("c=");
 const String registerParam = TEXT("register=");
-const String regCodeParam = TEXT("rc=");
-const String getWordParam = TEXT("get_word=");
+const String regCodeParam  = TEXT("rc=");
+const String getWordParam  = TEXT("get_word=");
 
 const String randomRequest = TEXT("get_random_word");
 const String recentRequest = TEXT("recent_lookups");
 
 const String iNoahFolder = TEXT ("\\iNoah");
-const String cookieFile = TEXT ("\\Cookie");
+const String cookieFile  = TEXT ("\\Cookie");
 const String regCodeFile = TEXT ("\\RegCode");
 
 
@@ -185,7 +189,7 @@ void iNoahSession::sendRequest(String url,
                                String& ret)
 {
     
-    Transmission tr(server, url);
+    Transmission tr(server, serverPort, url);
     String tmp;
     tr.getResponse(tmp);
     if(checkErrors(tr,tmp))
@@ -218,7 +222,7 @@ bool iNoahSession::getCookie()
     tmp+=script; tmp+=protocolVersion; tmp+=sep; tmp+=clientVersion;
     tmp+=sep; tmp+=deviceInfo; tmp+=sep; tmp+=cookieRequest;
     
-    Transmission tr(server,tmp);
+    Transmission tr(server, serverPort, tmp);
     String tmp2;
     if(checkErrors(tr,tmp2)) return true;
     if ( tmp2.find(cookieStr) == 0 )
@@ -295,15 +299,20 @@ void iNoahSession::storeString(String fileName, String str)
     CloseHandle(fHandle);
 }
 
+TCHAR numToHex(TCHAR num)
+{    
+    if (num>0 && num<9)
+        return TCHAR('0')+num;
+    // assert (num<16);
+    return TCHAR('A')+num-10;
+}
+
 void iNoahSession::text2Hex(const String& text, String& hex)
 {
-    TCHAR c;
-    for(int i=0; 0<text.length()-i;i++)
+    for(size_t i=0;text.length()<i;i++)
     {
-        c=(text[i]&0xF0)>>4;
-        hex+=c>9?c-10+TCHAR('A'):c+TCHAR('0');
-        c=(text[i]&0x0F);
-        hex+=c>9?c-10+TCHAR('A'):c+TCHAR('0');
+        hex += numToHex((text[i] & 0xF0) >> 4);
+        hex += numToHex(text[i] & 0x0F);
     }
 }
 
@@ -320,32 +329,39 @@ void iNoahSession::clearCache()
     cookieReceived = false;
 }
 
+// According to this msdn info:
+// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnppc2k/html/ppc_hpocket.asp
+// 128 is enough for buffer size
+#define INFO_BUF_SIZE 128
 String iNoahSession::getDeviceInfo()
 {
-    SMS_ADDRESS address;
+    SMS_ADDRESS      address;
     ArsLexis::String regsInfo;
     ArsLexis::String text;
-    
+    TCHAR            buffer[INFO_BUF_SIZE];
+
     memset(&address,0,sizeof(SMS_ADDRESS));
     HRESULT res = SmsGetPhoneNumber(&address); 
-    //No idea how to obtain length from SystemParametersInfo
-    //but 1000 should be enough for a quite long strings I hope
-    TCHAR buffer[1000];
-    if(SUCCEEDED(res))
+    if (SUCCEEDED(res))
     {
         text.assign(TEXT("PN"));
         text2Hex(address.ptsAddress,text);
     }
 
-    if(SystemParametersInfo(SPI_GETOEMINFO, 1000, buffer, 0))
+    memset(&buffer,0,sizeof(buffer));
+    if (SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0))
     {
-        if(text.length()) text+=TEXT(":");
+        if (text.length()>0)
+            text+=TEXT(":");
         text+=TEXT("OC");
         text2Hex(buffer,text);
     }
-    if(SystemParametersInfo(SPI_GETPLATFORMTYPE, 1000, buffer, 0))
+
+    memset(&buffer,0,sizeof(buffer));
+    if (SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0))
     {
-        if(text.length()) text+=TEXT(":");
+        if (text.length()>0)
+            text+=TEXT(":");
         text+=TEXT("OD");
         text2Hex(buffer,text);
     }

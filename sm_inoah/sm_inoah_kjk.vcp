@@ -9,12 +9,12 @@ CFG=sm_inoah - Win32 (WCE ARM) Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "sm_inoah.vcn".
+!MESSAGE NMAKE /f "sm_inoah_kjk.vcn".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "sm_inoah.vcn" CFG="sm_inoah - Win32 (WCE ARM) Debug"
+!MESSAGE NMAKE /f "sm_inoah_kjk.vcn" CFG="sm_inoah - Win32 (WCE ARM) Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -52,7 +52,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 CPP=clarm.exe
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
-# ADD CPP /nologo /W3 /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /YX /Oxs /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /D "KJK_BUILD" /YX /Oxs /M$(CECrtMT) /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -85,7 +85,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 CPP=clarm.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
-# ADD CPP /nologo /W3 /Zi /Od /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /YX /M$(CECrtMTDebug) /c
+# ADD CPP /nologo /W3 /Zi /Od /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /D "KJK_BUILD" /FR /YX /M$(CECrtMTDebug) /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -117,7 +117,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
-# ADD CPP /nologo /W3 /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /YX /Gs8192 /GF /Oxs /c
+# ADD CPP /nologo /W3 /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /D "KJK_BUILD" /FR /YX /Gs8192 /GF /Oxs /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -150,7 +150,7 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
-# ADD CPP /nologo /W3 /Zi /Od /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "CACHE" /FR /YX /Gs8192 /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /I "..\stl" /I ".\\" /I "..\ars_framework\Src" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "CACHE" /D "KJK_BUILD" /FR /YX /Gs8192 /GF /c
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -1130,13 +1130,15 @@ DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"ceutil.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INOAHS=\
+	".\eutil.h"\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1146,13 +1148,15 @@ DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"ceutil.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_INOAHS=\
+	".\eutil.h"\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1175,15 +1179,13 @@ DEP_CPP_INOAHS=\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_INOAHS=\
-	".\eutil.h"\
-	".\ibrate.h"\
-	".\inuserm.h"\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"ceutil.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ENDIF 
@@ -1587,11 +1589,13 @@ DEP_CPP_SM_IN=\
 	".\TAPILine.h"\
 	".\Transmission.h"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\onnmgr.h"\
+	".\pcshell.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1626,11 +1630,13 @@ DEP_CPP_SM_IN=\
 	".\TAPILine.h"\
 	".\Transmission.h"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IN=\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\onnmgr.h"\
+	".\pcshell.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1679,13 +1685,11 @@ DEP_CPP_SM_IN=\
 	".\TAPILine.h"\
 	".\Transmission.h"\
 	".\WinFont.h"\
-	
-NODEP_CPP_SM_IN=\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\onnmgr.h"\
-	".\pcshell.h"\
-	".\xTAPI.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ENDIF 
@@ -1704,7 +1708,9 @@ DEP_CPP_TAPID=\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
+	
+NODEP_CPP_TAPID=\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1716,7 +1722,9 @@ DEP_CPP_TAPID=\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
+	
+NODEP_CPP_TAPID=\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1742,9 +1750,7 @@ DEP_CPP_TAPID=\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	
-NODEP_CPP_TAPID=\
-	".\xTAPI.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
 	
 
 !ENDIF 
@@ -1760,8 +1766,10 @@ DEP_CPP_TAPIL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"tsp.h"\
+	
+NODEP_CPP_TAPIL=\
+	".\sp.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
@@ -1770,8 +1778,10 @@ DEP_CPP_TAPIL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	{$(INCLUDE)}"ExTAPI.h"\
-	{$(INCLUDE)}"tsp.h"\
+	
+NODEP_CPP_TAPIL=\
+	".\sp.h"\
+	".\xTAPI.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
@@ -1786,10 +1796,8 @@ DEP_CPP_TAPIL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	
-NODEP_CPP_TAPIL=\
-	".\sp.h"\
-	".\xTAPI.h"\
+	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"tsp.h"\
 	
 
 !ENDIF 

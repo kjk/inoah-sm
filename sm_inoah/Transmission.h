@@ -12,31 +12,31 @@
 #include "BaseTypes.hpp"
 #include "wininet.h"
 
-
 const TCHAR HTTPver[]=TEXT("HTTP/1.0");
 
-class Transmission  
+class Transmission
 {
-	static	HINTERNET	hInternet;
-	static	DWORD		openInternet();	
-	DWORD				lastError;
-	ArsLexis::String	localInfo;
-	ArsLexis::String	host;
-	HINTERNET			hIConnect;
-	HINTERNET			hIRequest;
-	DWORD				setError();
+    static  HINTERNET   hInternet;
+    static  DWORD       openInternet();
+    DWORD               lastError;
+    ArsLexis::String    localInfo;
+    ArsLexis::String    host;
+    INTERNET_PORT       port;
+    HINTERNET           hIConnect;
+    HINTERNET           hIRequest;
+    DWORD               setError();
 
-	ArsLexis::String	content;
+    ArsLexis::String    content;
 
 public:
 
-	Transmission(const ArsLexis::String& host,const  ArsLexis::String& localInfo);
-	
-	virtual	DWORD  sendRequest();
-	virtual void   getResponse(ArsLexis::String& ret);
-	
-	virtual ~Transmission();
-	
+    Transmission(const ArsLexis::String& host, const INTERNET_PORT port, const  ArsLexis::String& localInfo);
+
+    virtual DWORD  sendRequest();
+    virtual void   getResponse(ArsLexis::String& ret);
+
+    virtual ~Transmission();
+
 };
 
 #endif // !defined(AFX_TRANSMISSION_H__E386CB42_A1FC_4F99_A23C_2AFCA7E4CE36__INCLUDED_)

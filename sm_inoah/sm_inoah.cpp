@@ -421,20 +421,26 @@ void paint(HWND hwnd, HDC hdc)
     RECT rect;
     GetClientRect (hwnd, &rect);
     FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
-    rect.top+=22;
-    rect.left+=2;
-    rect.right-=7;
-    rect.bottom-=2;
+    rect.top    +=22;
+    rect.left   +=2;
+    rect.right  -=7;
+    rect.bottom -=2;
     if (!definition_)
     {
         LOGFONT logfnt;
-        
-        HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+        HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
         GetObject(fnt, sizeof(logfnt), &logfnt);
         logfnt.lfHeight+=1;
+        int fontDy = logfnt.lfHeight;
         HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
         SelectObject(hdc, fnt2);
-        DrawText (hdc, TEXT("Enter word and press \"Lookup\""), -1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
+
+        RECT tmpRect=rect;
+        DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        tmpRect.top += fontDy*3;
+        DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        tmpRect.top += fontDy+6;
+        DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
         SelectObject(hdc,fnt);
         DeleteObject(fnt2);
     }
