@@ -430,18 +430,18 @@ static void SetFontSize(int diff, HWND hwnd)
         {
             case IDM_FNT_LARGE:
                 CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
-                delta=-2;
+                delta = 2;
                 break;
             case IDM_FNT_STANDARD:
                 CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
                 break;
             case IDM_FNT_SMALL:
                 CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
-                delta=2;
+                delta = -2;
                 break;
         }
     }
-    g_forceLayoutRecalculation=true;
+    g_forceLayoutRecalculation = true;
     renderingPrefsPtr()->setFontSize(delta);
     InvalidateRect(hwnd,NULL,TRUE);
 }

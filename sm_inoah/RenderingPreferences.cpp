@@ -1,14 +1,16 @@
-// RenderingPreferences.cpp: implementation of the RenderingPreferences class.
-//
-//////////////////////////////////////////////////////////////////////
+#include <windows.h>
 
-#include <RenderingPreferences.hpp>
-#include "FontEffects.hpp"
-#include "WinFont.h"
+#include <BaseTypes.hpp>
+#include <WinFont.h>
+#include <FontEffects.hpp>
+
+#include "RenderingPreferences.hpp"
+
 #include "sm_inoah.h"
-#include <wingdi.h>
+
 using ArsLexis::FontEffects;
 using ArsLexis::Graphics;
+using ArsLexis::char_t;
 
 RenderingPreferences::RenderingPreferences()
     :needSynch(noChange)
@@ -21,14 +23,14 @@ RenderingPreferences::RenderingPreferences()
         hyperlinkDecorations_[i].font.setEffects(fx);
     
     Graphics::Font_t font(WinFont());
-    TCHAR bullet[3];
+    char_t bullet[3];
 
     if (bulletCircle==bulletType())
         bullet[0] = _T('*');
     else
         bullet[0] = _T('>');
-    bullet[1]=TCHAR(' ');
-    bullet[2]=TCHAR(' ');
+    bullet[1] = _T(' ');
+    bullet[2] = _T(' ');
     Graphics graphics(GetDC(g_hwndMain),g_hwndMain);
     Graphics::FontSetter setFont(graphics, font);
 }
@@ -45,7 +47,7 @@ void RenderingPreferences::setCompactView()
     styles_[styleSynonyms].requiresNewLine = false;
     styles_[stylePOfSpeechList].requiresNewLine = false;
     styles_[stylePOfSpeech].requiresNewLine = false;
-    needSynch=recalculateLayout;
+    needSynch = recalculateLayout;
 }
 
 void RenderingPreferences::setClassicView()
@@ -60,36 +62,54 @@ void RenderingPreferences::setClassicView()
     styles_[styleSynonyms].requiresNewLine = false;
     styles_[stylePOfSpeechList].requiresNewLine = false;
     styles_[stylePOfSpeech].requiresNewLine = false;
-    needSynch=recalculateLayout;
+    needSynch = recalculateLayout;
+}
+
+static int GetStandardFontDy()
+{
+    static int standardDy = -1;
+    if (-1!=standardDy)
+        return standardDy;
+
+    HFONT fntHandle = (HFONT)GetStockObject(SYSTEM_FONT);
+    if (NULL==fntHandle)
+    {
+        standardDy = 12;
+        return standardDy;
+    }
+    LOGFONT logfnt;
+    GetObject(fntHandle, sizeof(logfnt), &logfnt);
+
+    assert(logfnt.lfHeight<0);
+
+    standardDy = -logfnt.lfHeight;
+    standardDy -= 1;
+    return standardDy;
 }
 
 void RenderingPreferences::setFontSize(int diff)
 {
-    LOGFONT logfnt;
-    HFONT fntHandle=(HFONT)GetStockObject(SYSTEM_FONT);
-    GetObject(fntHandle, sizeof(logfnt), &logfnt);
+    int newDy = GetStandardFontDy() + diff;
 
-    int newHeight =  logfnt.lfHeight + 1 + diff;
-
-    WinFont fnt = WinFont(newHeight);
-    for(int k=0;k<stylesCount_;k++)
+    WinFont fnt = WinFont(newDy);
+    for (int k=0; k<stylesCount_; k++)
         styles_[k].font = fnt;
 
-    fnt = WinFont(newHeight);
+    fnt = WinFont(newDy);
     FontEffects fx;
     fx.setItalic(true);
     fnt.setEffects(fx);
     styles_[styleExample].font = fnt;
     styles_[styleExample].textColor = RGB(0,0,255);
 
-    fnt = WinFont(newHeight);
+    fnt = WinFont(newDy);
     FontEffects fx2;
     fx2.setItalic(false);
     fnt.setEffects(fx2);
     styles_[styleExampleList].font = fnt;
     styles_[styleExampleList].textColor = RGB(0,0,255);
 
-    fnt = WinFont(newHeight);
+    fnt = WinFont(newDy);
     FontEffects fx3;
     fx3.setWeight(FontEffects::weightBold);
     fnt.setEffects(fx3);
@@ -102,9 +122,10 @@ void RenderingPreferences::setFontSize(int diff)
     styles_[styleSynonymsList].font = fnt;
     styles_[styleSynonymsList].textColor = RGB(0,0,0);
 
-    int stylesHeight = logfnt.lfHeight - 4 + diff;
-    fnt = WinFont(stylesHeight);
+    int stylesDy = GetStandardFontDy() + 2 + diff;
+    fnt = WinFont(stylesDy);
     styles_[styleWord].font = fnt;
     styles_[styleWord].textColor = RGB(0,0,255);
-    needSynch=recalculateLayout;
+
+    needSynch = recalculateLayout;
 }
