@@ -1,6 +1,6 @@
 TODO:
-9.  word font is small at the beginnign, changes to correct after refresh. fix it
-12. changing font to large is broken
+14. Use PrefsStore.* for storing preferences, like iPedia and remember
+    the font size, cookie and regcode
 3.  scripts to create a cab and setup file
 4.  add an icon
 5.  pocket pc/pocket pc phone edition version
@@ -9,7 +9,6 @@ Phone Edition as well. Move those to a common library so iPedia can re-use.
 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnppcgen/html
 /conmgrdtac.asp
 8.  fix compact mode (need spaces to separate)
-14. Use PrefsStore.* for storing preferences, like iPedia
 
 DONE:
 2.   test registration (2004-08-06)
@@ -20,4 +19,6 @@ DONE:
 7.   after random lookup put the word into the edit text field and select it 
 (04-08-07)
 10. menu About/About doesn't work (04-08-08)
+9.  word font is small at the beginnign, changes to correct after refresh. (04-08-08)
+12. changing font to large is broken (04-08-08)
 

@@ -32,7 +32,7 @@ WNDPROC   g_oldEditWndProc = NULL;
 static bool g_forceLayoutRecalculation=false;
 
 String      g_currentWord;
-bool        g_fRec=false;
+bool        g_fUpdateScrollbars = false;
 
 String g_wordList;
 String g_recentWord;
@@ -74,7 +74,6 @@ static void DeleteDefinition()
 {
     ReplaceDefinition(NULL);
 }
-    
 
 static void SetDefinition(ArsLexis::String& defTxt)
 {
@@ -91,7 +90,7 @@ static void SetDefinition(ArsLexis::String& defTxt)
     SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
 
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-    g_fRec = true;
+    g_fUpdateScrollbars = true;
     InvalidateRect(g_hwndMain,NULL,TRUE);
 }
 
@@ -285,28 +284,53 @@ static void ScrollDefinition(int page)
 
 static void PaintAbout(HDC hdc, RECT& rect)
 {
+    HFONT   fnt = (HFONT)GetStockObject(SYSTEM_FONT);
+    if (NULL==fnt)
+        return;
+
     LOGFONT logfnt;
-    HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight+=1;
-    int fontDy = logfnt.lfHeight;
-    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-    SelectObject(hdc, fnt2);
-    
-    RECT tmpRect=rect;
-    DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    logfnt.lfHeight += 1;
+    int fontDy = -logfnt.lfHeight;
+    HFONT fnt2 = (HFONT)CreateFontIndirect(&logfnt);
+    if (NULL!=fnt2)
+        SelectObject(hdc, fnt2);
+    else
+        SelectObject(hdc, fnt);
+
+    int lineSpace = fontDy+5;
+
+    RECT tmpRect = rect;
+    DrawText(hdc, _T("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
     tmpRect.top += 46;
-    DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    tmpRect.top += 18;
-    DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    tmpRect.top += 18;
+
+    DrawText(hdc, _T("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    tmpRect.top += lineSpace;
 
     if (FRegCodeExists())
-        DrawText(hdc, TEXT("Registered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    {
+        DrawText(hdc, _T("Registered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+        tmpRect.top += lineSpace;
+        DrawText(hdc, _T("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    }
     else
-        DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    SelectObject(hdc,fnt);
-    DeleteObject(fnt2);
+    {
+        DrawText(hdc, _T("Unregistered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+        tmpRect.top += lineSpace;
+        DrawText(hdc, _T("Purchase registration code at:"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+        tmpRect.top += lineSpace;
+#ifdef HANDANGO
+        DrawText(hdc, _T("http://handango.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#else
+        DrawText(hdc, _T("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#endif
+    }
+
+    if (NULL!=fnt2)
+    {
+        SelectObject(hdc,fnt);
+        DeleteObject(fnt2);
+    }
 }
 
 static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
@@ -358,10 +382,10 @@ static void Paint(HWND hwnd, HDC hdc)
     else
         PaintDefinition(hwnd, hdc, rect);
 
-    if (g_fRec && (NULL!=GetDefinition()))
+    if (g_fUpdateScrollbars && (NULL!=GetDefinition()))
     {
         SetScrollBar(GetDefinition());
-        g_fRec = false;
+        g_fUpdateScrollbars = false;
     }
 }
 
@@ -415,33 +439,34 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     ReleaseDC(hwnd,hdc);
 }
 
-static void SetFontSize(int diff, HWND hwnd)
+static void SetFontSize(int menuItemId, HWND hwnd)
 {
+    HWND hwndMB = SHFindMenuBar(hwnd);
+    if (NULL==hwndMB) 
+        return;
+
+    HMENU hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+    CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_UNCHECKED | MF_BYCOMMAND);
+    CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
+    CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
+
     int delta=0;
-    HWND hwndMB = SHFindMenuBar (hwnd);
-    if (hwndMB) 
+    switch (menuItemId)
     {
-        HMENU hMenu;
-        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
-        CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_UNCHECKED | MF_BYCOMMAND);
-        CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
-        CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
-        switch(diff)
-        {
-            case IDM_FNT_LARGE:
-                CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
-                delta = 2;
-                break;
-            case IDM_FNT_STANDARD:
-                CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
-                break;
-            case IDM_FNT_SMALL:
-                CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
-                delta = -2;
-                break;
-        }
+        case IDM_FNT_LARGE:
+            CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
+            delta = 2;
+            break;
+        case IDM_FNT_STANDARD:
+            CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
+            break;
+        case IDM_FNT_SMALL:
+            CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
+            delta = -2;
+            break;
     }
     g_forceLayoutRecalculation = true;
+    g_fUpdateScrollbars = true;
     renderingPrefsPtr()->setFontSize(delta);
     InvalidateRect(hwnd,NULL,TRUE);
 }
@@ -505,7 +530,7 @@ static void DoCompact(HWND hwnd)
     }
 
     g_forceLayoutRecalculation = true;
-    g_fRec = true;
+    g_fUpdateScrollbars = true;
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
@@ -525,6 +550,7 @@ static void DoRecentLookups(HWND hwnd)
         MessageBox(g_hwndMain,
             _T("No lookups have been made so far."),
             _T("Information"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+        InvalidateRect(hwnd,NULL,TRUE);
     }
     else
     {

@@ -48,7 +48,8 @@ BEGIN
     BEGIN
         MENUITEM "Random word",              	IDM_MENU_RANDOM
         MENUITEM "Recent lookups",              IDM_MENU_RECENT
-        MENUITEM "Compact view",                IDM_MENU_COMPACT
+		// compact view doesn't work right
+        //MENUITEM "Compact view",                IDM_MENU_COMPACT
         MENUITEM "Register",                    IDM_MENU_REGISTER
 	POPUP "Font size"
 	BEGIN
@@ -95,7 +96,7 @@ STYLE WS_POPUP | WS_VISIBLE
 FONT 8, "System"
 BEGIN
     CTEXT "Enter registration code:",IDC_STATIC, 0, 25, 100, 10
-    EDITTEXT IDC_EDIT_REGCODE, 2, 47, 96, 10,
+    EDITTEXT IDC_EDIT_REGCODE, 2, 25+12, 96, 10,
         ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
 END
 
