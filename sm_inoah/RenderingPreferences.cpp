@@ -41,7 +41,11 @@ RenderingPreferences::RenderingPreferences()
     
     Graphics::Font_t font(WinFont());
     TCHAR bullet[3];
-    bullet[0]=(bulletType()==bulletCircle)?TCHAR('*'):TCHAR('>');
+
+    if (bulletCircle==bulletType())
+        bullet[0] = _T('*');
+    else
+        bullet[0] = _T('>');
     bullet[1]=TCHAR(' ');
     bullet[2]=TCHAR(' ');
     Graphics graphics(GetDC(g_hwndMain),g_hwndMain);
@@ -71,7 +75,7 @@ void RenderingPreferences::setClassicView()
     styles_[styleDefinitionList].requiresNewLine = true;
     styles_[styleDefinition].requiresNewLine = false;
     styles_[styleExampleList].requiresNewLine = true;
-    styles_[styleExample].requiresNewLine = false;
+    styles_[styleExample].requiresNewLine = true;
     styles_[styleSynonymsList].requiresNewLine = true;
     styles_[styleSynonyms].requiresNewLine = false;
     styles_[stylePOfSpeechList].requiresNewLine = false;

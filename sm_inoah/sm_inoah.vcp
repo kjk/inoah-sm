@@ -1186,9 +1186,52 @@ DEP_CPP_INOAH=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\DynamicNewLineElement.h"\
 	".\iNoahParser.h"\
 	".\RenderingPreferences.hpp"\
@@ -1256,6 +1299,49 @@ DEP_CPP_INOAHS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
 	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
@@ -1566,10 +1652,8 @@ NODEP_CPP_RECLO=\
 DEP_CPP_RECLO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	".\iNoahSession.h"\
 	".\reclookups.h"\
 	".\sm_inoah.h"\
-	".\Transmission.h"\
 	
 
 !ENDIF 
@@ -1621,7 +1705,6 @@ DEP_CPP_REGIS=\
 	".\iNoahSession.h"\
 	".\registration.h"\
 	".\sm_inoah.h"\
-	".\Transmission.h"\
 	
 
 !ENDIF 
@@ -1790,10 +1873,8 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\iNoahSession.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_inoah.h"\
-	".\Transmission.h"\
 	
 
 !ENDIF 
@@ -1932,7 +2013,6 @@ DEP_CPP_SM_IN=\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
 	".\Transmission.h"\
-	{$(INCLUDE)}"connmgr.h"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	{$(INCLUDE)}"sms.h"\
 	{$(INCLUDE)}"tpcshell.h"\
@@ -1993,11 +2073,9 @@ NODEP_CPP_TAPID=\
 DEP_CPP_TAPID=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\TAPIDevice.h"\
 	".\TAPILine.h"\
-	".\Transmission.h"\
 	{$(INCLUDE)}"ExTAPI.h"\
 	
 
@@ -2054,6 +2132,94 @@ DEP_CPP_TAPIL=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\Text.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_TEXT_=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
+	".\cctype"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_TEXT_=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
+	".\cctype"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_TEXT_=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
+	".\cctype"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_TEXT_=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
+	"..\STLport\stlport\cctype"\
+	"..\STLport\stlport\config\_epilog.h"\
+	"..\STLport\stlport\config\_msvc_warnings_off.h"\
+	"..\STLport\stlport\config\_prolog.h"\
+	"..\STLport\stlport\config\stl_apcc.h"\
+	"..\STLport\stlport\config\stl_apple.h"\
+	"..\STLport\stlport\config\stl_as400.h"\
+	"..\STLport\stlport\config\stl_bc.h"\
+	"..\STLport\stlport\config\stl_como.h"\
+	"..\STLport\stlport\config\stl_confix.h"\
+	"..\STLport\stlport\config\stl_cray.h"\
+	"..\STLport\stlport\config\stl_dec.h"\
+	"..\STLport\stlport\config\stl_dec_vms.h"\
+	"..\STLport\stlport\config\stl_dm.h"\
+	"..\STLport\stlport\config\stl_fujitsu.h"\
+	"..\STLport\stlport\config\stl_gcc.h"\
+	"..\STLport\stlport\config\stl_hpacc.h"\
+	"..\STLport\stlport\config\stl_ibm.h"\
+	"..\STLport\stlport\config\stl_icc.h"\
+	"..\STLport\stlport\config\stl_intel.h"\
+	"..\STLport\stlport\config\stl_kai.h"\
+	"..\STLport\stlport\config\stl_msvc.h"\
+	"..\STLport\stlport\config\stl_mwerks.h"\
+	"..\STLport\stlport\config\stl_mycomp.h"\
+	"..\STLport\stlport\config\stl_sco.h"\
+	"..\STLport\stlport\config\stl_select_lib.h"\
+	"..\STLport\stlport\config\stl_sgi.h"\
+	"..\STLport\stlport\config\stl_solaris.h"\
+	"..\STLport\stlport\config\stl_sunpro.h"\
+	"..\STLport\stlport\config\stl_symantec.h"\
+	"..\STLport\stlport\config\stl_watcom.h"\
+	"..\STLport\stlport\config\stl_wince.h"\
+	"..\STLport\stlport\config\stlcomp.h"\
+	"..\STLport\stlport\config\vc_select_lib.h"\
+	"..\STLport\stlport\stl\_abbrevs.h"\
+	"..\STLport\stlport\stl\_config.h"\
+	"..\STLport\stlport\stl\_config_compat.h"\
+	"..\STLport\stlport\stl\_config_compat_post.h"\
+	"..\STLport\stlport\stl\_epilog.h"\
+	"..\STLport\stlport\stl\_prolog.h"\
+	"..\STLport\stlport\stl\_site_config.h"\
+	"..\STLport\stlport\stl_user_config.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\Transmission.cpp
 
 !IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
@@ -2086,9 +2252,9 @@ NODEP_CPP_TRANS=\
 DEP_CPP_TRANS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	".\iNoahSession.h"\
 	".\sm_inoah.h"\
 	".\Transmission.h"\
+	{$(INCLUDE)}"connmgr.h"\
 	
 
 !ENDIF 

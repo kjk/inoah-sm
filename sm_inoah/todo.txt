@@ -1,11 +1,13 @@
 TODO:
-8. fix compact mode (need spaces to separate)
+9. word font is small at the beginnign, changes to correct after refresh. fix it
+10. menu About/About doesn't work
+11. don't re-download the word if it's the same as current word
+7. after random lookup put the word into the edit text field and select it
+12. changing font to large is broken
 3. scripts to create a cab and setup file
 4. add an icon
 5. pocket pc/pocket pc phone edition version
-7. after random lookup put the word into the edit text field and select it
-9. word font is small at the beginnign, changes to correct after refresh. fix it
-10. menu About/About doesn't work
+8. fix compact mode (need spaces to separate)
 
 DONE:
 2. test registration (2004-08-06)

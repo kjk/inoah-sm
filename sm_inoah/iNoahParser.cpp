@@ -533,22 +533,17 @@ static void FormatSynsetDef(const SynsetDef_t& synsetDef, int synsetNo, Paragrap
     uint_t examplesCount = synsetDef.examples.size();
     if (examplesCount>0)
     {
-        FAddDynamicLine(_T("Examples: "),styleExampleList,parent,elements);
-
         String example;
         String exampleLine;
         for (uint_t i=0; i<examplesCount; i++)
         {
             example = synsetDef.examples[i];
-            exampleLine.append(_T("\""));
+            exampleLine.assign(_T("\""));
             exampleLine.append(example);
             exampleLine.append(_T("\""));
-            if (i!=examplesCount-1)
-            {
-                exampleLine.append(_T(", "));
-            }
+            FAddDynamicLine(exampleLine,styleExample,parent,elements);
         }
-        FAddDynamicLine(exampleLine,styleExample,parent,elements);
+
     }
 }
 

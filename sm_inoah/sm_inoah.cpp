@@ -46,7 +46,6 @@ ArsLexis::String g_recentWord;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
-
 void    DrawProgressInfo(HWND hwnd, TCHAR* text);
 void    SetFontSize(int diff,HWND hwnd);
 void    Paint(HWND hwnd, HDC hdc);
