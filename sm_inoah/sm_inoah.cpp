@@ -7,6 +7,7 @@
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
 #include <SysUtils.hpp>
+#include <WinPrefsStore.hpp>
 #include <EnterRegCodeDialog.hpp>
 #include <Definition.hpp>
 
@@ -17,10 +18,10 @@
 #include "resource.h"
 
 using ArsLexis::String;
-
-const String iNoahFolder  = _T("\\iNoah");
-const String cookieFile   = _T("\\Cookie");
-const String regCodeFile  = _T("\\RegCode");
+using ArsLexis::PrefsStoreReader;
+using ArsLexis::PrefsStoreWriter;
+using ArsLexis::status_t;
+using ArsLexis::char_t;
 
 HINSTANCE g_hInst      = NULL;  // Local copy of hInstance
 HWND      g_hwndMain   = NULL;  // Handle to Main window returned from CreateWindow
@@ -94,143 +95,138 @@ static void SetDefinition(ArsLexis::String& defTxt)
     InvalidateRect(g_hwndMain,NULL,TRUE);
 }
 
-void DeleteFile(const String& fileName)
+#define FONT_SIZE_SMALL  1
+#define FONT_SIZE_MEDIUM 2
+#define FONT_SIZE_BIG    3
+typedef struct Preferences_ {
+    String cookie;
+    String regCode;
+    int    fontSize;
+} Preferences_t;
+
+Preferences_t g_prefs;
+
+enum PreferenceId 
 {
-    String path;
-    BOOL fOk = GetSpecialFolderPath(path);
-    if (!fOk)
+    cookiePrefId,
+    regCodePrefId,
+    fontSizePrefId
+};
+
+#define PREFS_FILE_NAME _T("iPedia.prefs")
+
+static void LoadPreferences()
+{
+    static bool fLoaded = false;
+    if (fLoaded)
         return;
-    String fullPath = path + iNoahFolder + fileName;
-    DeleteFile(fullPath.c_str());
+
+    std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(PREFS_FILE_NAME));
+
+    Preferences_t   prefs;
+    status_t        error;
+    const char_t*   text;
+
+    // those are default values in case preferences file doesn't exist
+    prefs.cookie.assign(_T(""));
+    prefs.regCode.assign(_T(""));
+    prefs.fontSize = FONT_SIZE_MEDIUM;
+
+    if (errNone!=(error=reader->ErrGetStr(cookiePrefId, &text))) 
+        goto Exit;
+    prefs.cookie = text;
+
+    if (errNone!=(error=reader->ErrGetStr(regCodePrefId, &text))) 
+        goto Exit;
+    prefs.regCode = text;
+    
+    if (errNone!=(error=reader->ErrGetInt(fontSizePrefId, &prefs.fontSize))) 
+        goto Exit;
+Exit:
+    fLoaded = true;
+    g_prefs = prefs;
 }
 
-static void SaveStringToFile(const String& fileName, const String& str)
+static void SavePreferences()
 {
-    String path;
-    BOOL fOk = GetSpecialFolderPath(path);
-    if (!fOk)
-        return;
+    status_t error;
+    std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(PREFS_FILE_NAME));
 
-    String fullPath = path + iNoahFolder;
-    fOk = CreateDirectory (fullPath.c_str(), NULL);  
-    if (!fOk)
-        return;
-    fullPath += fileName;
-
-    HANDLE handle = CreateFile(fullPath.c_str(), 
-        GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL, NULL); 
-    
-    if (INVALID_HANDLE_VALUE==handle)
-        return;
-
-    DWORD written;
-    WriteFile(handle, str.c_str(), str.length()*sizeof(TCHAR), &written, NULL);
-    CloseHandle(handle);
+    if (errNone!=(error=writer->ErrSetStr(cookiePrefId, g_prefs.cookie.c_str())))
+        goto OnError;
+    if (errNone!=(error=writer->ErrSetStr(regCodePrefId, g_prefs.regCode.c_str())))
+        goto OnError;
+    if (errNone!=(error=writer->ErrSetInt(fontSizePrefId, g_prefs.fontSize)))
+        goto OnError;
+    if (errNone!=(error=writer->ErrSavePreferences()))
+        goto OnError;
+    return;        
+OnError:
+    return; 
 }
-
-static String LoadStringFromFile(String fileName)
-{
-    String path;
-    BOOL fOk = GetSpecialFolderPath(path);
-    if (!fOk)
-        return _T("");
-
-    String fullPath = path + iNoahFolder + fileName;
-    
-    HANDLE handle = CreateFile(fullPath.c_str(), 
-        GENERIC_READ, FILE_SHARE_READ, NULL, 
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
-        NULL); 
-
-    if (INVALID_HANDLE_VALUE==handle)
-        return _T("");
-    
-    TCHAR  buf[254];
-    DWORD  bytesRead;
-    String ret;
-
-    while (TRUE)
-    {
-        fOk = ReadFile(handle, &buf, sizeof(buf), &bytesRead, NULL);
-
-        if (!fOk || (0==bytesRead))
-            break;
-        ret.append(buf, bytesRead/sizeof(TCHAR));
-    }
-
-    CloseHandle(handle);
-    return ret;
-}
-
-String g_regCode;
 
 String GetRegCode()
 {
-    static bool fTriedFile = false;
-    if (!g_regCode.empty())
-        return g_regCode;
-
-    if (fTriedFile)
-        return g_regCode;
-
-    g_regCode = LoadStringFromFile(regCodeFile);
-    fTriedFile = true;
-    return g_regCode;
+    LoadPreferences();
+    return g_prefs.regCode;
 }
 
 void SetRegCode(const String& regCode)
 {
-    g_regCode = regCode;
-    SaveStringToFile(regCodeFile,regCode);
+    g_prefs.regCode.assign(regCode);
+    SavePreferences();
 }
 
 static void DeleteRegCode()
 {
-    DeleteFile(regCodeFile);
-    g_regCode.clear();
+    g_prefs.regCode.clear();
+    SavePreferences();
 }
 
 static bool FRegCodeExists()
 {
-    if (g_regCode.empty())
+    LoadPreferences();
+    if (g_prefs.regCode.empty())
         return false;
     else
         return true;
 }
 
-String g_cookie;
-
 String GetCookie()
 {
-    static bool fTriedFile = false;
-    if (!g_cookie.empty())
-        return g_cookie;
-
-    if (fTriedFile)
-        return g_cookie;
-
-    g_cookie = LoadStringFromFile(cookieFile);
-    fTriedFile = true;
-    return g_cookie;
+    LoadPreferences();
+    return g_prefs.cookie;
 }
 
 void SetCookie(const String& cookie)
 {    
-    g_cookie = cookie;
-    SaveStringToFile(cookieFile,cookie);
+    g_prefs.cookie.assign(cookie);
+    SavePreferences();
 }
 
 static void DeleteCookie()
 {
-    DeleteFile(cookieFile);
-    g_cookie.clear();
+    g_prefs.cookie.clear();
+    SavePreferences();
 }
 
 static void ClearCache()
 {
     DeleteCookie();
     DeleteRegCode();
+}
+
+
+int GetPrefsFontSize()
+{
+    LoadPreferences();
+    return g_prefs.fontSize;
+}
+
+void SetPrefsFontSize(int size)
+{
+    g_prefs.fontSize = size;
+    SavePreferences();
 }
 
 static void SetScrollBar(Definition* definition)
@@ -440,7 +436,7 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     ReleaseDC(hwnd,hdc);
 }
 
-static void SetFontSize(int menuItemId, HWND hwnd)
+static void SetFontSize(int fontSize, HWND hwnd)
 {
     HWND hwndMB = SHFindMenuBar(hwnd);
     if (NULL==hwndMB) 
@@ -451,21 +447,28 @@ static void SetFontSize(int menuItemId, HWND hwnd)
     CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
     CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
 
-    int delta=0;
-    switch (menuItemId)
+    int menuItemId = IDM_FNT_STANDARD;
+    int delta = 0;
+    switch (fontSize)
     {
-        case IDM_FNT_LARGE:
-            CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
-            delta = 2;
-            break;
-        case IDM_FNT_STANDARD:
-            CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
-            break;
-        case IDM_FNT_SMALL:
-            CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
+        case FONT_SIZE_SMALL:
+            menuItemId = IDM_FNT_SMALL;
             delta = -2;
             break;
+        case FONT_SIZE_MEDIUM:
+            menuItemId = IDM_FNT_STANDARD;
+            delta = 0;
+            break;
+        case FONT_SIZE_BIG:
+            menuItemId = IDM_FNT_LARGE;
+            delta = -2;
+           break;
+        default:
+            assert(false);
+            break;
     }
+
+    CheckMenuItem(hMenu, menuItemId, MF_CHECKED | MF_BYCOMMAND);
     g_forceLayoutRecalculation = true;
     g_fUpdateScrollbars = true;
     renderingPrefsPtr()->setFontSize(delta);
@@ -604,8 +607,9 @@ static void OnCreate(HWND hwnd)
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
         );
-    
-    SetFontSize(IDM_FNT_STANDARD, hwnd);
+
+    int fontSize = GetPrefsFontSize();
+    SetFontSize(fontSize, hwnd);
     SetFocus(g_hwndEdit);
 }
 
@@ -687,19 +691,23 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_COMPACT:
+            assert(false); // doesn't work currently
             DoCompact(hwnd);
             break;
 
         case IDM_FNT_LARGE:
-            SetFontSize(IDM_FNT_LARGE, hwnd);
+            SetFontSize(FONT_SIZE_BIG, hwnd);
+            SetPrefsFontSize(FONT_SIZE_BIG);
             break;
 
         case IDM_FNT_STANDARD:
-            SetFontSize(IDM_FNT_STANDARD, hwnd);
+            SetFontSize(FONT_SIZE_MEDIUM, hwnd);
+            SetPrefsFontSize(FONT_SIZE_MEDIUM);
             break;
 
         case IDM_FNT_SMALL:
-            SetFontSize(IDM_FNT_SMALL, hwnd);
+            SetFontSize(FONT_SIZE_SMALL, hwnd);
+            SetPrefsFontSize(FONT_SIZE_SMALL);
             break;
 
         case ID_LOOKUP:
@@ -723,11 +731,21 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_HOME:
+#ifdef WIN32_PLATFORM_WFSP
             GotoURL(_T("http://arslexis.com/pda/sm.html"));
+#endif
+#ifdef WIN32_PLATFORM_PSCP
+            GotoURL(_T("http://arslexis.com/pda/ppc.html"));
+#endif
             break;
         
         case IDM_MENU_UPDATES:
+#ifdef WIN32_PLATFORM_WFSP
             GotoURL(_T("http://arslexis.com/updates/sm-inoah-1-0.html"));
+#endif
+#ifdef WIN32_PLATFORM_PSCP
+            GotoURL(_T("http://arslexis.com/updates/ppc-inoah-1-0.html"));      
+#endif
             break;
 
         case IDM_MENU_ABOUT:
