@@ -66,6 +66,13 @@ BEGIN
   BEGIN
     MENUITEM "Register",                IDM_MENU_REGISTER
     MENUITEM SEPARATOR
+	POPUP "Font size"
+	BEGIN
+	  MENUITEM "Large", 			  IDM_FNT_LARGE
+	  MENUITEM "Standard",			  IDM_FNT_STANDARD
+	  MENUITEM "Small", 			  IDM_FNT_SMALL
+	END
+    MENUITEM SEPARATOR
     //MENUITEM "Tutorial",                IDM_MENU_TUTORIAL
     MENUITEM "ArsLexis home",           IDM_MENU_HOME
     MENUITEM "Check updates",           IDM_MENU_UPDATES

@@ -227,6 +227,59 @@ void SetPrefsFontSize(int size)
     SavePreferences();
 }
 
+void *g_ClipboardText = NULL;
+
+static void FreeClipboardData()
+{
+    if (NULL!=g_ClipboardText)
+    {
+        LocalFree(g_ClipboardText);
+        g_ClipboardText = NULL;
+    }
+}
+
+static void* CreateNewClipboardData(const String& str)
+{
+    FreeClipboardData();
+
+    int     strLen = str.length();
+
+    g_ClipboardText = LocalAlloc(LPTR, (strLen+1)*sizeof(char_t));
+    if (NULL!=g_ClipboardText)
+        return NULL;
+
+    ZeroMemory(g_ClipboardText, (strLen+1)*sizeof(char_t));
+    memcpy(g_ClipboardText, str.c_str(), strLen*sizeof(char_t));
+    return g_ClipboardText;
+}
+
+// copy definition to clipboard
+static void CopyToClipboard(HWND hwndMain, Definition *def)
+{
+    void *    clipData;
+    String    text;
+
+    if (def->empty())
+        return;
+
+    if (!OpenClipboard(hwndMain))
+        return;
+
+    // TODO: should we put it anyway?
+    if (!EmptyClipboard())
+        goto Exit;
+    
+    def->selectionToText(text);
+
+    clipData = CreateNewClipboardData(text);
+    if (NULL==clipData)
+        goto Exit;
+    
+    SetClipboardData(CF_UNICODETEXT, clipData);
+Exit:
+    CloseClipboard();
+}
+
 static void SetScrollBar(Definition* definition)
 {
     int first=0;
@@ -759,6 +812,10 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     switch (wp)
     {
+        case IDM_MENU_CLIPBOARD:
+            CopyToClipboard(g_hwndMain, g_definition);
+            break;
+
         case IDM_EXIT: // intentional no break
         case IDOK:
             SendMessage(hwnd, WM_CLOSE, 0, 0);
@@ -911,7 +968,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 #ifdef WIN32_PLATFORM_WFSP
         case WM_HOTKEY:
-		    SHSendBackToFocusWindow(msg, wp, lp);
+            SHSendBackToFocusWindow(msg, wp, lp);
             break;
 #endif
 
