@@ -26,9 +26,9 @@ TCHAR szTitle[];
 // KJK_BUILD is defined in sm_inoah_kjk.vcp project so that my builds
 // always go against my server
 #ifdef KJK_BUILD
-#define server     TEXT("dict-pc.arslex.com")
+#define server     TEXT("dict-pc.arslexis.com")
 #define serverPort 4080
-//#define server     TEXT("dict.arslex.com")
+//#define server     TEXT("dict.arslexis.com")
 //#define serverPort 80
 #else
 #define server     TEXT("arslex.no-ip.info")
