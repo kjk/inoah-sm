@@ -10,19 +10,18 @@
 #include <SysUtils.hpp>
 #include <WinPrefsStore.hpp>
 #include <EnterRegCodeDialog.hpp>
-#include "StringListDialog.hpp"
+#include <StringListDialog.hpp>
 #include <Definition.hpp>
 
-#include "Transmission.h"
+#include "Transmission.hpp"
 #include "DefinitionParser.hpp"
 #include "sm_inoah.h"
 #include "resource.h"
 
-using ArsLexis::String;
-using ArsLexis::PrefsStoreReader;
-using ArsLexis::PrefsStoreWriter;
-using ArsLexis::status_t;
-using ArsLexis::char_t;
+using namespace ArsLexis;
+
+// this is not really used, it's just needed by a framework needed in sm_ipedia
+HWND g_hwndForEvents = NULL;
 
 HINSTANCE g_hInst      = NULL;  // Local copy of hInstance
 HWND      g_hwndMain   = NULL;  // Handle to Main window returned from CreateWindow
@@ -394,7 +393,6 @@ static void Paint(HWND hwnd, HDC hdc)
     }
 }
 
-
 static void DrawProgressInfo(HWND hwnd, TCHAR* text)
 {
     RECT rect;
@@ -406,7 +404,7 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     rect.bottom-=2;
     LOGFONT logfnt;
     
-    Rectangle(hdc, 18, 83, 152, 123);
+    ::Rectangle(hdc, 18, 83, 152, 123);
     
     POINT p[2];
     p[0].y=85;
@@ -546,21 +544,10 @@ static void DoCompact(HWND hwnd)
     InvalidateRect(hwnd,NULL,TRUE);
 }
 
-// note: caller needs to free memory with delete [[
-static const char_t *StringCopy(const String& str)
-{
-    const char_t *curStr = str.c_str();
-    int len = tstrlen(curStr);
-    char_t *newStr = new char_t[len+1];
-    if (NULL==newStr)
-        return NULL;
-
-    memcpy(newStr,curStr,(len+1)*sizeof(char_t));
-    return newStr;
-}
-
 static void DoRecentLookups(HWND hwnd)
 {
+    int wordCount;
+
     HDC hdc = GetDC(hwnd);
     Paint(hwnd, hdc);
     ReleaseDC(hwnd, hdc);
@@ -580,23 +567,8 @@ static void DoRecentLookups(HWND hwnd)
         return;
     }
 
-    StrList_t strList;
-    String word;
-
-    const char_t *wordTxt;
-    String::size_type curPos = 0;
-    bool fEnd;
-    int  wordCount = 0;
-    while (true)
-    {
-        word = ArsLexis::GetNextLine(recentLookups, curPos, fEnd);
-        if (fEnd)
-            break;
-        wordTxt = StringCopy(word);
-        strList.push_back(wordTxt);
-        ++wordCount;
-    }
-
+    CharPtrList_t strList;
+    wordCount = AddLinesToList(recentLookups, strList);
     if (0==wordCount)
         return;
 
@@ -605,16 +577,7 @@ static void DoRecentLookups(HWND hwnd)
     if (!fSelected)
         return;
 
-    StrList_t::iterator iter = strList.begin();
-    StrList_t::iterator iterEnd = strList.end();
-
-    const char_t *strToDelete;
-    do {
-        strToDelete = *iter;
-        delete [] (char_t*)strToDelete;
-        iter++;
-    } while (iter!=iterEnd);
-
+    FreeStringsFromCharPtrList(strList);
     DrawProgressInfo(hwnd, _T("definition..."));                
     String def;
     fOk = FGetWord(selectedString,def);

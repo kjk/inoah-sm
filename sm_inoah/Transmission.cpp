@@ -8,7 +8,7 @@
 #include <DeviceInfo.hpp>
 #include "ServerResponseParser.hpp"
 #include "sm_inoah.h"
-#include "Transmission.h"
+#include "Transmission.hpp"
 
 #define urlCommon    _T("/dict-2.php?pv=2&cv=1.0&")
 #define urlCommonLen sizeof(urlCommon)/sizeof(urlCommon[0])
