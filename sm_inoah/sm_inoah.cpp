@@ -23,7 +23,7 @@ const String cookieFile   = _T("\\Cookie");
 const String regCodeFile  = _T("\\RegCode");
 
 HINSTANCE g_hInst      = NULL;  // Local copy of hInstance
-HWND      g_hwndMain   = NULL;    // Handle to Main window returned from CreateWindow
+HWND      g_hwndMain   = NULL;  // Handle to Main window returned from CreateWindow
 HWND      g_hwndScroll = NULL;
 HWND      g_hwndEdit   = NULL;
 
@@ -97,7 +97,8 @@ static void SetDefinition(ArsLexis::String& defTxt)
 void DeleteFile(const String& fileName)
 {
     String path;
-    if (!GetSpecialFolderPath(path))
+    BOOL fOk = GetSpecialFolderPath(path);
+    if (!fOk)
         return;
     String fullPath = path + iNoahFolder + fileName;
     DeleteFile(fullPath.c_str());
