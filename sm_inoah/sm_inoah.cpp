@@ -392,6 +392,11 @@ static void PaintAbout(HDC hdc, RECT& rect)
     if (NULL==fnt)
         return;
 
+    rect.top += 2;
+#ifdef WIN32_PLATFORM_PSPC
+    rect.top += 6;
+#endif
+
     LOGFONT logfnt;
     GetObject(fnt, sizeof(logfnt), &logfnt);
     logfnt.lfHeight += 1;
@@ -408,10 +413,18 @@ static void PaintAbout(HDC hdc, RECT& rect)
     int lineSpace = fontDy+5;
 
     RECT tmpRect = rect;
+#ifdef WIN32_PLATFORM_PSPC
+    DrawText(hdc, _T("(enter word and press \"Search\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#else
     DrawText(hdc, _T("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#endif
     tmpRect.top += 36;
 
+#ifdef DEBUG
+    DrawText(hdc, _T("ArsLexis iNoah 1.0 (debug)"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#else
     DrawText(hdc, _T("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#endif
     tmpRect.top += lineSpace;
 
     if (FRegCodeExists())
@@ -436,8 +449,10 @@ static void PaintAbout(HDC hdc, RECT& rect)
     if (NULL!=fntVerySmall)
         SelectObject(hdc, fntVerySmall);
 
+#ifdef WIN32_PLATFORM_WFSP
     tmpRect.top += (lineSpace+22);
     DrawText(hdc, _T("Downloading uses data connection"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+#endif
 
     if (NULL!=fntSmall)
         DeleteObject(fntSmall);
