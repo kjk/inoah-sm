@@ -57,7 +57,7 @@ bool iNoahSession::checkErrors(Transmission &tr, String &ret)
 	{
 		//TODO: Better error handling
 		responseCode = error;
-		content = TEXT("Transmission error.");
+		tr.getResponse(content);
 		return true;
 	}
 	
@@ -143,10 +143,14 @@ void iNoahSession::sendRequest(String url,
 	Transmission tr(server, url);
 	String tmp;
     tr.getResponse(tmp);
-	if(checkErrors(tr,tmp)) ; 
+	if(checkErrors(tr,tmp))
+        ; 
 	else 
         if (tmp.find(answer, 0) == 0 )
+        {
 		    content.assign(tmp,answer.length()+1,-1);
+            this->responseCode=definition;
+        }
 	ret=content;
     return;
 }

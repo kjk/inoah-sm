@@ -95,8 +95,10 @@ Definition* iNoahParser::parse(String text)
     int cntPOS=0;
     for(int i=0;i<pOfSpeechCnt;i++)
     {
+        #ifdef HORLINES
         if (sorted[i].size() > 0)
             appendElement(new HorizontalLineElement());
+        #endif
         parent=0;
         int cntMeaning=1;
         if (sorted[i].size() > 0)
@@ -264,7 +266,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
     }
     if(last)
     {
-        last->setText(last->text()+TEXT(". "));
+        last->setText(last->text());//+TEXT(". "));
         DynamicNewLineElement *el=new DynamicNewLineElement(String(TEXT("Synonyms: ")));
         el->setStyle(styleSynonymsList);
         lst->push_front(el);
@@ -316,7 +318,6 @@ void iNoahParser::appendElement(DefinitionElement* element)
     elements_.push_back(element);
 }
 
-
 iNoahParser::ElementsList::~ElementsList()
 {
     std::for_each(lst.begin(), lst.end(), ObjectDeleter<DefinitionElement>());
@@ -331,4 +332,3 @@ void iNoahParser::ElementsList::push_front(DefinitionElement* el)
 {
     lst.push_front(el);
 }
-

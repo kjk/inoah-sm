@@ -5,6 +5,7 @@
 #include "Transmission.h"
 #include "winerror.h"
 #include "tchar.h"
+#include <BaseTypes.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -98,8 +99,28 @@ void Transmission::getResponse(ArsLexis::String& ret)
 
 DWORD Transmission::setError()
 {
-	lastError = GetLastError();
-	InternetCloseHandle(hIConnect);
+	
+    LPVOID lpMsgBuf;
+    lastError = GetLastError();
+    /*FormatMessage( 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM | 
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        lastError,
+        0, // Default language
+        (LPTSTR) &lpMsgBuf,
+        0,
+        NULL 
+    ); FUCK DOESN'T WORK AT ALL*/
+    //content=ArsLexis::String((TCHAR*)lpMsgBuf);
+    TCHAR buffer[20];
+    _itow(lastError, buffer, 10 );
+
+    content.assign(TEXT("Network connection unavailable. iNoah cannot retrieve the definition. Error code:"));
+    content+=buffer;
+    LocalFree( lpMsgBuf );
+    InternetCloseHandle(hIConnect);
 	InternetCloseHandle(hIRequest);
 	return lastError;
 }

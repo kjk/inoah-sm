@@ -103,8 +103,8 @@ namespace ArsLexis
         GetObject(hgdiobj, sizeof(pen), &pen);
         old = pen.lopnColor;
         pen.lopnColor = color;
-        CreatePenIndirect(&pen);
-        SelectObject(handle_,hgdiobj);
+        HPEN newPen=CreatePenIndirect(&pen);
+        SelectObject(handle_,newPen);
         DeleteObject(hgdiobj);
         return old;
     }

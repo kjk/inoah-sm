@@ -15,9 +15,11 @@
 #include <windows.h>
 #include <tpcshell.h>
 #include <wingdi.h>
-#include <FontEffects.hpp>
+#include <fonteffects.hpp>
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+void drawProgressInfo(HWND hwnd);
 
 WNDPROC oldEditWndProc;
 
@@ -34,6 +36,7 @@ RenderingPreferences* prefs= new RenderingPreferences();
 iNoahSession session;
 bool rec=false;
 
+BOOL InitRecentLookups(HWND hDlg);
 
 bool initializeConnection()
 {
@@ -279,10 +282,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     SendMessage(hwndEdit, EM_SETSEL, 0,len);
                     ArsLexis::String word(buf);
-        			session.getWord(word,text);
-                    setDefinition(text);
+                    drawProgressInfo(hwnd);
+                    session.getWord(word,text);
+                    iNoahSession::ResponseCode code=session.getLastResponseCode();
+                    if( (code==iNoahSession::srvmessage)||
+                        (code==iNoahSession::srverror)||
+                        (code==iNoahSession::error))
+                        MessageBox(hwnd,text.c_str(),TEXT("Error"), 
+                        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
+                    else
+                        setDefinition(text);
                     delete buf;
                     InvalidateRect(hwnd,NULL,TRUE);
+                    break;
+                }
+                case IDM_MENU_RECENT:
+                {
+                    DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc);
                     break;
                 }
 			    default:
@@ -547,4 +563,94 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
 }
 
+BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch(msg)
+    {
+        case WM_INITDIALOG:
+            return InitRecentLookups(hDlg);
+        
+    }
+    return FALSE;
+}
+
+BOOL InitRecentLookups(HWND hDlg)
+{
+	// Specify that the dialog box should stretch full screen
+	SHINITDLGINFO shidi;
+	ZeroMemory(&shidi, sizeof(shidi));
+    shidi.dwMask = SHIDIM_FLAGS;
+    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
+    shidi.hDlg = hDlg;
+            
+	// Set up the menu bar
+	SHMENUBARINFO shmbi;
+	ZeroMemory(&shmbi, sizeof(shmbi));
+    shmbi.cbSize = sizeof(shmbi);
+    shmbi.hwndParent = hDlg;
+    shmbi.nToolBarId = IDR_RECENT_MENUBAR;
+    shmbi.hInstRes = g_hInst;
+
+    //if (!SHCreateMenuBar(&shmbi))
+	//	return FALSE;
+	// If we could not initialize the dialog box, return an error
+	if (!SHInitDialog(&shidi))
+		return FALSE;
+
+    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
+			  MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+	            SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+
+	return TRUE;
+}
+
+void drawProgressInfo(HWND hwnd)
+{
+	RECT		rect;
+    HDC hdc=GetDC(hwnd);
+    GetClientRect (hwnd, &rect);
+    rect.top+=22;
+    rect.left+=2;
+    rect.right-=7;
+    rect.bottom-=2;
+    LOGFONT logfnt;
+    
+    Rectangle(hdc, 20, 85, 150, 121);
+    
+    POINT p[2];
+    p[0].y=85;
+    p[1].y=121;
+    LOGPEN pen;
+    HGDIOBJ hgdiobj = GetCurrentObject(hdc,OBJ_PEN);
+    GetObject(hgdiobj, sizeof(pen), &pen);
+    for(p[0].x=20;p[0].x<150;p[0].x++)
+    {                           
+        HPEN newPen=CreatePenIndirect(&pen);
+        pen.lopnColor = RGB(0,0,p[0].x+100);
+        SelectObject(hdc,newPen);
+        DeleteObject(hgdiobj);
+        hgdiobj=newPen;
+        p[1].x=p[0].x;
+        Polyline(hdc, p, 2);
+    }
+    DeleteObject(hgdiobj);
+    
+    SelectObject(hdc,GetStockObject(HOLLOW_BRUSH));
+    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfHeight+=1;
+    logfnt.lfWeight=800;
+    SetTextColor(hdc,RGB(255,255,255));
+    SetBkMode(hdc, TRANSPARENT);
+    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+    SelectObject(hdc, fnt2);
+    rect.top-=10;
+    DrawText (hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
+    rect.top+=32;
+    DrawText (hdc, TEXT("definition..."), -1, &rect, DT_VCENTER|DT_CENTER);
+    SelectObject(hdc,fnt);
+    DeleteObject(fnt2);
+    ReleaseDC(hwnd,hdc);
+    
+}
 // end sm_inoah.cpp
