@@ -11,7 +11,6 @@
 
 #include "Transmission.h"
 #include "iNoahParser.h"
-#include "TAPIDevice.h"
 #include "reclookups.h"
 #include "registration.h"
 #include "sm_inoah.h"
@@ -76,27 +75,6 @@ static void SetDefinition(ArsLexis::String& defTxt)
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     g_fRec = true;
     InvalidateRect(g_hwndMain,NULL,TRUE);
-}
-
-// return false on failure, true if ok
-bool GetSpecialFolderPath(String& pathOut)
-{
-#ifdef CSIDL_APPDATA
-    TCHAR szPath[MAX_PATH];
-    BOOL  fOk = SHGetSpecialFolderPath(NULL, szPath, CSIDL_APPDATA, FALSE);
-    if (!fOk)
-        return false;
-    pathOut.assign(szPath);
-    return true;
-#else
-    // Pocket PC doesn't have this defined so put our directory 
-    // at the root. This will likely change 
-    // in the future and this code should still work.
-    // TODO: see if SHGetSpecialFolderPath return path that ends with '\'
-    // pathOut.assign(_T("\\");
-    pathOut.assign(_T("");
-    return true;
-#endif
 }
 
 void DeleteFile(const String& fileName)
