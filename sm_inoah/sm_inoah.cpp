@@ -27,6 +27,7 @@ HINSTANCE g_hInst      = NULL;  // Local copy of hInstance
 HWND      g_hwndMain   = NULL;  // Handle to Main window returned from CreateWindow
 HWND      g_hwndScroll = NULL;
 HWND      g_hwndEdit   = NULL;
+HWND      g_hwndSearchButton = NULL;
 
 WNDPROC   g_oldEditWndProc = NULL;
 
@@ -743,6 +744,15 @@ static void OnCreate(HWND hwnd)
     SetWindowPos(hwnd, NULL, 0, 0, visibleDx, visibleDy, SWP_NOMOVE | SWP_NOZORDER);
 #endif
 
+#ifdef WIN32_PLATFORM_PSPC
+    g_hwndSearchButton = CreateWindow(
+        _T("button"),  
+        _T("Search"),
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON ,//| BS_OWNERDRAW,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd,
+        (HMENU)ID_SEARCH_BTN, g_hInst, NULL);
+#endif
+
     g_hwndEdit = CreateWindow( _T("edit"), NULL,
         WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
         0, 0, 0, 0, hwnd,
@@ -841,6 +851,8 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             SetPrefsFontSize(FONT_SIZE_SMALL);
             break;
 
+        case ID_SEARCH_BTN:
+        case IDM_SEARCH:
         case ID_LOOKUP:
             DoLookup(hwnd);
             break;
@@ -869,7 +881,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             GotoURL(_T("http://arslexis.com/pda/ppc.html"));
 #endif
             break;
-        
+
         case IDM_MENU_UPDATES:
 #ifdef WIN32_PLATFORM_WFSP
             GotoURL(_T("http://arslexis.com/updates/sm-inoah-1-0.html"));
@@ -900,10 +912,19 @@ static void OnSize(HWND hwnd, LPARAM lp)
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
 
+#ifdef WIN32_PLATFORM_PSPC
+    int searchButtonDX = 50;
+    int searchButtonX = dx - searchButtonDX - 2;
+
+    MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
+    MoveWindow(g_hwndEdit, 2, 2, searchButtonX - 6, 20, TRUE);
+#else
+    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
+#endif
+
     // should that depend on the size of edit window?
     int scrollStartY = 24;
     int scrollDy = dy - scrollStartY - 2;
-    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
     MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 }
 

@@ -54,6 +54,7 @@
 #define ID_OPTIONS_MENU_BTN             142
 #define ID_ACCEL                        143
 #define IDM_EXIT                        144
+#define ID_SEARCH_BTN                   145
 
 #define IDC_STRING_LIST                 1000
 #define IDC_EDIT_REGCODE                1001
