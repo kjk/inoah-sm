@@ -10,3 +10,4 @@ cd dist
 move inoah_sm.CAB inoah_sm_1_0.cab
 @rem ezsetup_sm -l english -i inoah_sm.ini -r readme.txt -e eula.txt -o iNoah_Smartphone_setup.exe
 ezsetup_sm -l english -i inoah_sm.ini -r readme_sm.txt -e eula_sm.txt -o inoah_sm_1_0_setup.exe
+del *.txt *.ini *.inf inoah.exe
