@@ -15,7 +15,7 @@
 TAPILine::TAPILine(DWORD dwLineID, TAPIDevice* device)
 {   
     DWORD dwSize;
-
+    
     lpLineDevCaps = NULL;    
     
     error = ERR_NONE;
@@ -28,10 +28,10 @@ TAPILine::TAPILine(DWORD dwLineID, TAPIDevice* device)
         TAPI_CURRENT_VERSION,         // Most recent API version
         &(this->dwAPIVersion),        // Negotiated API version
         NULL))                        // Must be NULL; the provider-
-                                      // specific extension is not 
-                                      // supported by Windows CE.
+        // specific extension is not 
+        // supported by Windows CE.
         return;
-
+    
     dwSize = sizeof (LINEDEVCAPS);
     
     // Allocate enough memory for lpLineDevCaps.
@@ -51,7 +51,7 @@ TAPILine::TAPILine(DWORD dwLineID, TAPIDevice* device)
             this->dwAPIVersion,
             0,
             lpLineDevCaps))
-
+            
             return;    
         
         // Stop if the allocated memory is equal to or greater than the 
@@ -64,7 +64,7 @@ TAPILine::TAPILine(DWORD dwLineID, TAPIDevice* device)
         lpLineDevCaps = NULL;
         
     } while (TRUE);
-               
+    
     if((error = lineOpen(device->gethLineApp(), dwLineID,
         &(this->hLine), this->dwAPIVersion, 0, 
         dwLineID, LINECALLPRIVILEGE_NONE, LINEMEDIAMODE_DATAMODEM , 
@@ -80,8 +80,8 @@ TAPILine::TAPILine(DWORD dwLineID, TAPIDevice* device)
             error = LINEERR_NOMEM;
             return;
         }
-
-    
+        
+        
         lplineGeneralInfo->dwTotalSize=dwSize;
         
         if (error = lineGetGeneralInfo(this->hLine, lplineGeneralInfo))

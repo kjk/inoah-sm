@@ -45,7 +45,7 @@ private:
     //static LINEINFO *g_lpLineInfo;     // Array that contains all the lines' 
     //static DWORD g_dwCurrentLineID ;   // Current line device identifier
     //static DWORD g_dwCurrentLineAddr;  // Current line address
-
+    
     // (lineInitialize)
     //static HCALL g_hCall;       // Handle to the open line device on
     // which the call is to be originated 
@@ -58,7 +58,7 @@ private:
     //static TCHAR g_szCurrentNum[TAPIMAXDESTADDRESSSIZE + 1];    
     // Current phone number
     //static TCHAR g_szLastNum[TAPIMAXDESTADDRESSSIZE + 1];    
-
+    
     static DWORD g_dwNumDevs;          // Number of line devices available
     static HLINEAPP g_hLineApp;        // Application's use handle for TAPI
     DWORD error;
@@ -66,13 +66,13 @@ private:
     static TAPIDevice* instance;
     
     static VOID FAR PASCAL lineCallbackFunc( 
-            DWORD hDevice, 
-            DWORD dwMsg, 
-            DWORD dwCallbackInstance, 
-            DWORD dwParam1, 
-            DWORD dwParam2, 
-            DWORD dwParam3);
-
+        DWORD hDevice, 
+        DWORD dwMsg, 
+        DWORD dwCallbackInstance, 
+        DWORD dwParam1, 
+        DWORD dwParam2, 
+        DWORD dwParam3);
+    
 };
 
 #endif // !defined(AFX_DEVICE_H__A3A57524_5023_4224_8F95_8F37FAFD5E07__INCLUDED_)

@@ -9,7 +9,7 @@
 //////////////////////////////////////////////////////////////////////
 
 DynamicNewLineElement::DynamicNewLineElement(const ArsLexis::String& text)
-    :FormattedTextElement(text)
+:FormattedTextElement(text)
 {
 }
 bool DynamicNewLineElement::breakBefore(const RenderingPreferences& prefs) const
@@ -19,5 +19,5 @@ bool DynamicNewLineElement::breakBefore(const RenderingPreferences& prefs) const
 
 DynamicNewLineElement::~DynamicNewLineElement()
 {
-
+    
 }

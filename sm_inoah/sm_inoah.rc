@@ -49,6 +49,12 @@ BEGIN
         MENUITEM "Recent lookups",              IDM_MENU_RECENT
         MENUITEM "Compact View",                IDM_MENU_COMPACT
         MENUITEM "Register",                    IDM_MENU_REGISTER
+	POPUP "Font size"
+	BEGIN
+		MENUITEM "Large",            	IDM_FNT_LARGE
+		MENUITEM "Standard",            IDM_FNT_STANDARD
+		MENUITEM "Small",            	IDM_FNT_SMALL
+	END
         MENUITEM "Quit",                        IDOK
     END
 END
@@ -75,7 +81,7 @@ IDD_RECENT DIALOG DISCARDABLE  4, 4, 80, 70
 STYLE WS_POPUP | WS_VISIBLE
 FONT 8, "System"
 BEGIN
-    LISTBOX         IDC_LIST_RECENT,0,2,100,86,
+    LISTBOX         IDC_LIST_RECENT,0,4,100,88,
 		    LBS_NOTIFY | LBS_STANDARD | NOT LBS_SORT | 
 		    WS_TABSTOP | NOT WS_BORDER
 END

@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 
-#include "..\ipedia\src\BaseTypes.hpp"
+#include "BaseTypes.hpp"
 #include <TAPI.h>
 #include <ExTAPI.h>
 #include <windows.h>
@@ -25,10 +25,10 @@ private:
     HLINE hLine;
     DWORD error;
 public:
-	TAPILine(DWORD lineID,TAPIDevice* device);
+    TAPILine(DWORD lineID,TAPIDevice* device);
     
-	virtual ~TAPILine();
-
+    virtual ~TAPILine();
+    
 };
 
 #endif // !defined(AFX_TAPILINE_H__A0C91177_AD39_4D7E_82AE_5E7BDC24DABA__INCLUDED_)

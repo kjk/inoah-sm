@@ -14,33 +14,7 @@ RenderingPreferences::RenderingPreferences()
     //:standardIndentation_(16)
     :needSynch(noChange)
 {
-    LOGFONT logfnt;
-    
-    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-    GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight+=1;
-    WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
-    for(int k=0;k<stylesCount_;k++)
-        styles_[k].font = wfnt;
-    logfnt.lfItalic=TRUE;
-    styles_[styleExample].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[styleExample].textColor = RGB(0,0,255);
-    logfnt.lfItalic=FALSE;
-    styles_[styleExampleList].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[styleExampleList].textColor = RGB(0,0,255);
-    logfnt.lfWeight=800;
-    styles_[stylePOfSpeechList].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[stylePOfSpeechList].textColor = RGB(0,200,0);
-    styles_[stylePOfSpeech].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[stylePOfSpeech].textColor = RGB(0,200,0);
-    styles_[styleSynonyms].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[styleSynonyms].textColor = RGB(0,0,0);
-    styles_[styleSynonymsList].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[styleSynonymsList].textColor = RGB(0,0,0);
-    logfnt.lfHeight -= 4;
-    styles_[styleWord].font = WinFont(CreateFontIndirect(&logfnt));
-    styles_[styleWord].textColor = RGB(0,0,255);
-
+    this->setFontSize(0);
     //int screenDepths=0;
     //bool color=false;
     /*Err error=WinScreenMode(winScreenModeGet, NULL, NULL, &screenDepths, &color);*/
@@ -102,5 +76,36 @@ void RenderingPreferences::setClassicView()
     styles_[styleSynonyms].requiresNewLine = false;
     styles_[stylePOfSpeechList].requiresNewLine = false;
     styles_[stylePOfSpeech].requiresNewLine = false;
+    needSynch=recalculateLayout;
+}
+
+void RenderingPreferences::setFontSize(int diff)
+{
+    LOGFONT logfnt;
+    
+    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfHeight+=1 + diff;
+    WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
+    for(int k=0;k<stylesCount_;k++)
+        styles_[k].font = wfnt;
+    logfnt.lfItalic=TRUE;
+    styles_[styleExample].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[styleExample].textColor = RGB(0,0,255);
+    logfnt.lfItalic=FALSE;
+    styles_[styleExampleList].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[styleExampleList].textColor = RGB(0,0,255);
+    logfnt.lfWeight=800;
+    styles_[stylePOfSpeechList].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[stylePOfSpeechList].textColor = RGB(0,200,0);
+    styles_[stylePOfSpeech].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[stylePOfSpeech].textColor = RGB(0,200,0);
+    styles_[styleSynonyms].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[styleSynonyms].textColor = RGB(0,0,0);
+    styles_[styleSynonymsList].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[styleSynonymsList].textColor = RGB(0,0,0);
+    logfnt.lfHeight -= 4 + diff;
+    styles_[styleWord].font = WinFont(CreateFontIndirect(&logfnt));
+    styles_[styleWord].textColor = RGB(0,0,255);
     needSynch=recalculateLayout;
 }

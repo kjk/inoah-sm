@@ -19,8 +19,8 @@
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-void drawProgressInfo(HWND hwnd);
-
+void drawProgressInfo(HWND hwnd, TCHAR* text);
+void setFontSize(int diff,HWND hwnd);
 WNDPROC oldEditWndProc;
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
@@ -94,11 +94,13 @@ void setScrollBar(Definition* definition_)
         total=definition_->totalLinesCount();
         shown=definition_->shownLinesCount();
     }
+    
     SetScrollPos(
         hwndScroll, 
         SB_CTL,
         frst,
         TRUE);
+    
     SetScrollRange(
         hwndScroll,
         SB_CTL,
@@ -107,8 +109,17 @@ void setScrollBar(Definition* definition_)
         TRUE);
 }
 
-void setDefinition(ArsLexis::String& defs)
+void setDefinition(ArsLexis::String& defs, HWND hwnd)
 {
+    iNoahSession::ResponseCode code=session.getLastResponseCode();
+    if( (code==iNoahSession::srvmessage)||
+        (code==iNoahSession::srverror)||
+        (code==iNoahSession::error))
+    {
+        MessageBox(hwnd,defs.c_str(),TEXT("Error"), 
+            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
+        return;
+    }
     delete definition_;
     ParagraphElement* parent=0;
     int start=0;
@@ -116,6 +127,7 @@ void setDefinition(ArsLexis::String& defs)
     definition_=parser.parse(defs);
     ArsLexis::Graphics gr(GetDC(hwndMain));
     rec=true;
+    InvalidateRect(hwnd,NULL,TRUE);
 }
 
 //
@@ -135,13 +147,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     PAINTSTRUCT ps;
     RECT        rect;
     static HWND hwndEdit;
-    
+
     static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("");
     
     switch(msg)
     {
-        case WM_CREATE:
+    case WM_CREATE:
         {
             //if (
             if (!initializeConnection())
@@ -201,59 +213,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
                 SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
                 );
-                /*            RegisterHotKey(hwndEdit, 0x0100, MOD_WIN, VK_THOME);
-                RegisterHotKey(hwndEdit, 0x0101, MOD_WIN, VK_TUP);
-            RegisterHotKey(hwndEdit, 0x0102, MOD_WIN, VK_TDOWN);*/
-            
-            /*RegisterHotKey(hwndMain, 1, MOD_KEYUP, VK_UP);
-            RegisterHotKey(hwndMain, 2, MOD_KEYUP, VK_NEXT);
-            RegisterHotKey(hwndMain, 3, MOD_KEYUP, VK_PRIOR);
-            RegisterHotKey(hwndMain, 4, MOD_KEYUP, VK_DOWN);*/
-            //(void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TDOWN,
-            //    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-            //    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+
+            setFontSize(IDM_FNT_STANDARD, hwnd);
             break;
         }
-        case WM_SIZE:
-            MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
-            MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
-            break;
+    case WM_SIZE:
+        MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
+        MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
+        break;
         
-        /*case WM_VSCROLL:
-        {
-        int page=definition_.shownLinesCount();
-        ArsLexis::Graphics gr(GetDC(hwndMain));   
+    case WM_SETFOCUS:
+        SetFocus(hwndEdit);
+        break;
         
-          switch(LOWORD(wp))
-          {
-          case SB_PAGEDOWN:
-          definition_.scroll(gr,*prefs,page);
-          break;
-          case SB_LINEDOWN:
-          definition_.scroll(gr,*prefs,1);
-          break;
-          case SB_PAGEUP:
-          definition_.scroll(gr,*prefs,-page);
-          break;
-          case SB_LINEUP:
-          definition_.scroll(gr,*prefs,-1);
-          break;
-          }
-          break;
-    }*/
-        
-        case WM_SETFOCUS:
-            SetFocus(hwndEdit);
-            break;
-        
-        case WM_COMMAND:
+    case WM_COMMAND:
         {
             switch (wp)
             {
-                case IDOK:
-                    SendMessage(hwnd,WM_CLOSE,0,0);
-                    break;
-                case IDM_MENU_COMPACT:
+            case IDOK:
+                SendMessage(hwnd,WM_CLOSE,0,0);
+                break;
+            case IDM_MENU_COMPACT:
                 {
                     HWND hwndMB = SHFindMenuBar (hwnd);
                     if (hwndMB) 
@@ -270,7 +250,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         {
                             CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
                             prefs->setClassicView();
-                            
                         }
                         g_forceLayoutRecalculation=true;
                         rec=true;
@@ -278,69 +257,59 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     break;
                 }
-                case ID_LOOKUP:
+    
+            case IDM_FNT_LARGE:
+                setFontSize(IDM_FNT_LARGE, hwnd);
+                break;
+            case IDM_FNT_STANDARD:
+                setFontSize(IDM_FNT_STANDARD, hwnd);
+                break;
+            case IDM_FNT_SMALL:
+                setFontSize(IDM_FNT_SMALL, hwnd);
+                break;
+            case ID_LOOKUP:
                 {
                     int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
                     TCHAR *buf=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     SendMessage(hwndEdit, EM_SETSEL, 0,len);
                     ArsLexis::String word(buf); 
-                    drawProgressInfo(hwnd);
+                    drawProgressInfo(hwnd, TEXT("definition..."));
                     session.getWord(word,text);
-                    iNoahSession::ResponseCode code=session.getLastResponseCode();
-                    if( (code==iNoahSession::srvmessage)||
-                        (code==iNoahSession::srverror)||
-                        (code==iNoahSession::error))
-                        MessageBox(hwnd,text.c_str(),TEXT("Error"), 
-                        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-                    else
-                        setDefinition(text);
+                    setDefinition(text,hwnd);
                     delete buf;
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;
                 }
-                case IDM_MENU_RANDOM:
+                
+            case IDM_MENU_RANDOM:
                 {         
                     ArsLexis::String word;
+                    drawProgressInfo(hwnd, TEXT("random definition..."));
                     session.getRandomWord(word);
-                    iNoahSession::ResponseCode code=session.getLastResponseCode();
-                    if( (code==iNoahSession::srvmessage)||
-                        (code==iNoahSession::srverror)||
-                        (code==iNoahSession::error))
-                        MessageBox(hwnd,text.c_str(),TEXT("Error"), 
-                        MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-                    else
-                        setDefinition(word);
-                    InvalidateRect(hwnd,NULL,TRUE);
+                    setDefinition(word,hwnd);
                     break;
                 }
-                case IDM_MENU_RECENT:
+            case IDM_MENU_RECENT:
                 {
                     wordList.assign(TEXT(""));
+                    drawProgressInfo(hwnd, TEXT("recent lookups list..."));
                     session.getWordList(wordList);
                     if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_RECENT), hwnd,RecentLookupsDlgProc))
-                    {
-                        
-                        drawProgressInfo(hwnd);
+                    {                        
+                        drawProgressInfo(hwnd, TEXT("definition..."));
                         session.getWord(recentWord,text);
-                        iNoahSession::ResponseCode code=session.getLastResponseCode();
-                        if( (code==iNoahSession::srvmessage)||
-                            (code==iNoahSession::srverror)||
-                            (code==iNoahSession::error))
-                            MessageBox(hwnd,text.c_str(),TEXT("Error"), 
-                            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-                        else
-                            setDefinition(text);
-                        InvalidateRect(hwnd,NULL,TRUE);
+                        setDefinition(text,hwnd);
                     }
                     break;
                 }
-                default:
-                    return DefWindowProc(hwnd, msg, wp, lp);
+            default:
+                return DefWindowProc(hwnd, msg, wp, lp);
             }
             break;
         }
-        case WM_HOTKEY:
+        
+    case WM_HOTKEY:
         {
             ArsLexis::Graphics gr(GetDC(hwndMain));
             int page=0;
@@ -348,19 +317,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 page=definition_->shownLinesCount();
             switch(HIWORD(lp))
             {
-                case VK_TBACK:
-                    if ( 0 != (MOD_KEYUP & LOWORD(lp)))
-                        SHSendBackToFocusWindow( msg, wp, lp );
-                    break;
-                case VK_TDOWN:
-                    if(definition_)
-                        definition_->scroll(gr,*prefs,page);
-                    setScrollBar(definition_);
-                    break;
+            case VK_TBACK:
+                if ( 0 != (MOD_KEYUP & LOWORD(lp)))
+                    SHSendBackToFocusWindow( msg, wp, lp );
+                break;
+            case VK_TDOWN:
+                if(definition_)
+                    definition_->scroll(gr,*prefs,page);
+                setScrollBar(definition_);
+                break;
             }
             break;
         }    
-        case WM_PAINT:
+        
+    case WM_PAINT:
         {
             hdc = BeginPaint (hwnd, &ps);
             GetClientRect (hwnd, &rect);
@@ -422,16 +392,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }		
         break;
         
-        case WM_CLOSE:
-            DestroyWindow(hwnd);
-            break;
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            break;
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
         
-        default:
-            lResult = DefWindowProc(hwnd, msg, wp, lp);
-            break;
+    default:
+        lResult = DefWindowProc(hwnd, msg, wp, lp);
+        break;
     }
     return (lResult);
 }
@@ -607,10 +577,10 @@ BOOL CALLBACK RecentLookupsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
         {
             switch (wp)
             {
-                case ID_CANCEL:
-                    EndDialog(hDlg, 0);
-                    break;
-                case ID_SELECT:
+            case ID_CANCEL:
+                EndDialog(hDlg, 0);
+                break;
+            case ID_SELECT:
                 {
                     HWND ctrl = GetDlgItem(hDlg, IDC_LIST_RECENT);
                     int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
@@ -661,22 +631,25 @@ BOOL InitRecentLookups(HWND hDlg)
     while((last!=-1)&&(last!=wordList.length()))
     {
         ArsLexis::String tmp=wordList.substr(first,last-first);
-        TCHAR *str=new TCHAR [tmp.length()+1];
-        wcscpy(str,tmp.c_str());
-        SendMessage(
-            ctrl,
-            LB_ADDSTRING,
-            0,
-            (LPARAM)str);
+        if (tmp.compare(TEXT(""))!=0)
+        {
+            TCHAR *str  =new TCHAR [tmp.length()+1];
+            wcscpy(str,tmp.c_str());
+            SendMessage(
+                ctrl,
+                LB_ADDSTRING,
+                0,
+                (LPARAM)str);
+        }
         first=last+1;
         last=wordList.find_first_of(TCHAR('\n'),first);
     }
-    SendMessage (ctrl, LB_SETCURSEL, 1, 0);
+    SendMessage (ctrl, LB_SETCURSEL, 0, 0);
     //UpdateWindow(ctrl);
     return TRUE;
 }
 
-void drawProgressInfo(HWND hwnd)
+void drawProgressInfo(HWND hwnd, TCHAR* text)
 {
     RECT rect;
     HDC hdc=GetDC(hwnd);
@@ -687,7 +660,7 @@ void drawProgressInfo(HWND hwnd)
     rect.bottom-=2;
     LOGFONT logfnt;
     
-    Rectangle(hdc, 20, 85, 150, 121);
+    Rectangle(hdc, 18, 83, 152, 123);
     
     POINT p[2];
     p[0].y=85;
@@ -719,10 +692,39 @@ void drawProgressInfo(HWND hwnd)
     rect.top-=10;
     DrawText (hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
     rect.top+=32;
-    DrawText (hdc, TEXT("definition..."), -1, &rect, DT_VCENTER|DT_CENTER);
+    DrawText (hdc, text, -1, &rect, DT_VCENTER|DT_CENTER);
     SelectObject(hdc,fnt);
     DeleteObject(fnt2);
     ReleaseDC(hwnd,hdc);
-    
+}
+void setFontSize(int diff, HWND hwnd)
+{
+    int delta=0;
+    HWND hwndMB = SHFindMenuBar (hwnd);
+    if (hwndMB) 
+    {
+        HMENU hMenu;
+        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+        CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_UNCHECKED | MF_BYCOMMAND);
+        CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
+        CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
+        switch(diff)
+        {
+            case IDM_FNT_LARGE:
+                CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
+                delta=-2;
+                break;
+            case IDM_FNT_STANDARD:
+                CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
+                break;
+            case IDM_FNT_SMALL:
+                CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
+                delta=2;
+                break;
+        }
+    }
+    g_forceLayoutRecalculation=true;
+    prefs->setFontSize(delta);
+    InvalidateRect(hwnd,NULL,TRUE);
 }
 // end sm_inoah.cpp

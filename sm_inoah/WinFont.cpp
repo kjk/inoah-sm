@@ -47,12 +47,12 @@ HFONT WinFont::getHandle() const
 
 void WinFont::setEffects(ArsLexis::FontEffects& fx)
 {
-
+    
 }
 
 void WinFont::addEffects(ArsLexis::FontEffects& fx)
 {
-
+    
 }
 
 ArsLexis::FontEffects WinFont::effects() const
@@ -69,8 +69,8 @@ WinFont::~WinFont()
 }
 
 WinFont::FontWrapper::FontWrapper(HFONT fnt):
-    font(fnt),
-    refsCount(1)
+font(fnt),
+refsCount(1)
 {
     
 }

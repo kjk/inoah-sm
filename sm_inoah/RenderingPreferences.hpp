@@ -112,6 +112,7 @@ public:
     
     void setCompactView();
     void setClassicView();
+    void setFontSize(int diff);
 
 private:
     

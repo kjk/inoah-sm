@@ -38,8 +38,8 @@ private:
                 el.push_back(*iter);
             lst.clear();
         }
-
-
+        
+        
     };
     //ArsLexis::String definition;
     Definition::Elements_t elements_;
@@ -52,7 +52,7 @@ private:
     DefinitionElement* explanation;
     ElementsList* examples;
     ElementsList* synonyms;
-
+    
     ArsLexis::String error;
     bool parseDefinitionList(ArsLexis::String &text, ArsLexis::String &word, int& pOfSpeech);
     ElementsList* parseSynonymsList(ArsLexis::String &text, ArsLexis::String &word);
