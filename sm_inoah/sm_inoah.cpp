@@ -419,7 +419,7 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     LOGPEN pen;
     HGDIOBJ hgdiobj = GetCurrentObject(hdc,OBJ_PEN);
     GetObject(hgdiobj, sizeof(pen), &pen);
-    for(p[0].x=20;p[0].x<150;p[0].x++)
+    for (p[0].x=20;p[0].x<150;p[0].x++)
     {                           
         HPEN newPen=CreatePenIndirect(&pen);
         pen.lopnColor = RGB(0,0,p[0].x+100);
@@ -430,22 +430,24 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
         Polyline(hdc, p, 2);
     }
     DeleteObject(hgdiobj);
-    
+
     SelectObject(hdc,GetStockObject(HOLLOW_BRUSH));
-    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-    GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight+=1;
-    logfnt.lfWeight=800;
-    SetTextColor(hdc,RGB(255,255,255));
-    SetBkMode(hdc, TRANSPARENT);
-    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-    SelectObject(hdc, fnt2);
-    rect.top-=10;
-    DrawText (hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
-    rect.top+=32;
-    DrawText (hdc, text, -1, &rect, DT_VCENTER|DT_CENTER);
+    HFONT fnt = (HFONT)GetStockObject(SYSTEM_FONT);
+    //GetObject(fnt, sizeof(logfnt), &logfnt);
+    //logfnt.lfHeight+=1;
+    //logfnt.lfWeight=800;
+    //SetTextColor(hdc,RGB(255,255,255));
+    SetTextColor(hdc,RGB(255,0,0));
+    // SetBkMode(hdc, TRANSPARENT);
+    //HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+    //SelectObject(hdc, fnt2);
+    SelectObject(hdc, fnt);
+    rect.top -= 10;
+    DrawText(hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
+    rect.top += 32;
+    DrawText(hdc, text, -1, &rect, DT_VCENTER|DT_CENTER);
     SelectObject(hdc,fnt);
-    DeleteObject(fnt2);
+    //DeleteObject(fnt2);
     ReleaseDC(hwnd,hdc);
 }
 
@@ -524,7 +526,7 @@ static void DoCompact(HWND hwnd)
 {
     static bool fCompactView = false;
 
-    HWND hwndMB = SHFindMenuBar (hwnd);
+    HWND hwndMB = SHFindMenuBar(hwnd);
     if (!hwndMB)
     {
         // can it happen?
