@@ -40,7 +40,6 @@ bool        g_fRec=false;
 
 ArsLexis::String g_wordList;
 ArsLexis::String g_recentWord;
-iNoahSession     g_session;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -81,32 +80,6 @@ static void setDefinition2(ArsLexis::String& defTxt)
     ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     g_fRec = true;
     InvalidateRect(g_hwndMain,NULL,TRUE);
-}
-
-static void setDefinition(ArsLexis::String& defs, HWND hwnd)
-{
-    iNoahSession::ResponseCode code=g_session.getLastResponseCode();
-
-    switch (code)
-    {
-        case iNoahSession::serverMessage:
-        {
-            MessageBox(hwnd,defs.c_str(),TEXT("Information"), 
-            MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
-            return;
-        }
-        case iNoahSession::serverError:
-        case iNoahSession::error:
-        {
-            MessageBox(hwnd,defs.c_str(),TEXT("Error"), 
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-            return;
-        }
-        default:
-        {
-            setDefinition2(defs);
-        }
-    }
 }
 
 #define MAX_WORD_LEN 64

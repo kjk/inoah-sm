@@ -3,18 +3,18 @@
 #include "sm_inoah.h"
 #include "iNoahSession.h"
 
-
 // Given a handle of text edit window, return text of that window
-// in txt
-static void GetEditWinText(HWND hwndEdit, ArsLexis::String &txt)
+static void GetEditWinText(HWND hwndEdit, ArsLexis::String &txtOut)
 {
     int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
 
     TCHAR *buf=new TCHAR[len+1];
     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-    txt.assign(buf);
+    txtOut.assign(buf);
     delete [] buf;
 }
+
+extern String g_regCode;
 
 static void OnRegister(HWND hDlg)
 {
@@ -25,24 +25,25 @@ static void OnRegister(HWND hDlg)
     HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
     GetEditWinText(hwndEdit, regCode);
 
-    g_session.registerNoah(regCode, text);
-    iNoahSession::ResponseCode code = g_session.getLastResponseCode();
-    switch (code)
+    bool fRegCodeOk = false;
+    if (!FCheckRegCode(regCode, fRegCodeOk))
     {
-        case iNoahSession::serverMessage:
-        {
-            MessageBox(hDlg,text.c_str(),TEXT("Information"), 
-                MB_OK|MB_ICONINFORMATION|MB_APPLMODAL|MB_SETFOREGROUND);
-            EndDialog(hDlg, 1);
-            break;
-        }
-        case iNoahSession::serverError:
-        case iNoahSession::error:
-        {
-            MessageBox(hDlg,text.c_str(),TEXT("Error"), 
-                MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND);
-            break;
-        }
+        assert( false == fRegCodeOk );
+        return;
+    }
+
+    // TODO: display "thank you for registering iNoah" dialog or
+    // "regCode invalid - do you want to re-enter it". "Yes" "Later"
+
+    if (fRegCodeOk)
+    {
+        SaveRegCode(regCode);
+        g_regCode = regCode;
+    }
+    else
+    {
+
+
     }
 }
 

@@ -10,42 +10,10 @@ String  getDeviceInfo();
 bool    FGetRandomDef(String& defOut);
 bool    FGetWord(const String& word, String& defOut);
 bool    FGetWordList(String& wordListOut);
+bool    FCheckRegCode(const String& regCode, bool& fRegCodeValid);
 void    ClearCache();
-
-class iNoahSession
-{
-    
-public:
-    enum ResponseCode
-    {
-        serverMessage,
-        serverError,
-        error,       // connection errors e.g. unable to connect, 
-        definition,
-        wordlist,
-        resultMalformed
-    };
-    
-    iNoahSession();
-
-    void  registerNoah(String registerCode, String& ret);
-
-    String         getLastResponse() { return content_; }
-    ResponseCode   getLastResponseCode() { return responseCode; }
-
-    virtual ~iNoahSession();
-
-private:
-    bool    fCookieReceived_;
-    String  cookie;
-    String  content_;
-    void    sendRequest(String url, String answer, String& ret);
-    bool    fErrorPresent(Transmission &tr, String &ret);
-    int     CreateAppFolder(HWND hWnd, TCHAR *pszAppFolder, int nMax);
-    bool    getCookie();
-
-    ResponseCode responseCode;
-};
+void    SaveRegCode(const String& regCode);
+void    SaveCookie(const String& cookie);
 
 // those are ids representing all fields that a server can possibly send
 // must start with 0 and increase by 1 because we're using them as indexes
@@ -78,7 +46,6 @@ public:
 private:
     bool   FParseResponseIfNot();
     bool   FParseResponse();
-    void   ParseResponseOld();
     String _content;
     bool   _fParsed;    // did we parse the response already?
     bool   _fMalformed; // was the response malformed (having incorrect format)?

@@ -128,6 +128,16 @@ static void SaveStringToFile(const String& fileName, const String& str)
     CloseHandle(handle);
 }
 
+void SaveCookie(const String& cookie)
+{
+    SaveStringToFile(cookieFile,cookie);
+}
+
+void SaveRegCode(const String& regCode)
+{
+    SaveStringToFile(regCodeFile,regCode);
+}
+
 static String LoadStringFromFile(String fileName)
 {
     TCHAR szPath[MAX_PATH];
@@ -329,96 +339,6 @@ bool ServerResponseParser::FParseResponse()
     return true;
 }
 
-void ServerResponseParser::ParseResponseOld()
-{
-    if (_fParsed)
-        return;
-
-    String::size_type contentLen = _content.length();
-    String::size_type curPos = 0;
-    String::size_type delimEndPos;
-    eFieldId          fieldId;
-    while (true)
-    {
-        if (curPos==contentLen+1)
-        {            
-            // we successfully parsed the whole response
-            break;
-        }
-
-        fieldId = GetFieldId(_content,curPos);
-        if (fieldIdInvalid==fieldId)
-        {
-            _fMalformed = true;
-            break;
-        }
-
-        eFieldType fieldType = fieldsDef[(int)fieldId].fieldType;
-
-        delimEndPos = _content.find(_T("\n"), curPos);
-        if (String::npos == delimEndPos)
-        {
-            _fMalformed = true;
-            break;
-        }
-
-        if (fieldNoValue==fieldType)
-        {
-            if (delimEndPos!=curPos+FieldStrLen(fieldId))
-            {
-                _fMalformed = true;
-                break;
-            }
-            curPos = delimEndPos+1;
-        } else if (fieldValueInline==fieldType)
-        {
-            String::size_type valueStart = curPos+FieldStrLen(fieldId);
-            if ( _T(' ') != _content[valueStart])
-            {
-                _fMalformed = true;
-                break;
-            }
-
-            valueStart += 1;
-            String::size_type valueLen = delimEndPos-valueStart;
-            if (0==valueLen)
-            {
-                _fMalformed = true;
-                break;
-            }
-        }
-        else if (fieldValueFollow==fieldType)
-        {
-            String::size_type fieldNameEnd = curPos+FieldStrLen(fieldId)-1;
-            if ( _T('\n') != _content[fieldNameEnd+1] )
-            {
-                // for fields where value follows, field name should be
-                // immediately followed by '\n'
-                _fMalformed = true;
-                break;
-            }
-            String::size_type fieldValueStart = curPos+FieldStrLen(fieldId)+1;
-            String::size_type fieldValueEnd = GetFollowValueEnd(fieldValueStart);
-            String::size_type fieldValueLen = fieldValueEnd - fieldValueStart;
-
-            SetFieldStart(fieldId, curPos);
-            SetFieldValueStart(fieldId, fieldValueStart);
-            SetFieldValueLen(fieldId, fieldValueLen);
-            curPos = fieldValueEnd+1;
-#ifdef DEBUG
-            {
-                String fldValue;
-                GetFieldValue(fieldId,fldValue);
-            }
-#endif
-        }
-#ifdef DEBUG
-        else
-            assert(false);
-#endif
-    }
-}
-
 bool ServerResponseParser::fMalformed()
 {    
     bool fOk = FParseResponseIfNot();
@@ -483,11 +403,11 @@ String g_regCode;
 
 static String GetRegCode()
 {
-	if (!g_regCode.empty())
-		return g_regCode;
-	// TODO: this will always try to reg code from file if we don't
-	// have reg code. Could avoid that by using additional flag
-	g_regCode = LoadStringFromFile(regCodeFile);
+    if (!g_regCode.empty())
+        return g_regCode;
+    // TODO: this will always try to reg code from file if we don't
+    // have reg code. Could avoid that by using additional flag
+    g_regCode = LoadStringFromFile(regCodeFile);
     return g_regCode;
 }
 
@@ -516,6 +436,27 @@ static String BuildGetWordUrl(const String& cookie, const String& word)
     url.append(regCode);
     return url;
 }
+
+static String BuildRegisterUrl(const String& cookie, const String& regCode)
+{
+    String url;
+    url.reserve(urlCommonLen +
+                cookieParam.length() +
+                cookie.length() +
+                sep.length() + 
+                registerParam.length() +
+                regCode.length()
+                );
+
+    url.assign(urlCommon);
+    url.append(cookieParam);
+    url.append(cookie);
+    url.append(sep);
+    url.append(registerParam);
+    url.append(regCode);
+    return url;
+}
+
 
 static void HandleConnectionError(DWORD errorCode)
 {
@@ -642,7 +583,7 @@ bool FGetCookie(String& cookieOut)
 
     responseParser.GetFieldValue(cookieField,cookieOut);
     g_cookie = cookieOut;
-    SaveStringToFile(cookieFile,cookieOut);
+    SaveCookie(cookieOut);
     return true;
 }
 
@@ -742,155 +683,50 @@ bool FGetWordList(String& wordListOut)
     return true;
 }
 
-iNoahSession::iNoahSession()
- : fCookieReceived_(false),
-   responseCode(error),
-   content_(TEXT("No request."))
+// send the register request to the server to find out, if a registration
+// code regCode is valid. Return false if there was a connaction error.
+// If return true, fRegCodeValid indicates if regCode was valid or not
+bool FCheckRegCode(const String& regCode, bool& fRegCodeValid)
 {
-    
-}
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
 
-// TODO: refactor things. This function does two unrelated things.
-// return true if there was an error during transmission. Otherwise
-// return false and stuff response into ret
-bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
-{
-    if (errNone != tr.sendRequest())
+    String  url = BuildRegisterUrl(cookie, regCode);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
     {
-        //TODO: Better error handling
-        responseCode = error;
-        tr.getResponse(content_);
-        return true;
-    }
-
-    tr.getResponse(ret);
-
-/*    // Check whether server returned errror
-    if (0==ret.find(errorStr, 0))
-    {
-        content_.assign(ret,errorStr.length()+1,-1);
-        responseCode = serverError;
-        return true;
-    }
-    
-    if (0==ret.find(messageStr, 0))
-    {
-        content_.assign(ret,messageStr.length()+1,-1);
-        responseCode = serverMessage;
-        return true;
-    }*/
-
-    return false;
-}
-
-
-void iNoahSession::registerNoah(String registerCode, String& ret)
-{
-    if (!fCookieReceived_ && getCookie())
-    {
-        ret = content_;
-        return;
-    }
-    
-    String tmp;
-    tmp.reserve(urlCommonLen+
-        cookieParam.length()+cookie.length()+sep.length()+
-        registerParam.length()+registerCode.length());
-    
-    tmp.assign(urlCommon);
-    tmp += cookieParam;
-    tmp += cookie;
-    tmp += sep;
-    tmp += registerParam;
-    tmp += registerCode;
-
-    //TODO: sendRequest(tmp,registrationStr,ret);
-    if (ret.compare(TEXT("OK\n"))==0)
-    {
-        ret.assign(TEXT("Registration successful."));
-        responseCode = serverMessage;
-        SaveStringToFile(regCodeFile,registerCode);
-    }
-    else
-    {
-        ret.assign(TEXT("Registration unsuccessful."));
-        responseCode = serverError;
-    }
-}
-
-void iNoahSession::sendRequest(String url, String answer, String& ret)
-{
-    Transmission tr(server, serverPort, url);
-
-    String response;
-    tr.getResponse(response);
-
-    if (fErrorPresent(tr,response))
-        ; 
-    else
-        if (0 == response.find(answer, 0))
-        {
-            content_.assign(response, answer.length()+1, -1);
-            this->responseCode = definition;
-        }
-    ret = content_;
-    return;
-}
-
-bool iNoahSession::getCookie()
-{
-    String storedCookie = LoadStringFromFile(cookieFile);
-
-    if (storedCookie.length()>0)
-    {
-        cookie = storedCookie;
-        fCookieReceived_ = true;
+        HandleConnectionError(err);
         return false;
     }
 
-    String deviceInfo = deviceInfoParam + getDeviceInfo();
-    String tmp;
+    ServerResponseParser responseParser(response);
 
-    tmp.reserve(urlCommonLen+
-        deviceInfo.length()+sep.length()+cookieRequest.length());
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
 
-    tmp.assign(urlCommon);
-    tmp += deviceInfo; 
-    tmp += sep; 
-    tmp += cookieRequest;
-
-    Transmission tr(server, serverPort, tmp);
-    String tmp2;
-
-    if (fErrorPresent(tr,tmp2))
-        return true;
-
-    ServerResponseParser responseParser(tmp2); 
-
-    if (responseParser.fMalformed())
+    if (responseParser.fHasField(registrationOkField))
     {
-        tr.getResponse(content_); // TODO: does it make sense?
-        responseCode = resultMalformed;
-        return true;
+        fRegCodeValid = true;
     }
-
-    if (responseParser.fHasField(errorField))
+    else if (responseParser.fHasField(registrationFailedField))
     {
-        responseCode = serverError;
+        fRegCodeValid = false;
     }
-
-    if (0==tmp2.find(cookieStr))
+    else
     {
-        cookie.assign(tmp2,tstrlen(cookieStr)+1,-1);
-        fCookieReceived_ = true;
-        SaveStringToFile(cookieFile,cookie);
+        HandleMalformedResponse();
         return false;
     }
-    
-    content_ = TEXT("Bad answer received.");
-    responseCode = error;
+
     return true;
 }
+
+
+
 
 TCHAR numToHex(TCHAR num)
 {    
@@ -971,7 +807,3 @@ String getDeviceInfo()
     return text;
 }
 
-iNoahSession::~iNoahSession()
-{
-    
-}

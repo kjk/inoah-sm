@@ -10,7 +10,6 @@ extern HWND      g_hwndMain;    // Handle to Main window returned from CreateWin
 
 extern ArsLexis::String g_recentWord;
 extern ArsLexis::String g_wordList;
-extern iNoahSession     g_session;
 
 TCHAR szAppName[];
 TCHAR szTitle[];
