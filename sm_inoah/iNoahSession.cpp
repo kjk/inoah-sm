@@ -52,24 +52,6 @@ const String iNoahFolder     = TEXT ("\\iNoah");
 const String cookieFile      = TEXT ("\\Cookie");
 const String regCodeFile     = TEXT ("\\RegCode");
 
-// those are ids representing all fields that a server can possibly send
-// must start with 0 and increase by 1 because we're using them as indexes
-// to arrays.
-enum eFieldId {
-    fieldIdInvalid = -1,
-    fieldIdFirst = 0,
-    errorField  = fieldIdFirst,
-    cookieField,
-    messageField,
-    definitionField,
-    wordListField,
-    requestsLeftField,
-    pronField,
-    registrationFailedField,
-    registrationOkField,
-    fieldsCount = registrationOkField + 1 // because we start from 0
-};
-
 enum eFieldType {
     fieldNoValue,     // field has no value e.g. "REGISTRATION_OK\n"
     fieldValueInline,  // field has arguments before new-line e.g. "REQUESTS_LEFT 5\n"
@@ -137,40 +119,6 @@ static void SaveStringToFile(const String& fileName, const String& str)
     CloseHandle(handle);
 }
 
-    
-// this class does parsing of the response returned by iNoah server
-// and a high-level interface for accessing various parts of this response.
-class ServerResponseParser
-{
-public:
-    ServerResponseParser(String &content);
-    bool    fMalformed();
-    bool    fHasValue(eFieldId fieldId);
-    void    GetFieldValue(eFieldId fieldId, String& fieldValueOut);
-
-private:
-    void   ParseResponse();
-    String _content;
-    bool   _fParsed;    // did we parse the response already?
-    bool   _fMalformed; // was the response malformed (having incorrect format)?
-
-    // contains results of parsing. 3 values per each field. All values are
-    // offsets into _content. First value is an offset of the field itself
-    // - not strictly necessary. Second and third are beginning/end of 
-    // field's value, without the separating new-line. String::npos marks
-    // non-existing value (e.g. field or its value do not exist).
-    String::size_type _fieldPos[3*fieldsCount];
-
-    String::size_type GetFieldStart(eFieldId fieldId) { return _fieldPos[3*(int)fieldId]; }
-    String::size_type GetFieldValueStart(eFieldId fieldId) { return _fieldPos[(3*(int)fieldId)+1]; }
-    String::size_type GetFieldValueLen(eFieldId fieldId) { return _fieldPos[(3*(int)fieldId)+2]; }
-
-    void SetFieldStart(eFieldId fieldId, String::size_type pos) { _fieldPos[3*(int)fieldId]=pos; }
-    void SetFieldValueStart(eFieldId fieldId, String::size_type pos) { _fieldPos[(3*(int)fieldId)+1]=pos; }
-    void SetFieldValueLen(eFieldId fieldId, String::size_type len) { _fieldPos[(3*(int)fieldId)+2]=len; }
-
-};
-
 ServerResponseParser::ServerResponseParser(String &content)
 {
     _content    = content;
@@ -185,7 +133,8 @@ ServerResponseParser::ServerResponseParser(String &content)
     }
 }
 
-bool ServerResponseParser::fHasValue(eFieldId fieldId)
+// return true if this response contains a given field
+bool ServerResponseParser::fHasField(eFieldId fieldId)
 {
     assert(_fParsed);
     if (String::npos==GetFieldStart(fieldId))
@@ -194,6 +143,7 @@ bool ServerResponseParser::fHasValue(eFieldId fieldId)
     return true;
 }
 
+// return a value for a given field
 void ServerResponseParser::GetFieldValue(eFieldId fieldId, String& fieldValueOut)
 {
     assert(_fParsed);
@@ -243,11 +193,18 @@ void ServerResponseParser::ParseResponse()
     if (_fParsed)
         return;
 
+    String::size_type contentLen = _content.length();
     String::size_type curPos = 0;
     String::size_type delimEndPos;
     eFieldId          fieldId;
     while (true)
     {
+        if (curPos==contentLen+1)
+        {            
+            // we successfully parsed the whole response
+            break;
+        }
+
         fieldId = GetFieldId(_content,curPos);
         if (fieldIdInvalid==fieldId)
         {
@@ -291,24 +248,63 @@ void ServerResponseParser::ParseResponse()
         }
         else if (fieldValueFollow==fieldType)
         {
-            // TODO:
+            String::size_type fieldNameEnd = curPos+FieldStrLen(fieldId)-1;
+            if ( _T('\n') != _content[fieldNameEnd+1] )
+            {
+                // for fields where value follows, field name should be
+                // immediately followed by '\n'
+                _fMalformed = true;
+                break;
+            }
+            String::size_type fieldValueStart = curPos+FieldStrLen(fieldId)+1;
+            String::size_type fieldValueEnd = _content.find(_T("\n"), fieldValueStart);
+            if (String::npos==fieldValueEnd)
+            {
+                _fMalformed = true;
+                break;
+            }
+            --fieldValueEnd;
+            String::size_type fieldValueLen = fieldValueEnd - fieldValueStart;
+            SetFieldStart(fieldId, curPos);
+            SetFieldValueStart(fieldId, fieldValueStart);
+            SetFieldValueLen(fieldId, fieldValueLen);
+            curPos = fieldValueEnd+1;
         }
         else if (fieldValueFollowNoSep==fieldType)
         {
-            //TODO:
+            // A special case for COOKIE which doesn't have a value terminated
+            // by a '\n' - a mistake in the server code
+            // Another assumption: this is the last field in the response
+            assert (fieldId==cookieField);
+            String::size_type fieldNameEnd = curPos+FieldStrLen(fieldId)-1;
+            if ( _T('\n') != _content[fieldNameEnd+1] )
+            {
+                // for fields where value follows, field name should be
+                // immediately followed by '\n'
+                _fMalformed = true;
+                break;
+            }
+            String::size_type fieldValueStart = curPos+FieldStrLen(fieldId)+1;
+
+            // it should be the last field in the response
+            String::size_type delimPos = _content.find(_T("\n"), fieldValueStart);
+            assert (String::npos == delimPos);
+            if (String::npos != delimPos)
+            {
+                _fMalformed = true;
+                break;
+            }
+            String::size_type fieldValueEnd = contentLen;
+            String::size_type fieldValueLen = fieldValueEnd - fieldValueStart;
+            SetFieldStart(fieldId, curPos);
+            SetFieldValueStart(fieldId, fieldValueStart);
+            SetFieldValueLen(fieldId, fieldValueLen);
+            break;
         }
-#ifndef NDEBUG
+#ifdef DEBUG
         else
             assert(false);
 #endif
-
-        if (curPos == _content.length())
-        {
-            // this is the last character in the response, so we successfully
-            // parsed the whole response
-            break;
-        }
-
     }
 }
 
@@ -338,7 +334,7 @@ bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
         tr.getResponse(content_);
         return true;
     }
-    
+
     tr.getResponse(ret);
 
 /*    // Check whether server returned errror
@@ -354,18 +350,7 @@ bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
         content_.assign(ret,messageStr.length()+1,-1);
         responseCode = serverMessage;
         return true;
-    } */
-
-    ServerResponseParser responseParser(ret); 
-
-    if (responseParser.fMalformed())
-    {
-        tr.getResponse(content_); // TODO: does it make sense?
-        responseCode = resultMalformed;
-        return true;
-    }
-
-    
+    }*/
 
     return false;
 }
@@ -540,12 +525,26 @@ bool iNoahSession::getCookie()
     tmp += deviceInfo; 
     tmp += sep; 
     tmp += cookieRequest;
-    
+
     Transmission tr(server, serverPort, tmp);
     String tmp2;
 
     if (fErrorPresent(tr,tmp2))
         return true;
+
+    ServerResponseParser responseParser(tmp2); 
+
+    if (responseParser.fMalformed())
+    {
+        tr.getResponse(content_); // TODO: does it make sense?
+        responseCode = resultMalformed;
+        return true;
+    }
+
+    if (responseParser.fHasField(errorField))
+    {
+        responseCode = serverError;
+    }
 
     if (0==tmp2.find(cookieStr))
     {

@@ -12,6 +12,7 @@
 #include "ParagraphElement.hpp"
 #include "HorizontalLineElement.hpp"
 #include "Definition.hpp"
+#include <Debug.hpp>
 
 // those 3 must be in this sequence in order to get IID_DestNetInternet
 // http://www.smartphonedn.com/forums/viewtopic.php?t=360
@@ -82,7 +83,7 @@ static bool fInitConnection()
 
     if (FAILED(res))
     {
-        //assert(NULL==g_hConnection);
+        assert(NULL==g_hConnection);
         g_hConnection = NULL;
     }
 
@@ -187,6 +188,12 @@ static void DoLookup(HWND hwnd)
     drawProgressInfo(hwnd, TEXT("definition..."));
     g_session.getWord(word,g_text);
     setDefinition(g_text,hwnd);
+}
+
+static void HandleServerResponse(ServerResponseParser& responseParser)
+{
+
+
 }
 
 static void DoRandom(HWND hwnd)
@@ -530,8 +537,8 @@ BOOL InitApplication ( HINSTANCE hInstance )
     wc.lpszMenuName  = NULL;
     wc.lpszClassName = szAppName;
 
-    BOOL f = RegisterClass(&wc);
-    return f;
+    BOOL fOk = RegisterClass(&wc);
+    return fOk;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance,
