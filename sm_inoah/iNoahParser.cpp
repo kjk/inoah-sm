@@ -1,6 +1,6 @@
 #include "iNoahParser.h"
 #include <DefinitionElement.hpp>
-#include <GenericTextElement.hpp>
+#include "DynamicNewLineElement.h"
 #include <ParagraphElement.hpp>
 #include <HorizontalLineElement.hpp>
 
@@ -87,27 +87,27 @@ Definition* iNoahParser::parse(String text)
     Definition* def=new Definition;
     if(!def) return NULL;
     ParagraphElement* parent=0;
-    def->appendElement(parent=new ParagraphElement());
-    GenericTextElement *el=new GenericTextElement(word);
-    def->appendElement(el);
+    appendElement(parent=new ParagraphElement());
+    DynamicNewLineElement *el=new DynamicNewLineElement(word);
+    appendElement(el);
     el->setStyle(styleWord);
     el->setParent(parent);
     int cntPOS=0;
     for(int i=0;i<pOfSpeechCnt;i++)
     {
         if (sorted[i].size() > 0)
-            def->appendElement(new HorizontalLineElement());
+            appendElement(new HorizontalLineElement());
         parent=0;
         int cntMeaning=1;
         if (sorted[i].size() > 0)
         {   
-            GenericTextElement *pofsl=new GenericTextElement(arabNums[cntPOS] + TEXT(" "));
-            GenericTextElement *pofs=new GenericTextElement(pOfSpeach[fullForm][i]);
+            DynamicNewLineElement *pofsl=new DynamicNewLineElement(arabNums[cntPOS] + TEXT(" "));
+            DynamicNewLineElement *pofs=new DynamicNewLineElement(pOfSpeach[fullForm][i]);
+            appendElement(parent=new ParagraphElement());
+            appendElement(pofsl);
+            appendElement(pofs);
             pofsl->setStyle(stylePOfSpeechList);
             pofs->setStyle(stylePOfSpeech);
-            def->appendElement(parent=new ParagraphElement());
-            def->appendElement(pofsl);
-            def->appendElement(pofs);
             pofs->setParent(parent);
             pofsl->setParent(parent);
             cntPOS++;
@@ -119,13 +119,15 @@ Definition* iNoahParser::parse(String text)
                 _itow( j, buffer, 10 );
                 ArsLexis::String str(buffer);
                 str+=TEXT(") ");
-                GenericTextElement* el=new GenericTextElement(str);
-                def->appendElement(el);
+                DynamicNewLineElement* el=new DynamicNewLineElement(str);
+                el->setStyle(styleDefinitionList);
+                appendElement(el);
                 //el->setParent(parent);
-                (*iter)->merge(*def);
+                (*iter)->merge(elements_);
             }
         }
     }
+    def->replaceElements(elements_);
     return def;
 }
 
@@ -178,7 +180,7 @@ bool iNoahParser::parseDefinitionList(String &text, String &word, int& partOfSpe
             {
                 // Create Explanation subtoken
                 explanation =
-                    new GenericTextElement(text.substr(start + 1, 
+                    new DynamicNewLineElement(text.substr(start + 1, 
                     currIndx-start-1)+TEXT(". "));
                 break;
             }
@@ -233,7 +235,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
 {
     int currIndx = 0;
     ElementsList* lst=new ElementsList();
-    GenericTextElement* last=NULL;
+    DynamicNewLineElement* last=NULL;
 
     while ((currIndx < text.length() - 2)
         && (text[currIndx+1] == '!'))
@@ -255,7 +257,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
         {
             if(last)
                 last->setText(last->text()+TEXT(", "));
-            last = new GenericTextElement(newSynonym);
+            last = new DynamicNewLineElement(newSynonym);
             last->setStyle(styleSynonyms);
             lst->push_back(last);
         }
@@ -263,7 +265,7 @@ iNoahParser::ElementsList* iNoahParser::parseSynonymsList(String &text, String &
     if(last)
     {
         last->setText(last->text()+TEXT(". "));
-        GenericTextElement *el=new GenericTextElement(String(TEXT("Synonyms: ")));
+        DynamicNewLineElement *el=new DynamicNewLineElement(String(TEXT("Synonyms: ")));
         el->setStyle(styleSynonymsList);
         lst->push_front(el);
 
@@ -275,7 +277,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
 {
     int currIndx = 0;
     ElementsList* lst=new ElementsList();
-    GenericTextElement* last=NULL;
+    DynamicNewLineElement* last=NULL;
 
     while ((currIndx < text.length() - 2)
         && (text[currIndx+1] == '#'))
@@ -292,7 +294,7 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
         }
         if(last!=NULL)
             last->setText(last->text()+TEXT(", "));
-        last = new GenericTextElement(
+        last = new DynamicNewLineElement(
             TEXT("\"") + 
             text.substr(start + 2, currIndx-start-2) + 
             TEXT("\""));
@@ -302,12 +304,19 @@ iNoahParser::ElementsList* iNoahParser::parseExamplesList(String &text)
     if(last!=NULL)
     {
         last->setText(last->text()+TEXT(". "));
-        GenericTextElement *el=new GenericTextElement(String(TEXT("Examples: ")));
+        DynamicNewLineElement *el=new DynamicNewLineElement(String(TEXT("Examples: ")));
         el->setStyle(styleExampleList);
         lst->push_front(el);
     }
     return lst;
 }
+
+void iNoahParser::appendElement(DefinitionElement* element)
+{
+    elements_.push_back(element);
+}
+
+
 iNoahParser::ElementsList::~ElementsList()
 {
     std::for_each(lst.begin(), lst.end(), ObjectDeleter<DefinitionElement>());

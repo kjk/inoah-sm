@@ -62,12 +62,16 @@ public:
         repaint,
         recalculateLayout
     };
-
+    SynchronizationResult needSynch;
     /**
      * @todo Implement RenderingPreferences::synchronize()
      */
     SynchronizationResult synchronize(const RenderingPreferences&)
-    {return noChange;}
+    {
+        SynchronizationResult ret=needSynch;
+        needSynch = noChange;
+        return ret;
+    }
     
     BulletType bulletType() const
     {return bulletCircle;}
@@ -106,6 +110,8 @@ public:
     ArsLexis::Graphics::Color_t backgroundColor() const
     {return RGB(255,255,255);}
     
+    void setCompactView();
+    void setClassicView();
 
 private:
     

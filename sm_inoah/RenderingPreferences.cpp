@@ -12,6 +12,7 @@ using ArsLexis::Graphics;
 
 RenderingPreferences::RenderingPreferences()
     //:standardIndentation_(16)
+    :needSynch(noChange)
 {
     LOGFONT logfnt;
     
@@ -58,6 +59,7 @@ RenderingPreferences::RenderingPreferences()
         //for (uint_t i=0; i<stylesCount_; ++i)
           //styles_[i].textColor=UIColorGetTableEntryIndex(UIObjectForeground);        
     }*/
+    setClassicView();
     FontEffects fx;
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 
@@ -71,4 +73,34 @@ RenderingPreferences::RenderingPreferences()
     Graphics graphics(GetDC(hwndMain));
     Graphics::FontSetter setFont(graphics, font);
     //standardIndentation_=graphics.textWidth(bullet, 2);
+}
+
+void RenderingPreferences::setCompactView()
+{
+    styles_[styleDefault].requiresNewLine = false;
+    styles_[styleWord].requiresNewLine = false;
+    styles_[styleDefinitionList].requiresNewLine = false;
+    styles_[styleDefinition].requiresNewLine = false;
+    styles_[styleExampleList].requiresNewLine = false;
+    styles_[styleExample].requiresNewLine = false;
+    styles_[styleSynonymsList].requiresNewLine = false;
+    styles_[styleSynonyms].requiresNewLine = false;
+    styles_[stylePOfSpeechList].requiresNewLine = false;
+    styles_[stylePOfSpeech].requiresNewLine = false;
+    needSynch=recalculateLayout;
+}
+
+void RenderingPreferences::setClassicView()
+{
+    styles_[styleDefault].requiresNewLine = false;
+    styles_[styleWord].requiresNewLine = false;
+    styles_[styleDefinitionList].requiresNewLine = true;
+    styles_[styleDefinition].requiresNewLine = false;
+    styles_[styleExampleList].requiresNewLine = true;
+    styles_[styleExample].requiresNewLine = false;
+    styles_[styleSynonymsList].requiresNewLine = true;
+    styles_[styleSynonyms].requiresNewLine = false;
+    styles_[stylePOfSpeechList].requiresNewLine = false;
+    styles_[stylePOfSpeech].requiresNewLine = false;
+    needSynch=recalculateLayout;
 }

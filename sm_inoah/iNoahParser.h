@@ -3,7 +3,7 @@
 
 #include "BaseTypes.hpp"
 #include <DefinitionElement.hpp>
-#include <GenericTextElement.hpp>
+#include "DynamicNewLineElement.h"
 #include <list.h>
 
 class iNoahParser
@@ -14,6 +14,7 @@ public:
     {
     }
     Definition* parse(ArsLexis::String text);
+    void appendElement(DefinitionElement* element);
 private:
     class ElementsList
     {
@@ -30,16 +31,18 @@ private:
                 back_inserter(this->lst) = *iter;
             r.lst.clear();
         }
-        void merge(Definition& def)
-        {   
+        void merge(Definition::Elements_t& el)
+        {
             std::list<DefinitionElement*>::iterator iter;
-            for (iter=lst.begin();!(iter==lst.end());iter++ )
-                def.appendElement(*iter);
+            for (iter=lst.begin();!(iter==lst.end());iter++)
+                el.push_back(*iter);
             lst.clear();
         }
 
+
     };
     //ArsLexis::String definition;
+    Definition::Elements_t elements_;
     static const ArsLexis::String arabNums[];
 	static const pOfSpeechCnt;
     static const int abbrev;

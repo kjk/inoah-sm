@@ -13,6 +13,7 @@
 #include "Definition.hpp"
 #include <windows.h>
 #include <tpcshell.h>
+#include <wingdi.h>
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -24,44 +25,20 @@ HWND hwndScroll;
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
-Definition *definition_ = new Definition();
+Definition *definition_ = NULL;
 
 RenderingPreferences* prefs= new RenderingPreferences();
 iNoahSession session;
 
-void initialize()
-{
-        definition_->clear();
-        ParagraphElement* parent=0;
-        definition_->appendElement(parent=new ParagraphElement());
-        DefinitionElement* element=0;
-        definition_->appendElement(element=new GenericTextElement(
-            TEXT("Enter word and press lookup")
-         ));
-        element->setParent(parent);
-}
 
 void setDefinition(ArsLexis::String& defs)
 {
         delete definition_;
-        //definition_=new Definition();
         ParagraphElement* parent=0;
-        //parent->setChildIndentation(16);
         int start=0;
         iNoahParser parser;
         definition_=parser.parse(defs);
-        /*for(int i=0;i<defs.length(); i++)
-        {
-            if(defs[i]==TCHAR('\n'))
-            {
-                definition_->appendElement(parent=new ParagraphElement());
-                DefinitionElement* element=0;
-                ArsLexis::String txt=defs.substr(start,i-start);
-                definition_->appendElement(element=new GenericTextElement(txt));
-                start=i+1;
-                element->setParent(parent);
-            }
-        }*/
+        ArsLexis::Graphics gr(GetDC(hwndMain));
 }
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
@@ -89,7 +66,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 		case WM_CREATE:
 		{
-			initialize();
+			//initialize();
             // create the menu bar
 			SHMENUBARINFO mbi;
 			ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
@@ -122,20 +99,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_SCROLL,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
-            
+            int frst=0;
+            int total=0;
+            int shown=0;
+            if(definition_)
+            {
+                frst=definition_->firstShownLine();
+                total=definition_->totalLinesCount();
+                shown=definition_->shownLinesCount();
+            }
             SetScrollPos(
                 hwndScroll, 
-                SB_CTL, 
-                definition_->firstShownLine(),
+                SB_CTL,
+                frst,
                 TRUE);
             SetScrollRange(
-                hwndScroll, 
-                SB_CTL, 
+                hwndScroll,
+                SB_CTL,
                 0,
-                definition_->totalLinesCount()-
-                definition_->shownLinesCount(), 
+                total-shown,
                 TRUE);
-
             // In order to make Back work properly, it's necessary to 
 	        // override it and then call the appropriate SH API
 	        (void)SendMessage(
@@ -204,9 +187,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
                        compactView=!compactView;
                        if(compactView)
-    				       CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
+                       {
+                           CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
+    				       prefs->setCompactView();
+                       }
                        else
+                       {
                            CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
+                            prefs->setClassicView();
+
+                       }
+                       InvalidateRect(hwnd,NULL,TRUE);
                     }
 				    break;
                 }
@@ -215,6 +206,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
                     TCHAR *buf=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
+                    SendMessage(hwndEdit, EM_SETSEL, 0,len);
                     ArsLexis::String word(buf);
         			session.getWord(word,text);
                     setDefinition(text);
@@ -230,7 +222,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_HOTKEY:
         {
             ArsLexis::Graphics gr(GetDC(hwndMain));
-            int page=definition_->shownLinesCount();
+            int page=0;
+            if (definition_)
+                page=definition_->shownLinesCount();
             switch(HIWORD(lp))
             {
                 case VK_TBACK:
@@ -238,8 +232,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         SHSendBackToFocusWindow( msg, wp, lp );
                     break;
                 case VK_TDOWN:
-                    definition_->scroll(gr,*prefs,page);
-                    int page=definition_->shownLinesCount();
+                    if(definition_)
+                        definition_->scroll(gr,*prefs,page);
                     break;       
             }                    
             break;
@@ -252,10 +246,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             rect.left+=2;
             rect.right-=7;
             rect.bottom-=2;
-            ArsLexis::Graphics gr(hdc);   
             //RenderingPreferences* prefs= new RenderingPreferences();
-			//DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);            
-            definition_->render(gr, rect, *prefs, true);
+			if (!definition_)
+            {
+                LOGFONT logfnt;
+        
+                HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+                GetObject(fnt, sizeof(logfnt), &logfnt);
+                logfnt.lfHeight+=1;
+                HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+                SelectObject(hdc, fnt2);
+                DrawText (hdc, TEXT("Enter word and press \"Look up\""), -1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
+                SelectObject(hdc,fnt);
+                DeleteObject(fnt2);
+            }
+            else
+            {
+                ArsLexis::Graphics gr(hdc);   
+                definition_->render(gr, rect, *prefs, true);
+            }
 			EndPaint (hwnd, &ps);
 		}		
 		break;
@@ -265,11 +274,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		    break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
-		break;
+		    break;
 
 		default:
 			lResult = DefWindowProc(hwnd, msg, wp, lp);
-		break;
+		    break;
 	}
 	return (lResult);
 }
@@ -383,9 +392,11 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
         case WM_KEYDOWN:
         {
-            int page=definition_->shownLinesCount();
+            int page=0;
+            if(definition_)
+                page=definition_->shownLinesCount();
             ArsLexis::Graphics gr(GetDC(hwndMain));
-
+            if(definition_)
             switch(wp)
             {
                 case VK_DOWN:
