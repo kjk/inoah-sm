@@ -20,7 +20,7 @@
 #define IDM_MENU_UNCHECK				108
 #define IDM_MENU_QUIT					109
 #define IDR_MENU_MENU1					110
-#define IDM_MENU_REGULAR                111
+#define IDM_MENU_REGISTER               111
 #define IDM_MENU_COMPACT                112
 #define IDM_MENU_RECENT                 113
 #define ID_EDIT                         114

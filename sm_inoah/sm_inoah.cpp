@@ -1,12 +1,11 @@
 // sm_inoah.cpp : Defines the entry point for the application.
 //
 
-#include <windows.h>
-#include <winuser.h>
-#include <aygshell.h>
 #include "resource.h"
 #include "iNoahSession.h"
 #include "..\ipedia\src\BaseTypes.hpp"
+#include <windows.h>
+#include <tpcshell.h>
 
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
@@ -14,7 +13,6 @@ HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
-
 
 iNoahSession session;
 			
@@ -35,6 +33,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	PAINTSTRUCT	ps;
 	RECT		rect;
     static HWND hwndEdit;
+    static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("Enter word and press look up");
 	switch(msg)
 	{
@@ -63,6 +62,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_EDIT,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
+
+            // In order to make Back work properly, it's necessary to 
+	        // override it and then call the appropriate SH API
+	        (void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
+		        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
+		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));            
+            
 			break;
 		}
         case WM_SIZE:
@@ -73,24 +79,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 		case WM_COMMAND:
         {
-
 			switch (wp)
 			{
 			    case IDOK:
     				SendMessage(hwnd,WM_CLOSE,0,0);
 	    			break;
-                case IDM_MENU_REGULAR:
-                {
-				    HWND hwndMB = SHFindMenuBar (hwnd);
-                    if (hwndMB) 
-                    {
-                       HMENU hMenu;
-                       hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
-    				   CheckMenuItem(hMenu, IDM_MENU_REGULAR, MF_CHECKED | MF_BYCOMMAND);
-                       CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
-                    }
-				    break;
-                }
                 case IDM_MENU_COMPACT:
                 {
 				    HWND hwndMB = SHFindMenuBar (hwnd);
@@ -98,8 +91,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                        HMENU hMenu;
                        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
-    				   CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
-                       CheckMenuItem(hMenu, IDM_MENU_REGULAR, MF_UNCHECKED | MF_BYCOMMAND);
+                       compactView=!compactView;
+                       if(compactView)
+    				       CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
+                       else
+                           CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
                     }
 				    break;
                 }
@@ -109,7 +105,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     TCHAR *buf=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     ArsLexis::String word(buf);
-        			text.assign(session.getWord(word));
+        			session.getWord(word,text);
                     delete buf;
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;
@@ -119,12 +115,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			}
 			break;
         }
+        case WM_HOTKEY:
+            if ( HIWORD(lp) == VK_TBACK && (0 != (MOD_KEYUP & LOWORD(lp))))
+            {
+                // check box is enabled, so we process the back key
+                SHSendBackToFocusWindow( msg, wp, lp );
+            }
+            break;
+            
 		case WM_PAINT:
 		{
 			hdc = BeginPaint (hwnd, &ps);
 			GetClientRect (hwnd, &rect);
-			DrawText (hdc, text.c_str(), -1, &rect, 
-                DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+            rect.top+=22;
+            rect.left+=2;
+            rect.right-=2;
+            rect.bottom-=2;
+			DrawText (hdc, text.c_str(), -1, &rect, DT_LEFT);
 			EndPaint (hwnd, &ps);
 		}		
 		break;

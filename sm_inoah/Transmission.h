@@ -30,10 +30,10 @@ class Transmission
 
 public:
 
-	Transmission(ArsLexis::String host, ArsLexis::String localInfo);
+	Transmission(const ArsLexis::String& host,const  ArsLexis::String& localInfo);
 	
-	virtual	DWORD				sendRequest();
-	virtual ArsLexis::String&	getResponse();
+	virtual	DWORD  sendRequest();
+	virtual void   getResponse(ArsLexis::String& ret);
 	
 	virtual ~Transmission();
 	

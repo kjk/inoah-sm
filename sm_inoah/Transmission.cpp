@@ -14,8 +14,8 @@ HINTERNET Transmission::hInternet = NULL;
 
 // TODO: Here port should be added
 Transmission::Transmission(
-	const ArsLexis::String host, 
-	const ArsLexis::String localInfo)
+	const ArsLexis::String& host, 
+	const ArsLexis::String& localInfo)
 {
 	if (!hInternet)
 		lastError = openInternet();
@@ -92,9 +92,9 @@ DWORD Transmission::sendRequest()
 	return NO_ERROR;
 }
 
-ArsLexis::String& Transmission::getResponse()
+void Transmission::getResponse(ArsLexis::String& ret)
 {
-	return content;
+	ret=content;
 }
 
 DWORD Transmission::setError()

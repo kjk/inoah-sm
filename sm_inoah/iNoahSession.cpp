@@ -4,6 +4,9 @@
 
 #include "iNoahSession.h"
 #include "Transmission.h"
+#include <aygshell.h>
+#include <tpcshell.h>
+#include <winuserm.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -39,7 +42,7 @@ const ArsLexis::String getWordParam = TEXT("get_word=");
 iNoahSession::iNoahSession()
 	: cookieReceived(false),
 	  responseCode(error),
-	  content(TEXT("No request in."))
+	  content(TEXT("No request."))
 {
 
 }
@@ -54,77 +57,112 @@ bool iNoahSession::checkErrors(Transmission &tr, ArsLexis::String &ret)
 		return true;
 	}
 	
-	ret = tr.getResponse();
+	tr.getResponse(ret);
 
 	// Check whether server returned errror
 	if (ret.find(errorStr, 0) == 0 )
 	{
-		content = ret.substr(errorStr.length());
+		content.assign(ret,errorStr.length()+1,-1);
 		responseCode = srverror;
 		return true;
 	}
 	
 	if (ret.find(messageStr, 0) == 0 )
 	{
-		content = ret.substr(errorStr.length());
+		content.assign(ret,messageStr.length()+1,-1);
 		responseCode = srvmessage;
 		return true;
 	}
 	return false;
 }
 
-ArsLexis::String iNoahSession::getRandomWord()
+void iNoahSession::getRandomWord(ArsLexis::String& ret)
 {
 	if ((!cookieReceived)&&(getCookie()))
-			return content;
-	return sendRequest(script+protocolVersion+sep+clientVersion+sep+
-		cookieParam+cookie+sep+randomRequest,definitionStr);
+    {
+			ret=content;
+            return;
+    }
+    ArsLexis::String tmp;
+    tmp.reserve(script.length()+protocolVersion.length()+
+        sep.length()+clientVersion.length()+sep.length()+
+		cookieParam.length()+cookie.length()+sep.length()+
+        randomRequest.length()); 
+	tmp+=script;tmp+=protocolVersion;tmp+=sep; tmp+=clientVersion;
+    tmp+=sep; tmp+=cookieParam; tmp+=cookie;
+    tmp+=sep; tmp+=randomRequest;
+    sendRequest(tmp,definitionStr,ret);
 }
 
-ArsLexis::String iNoahSession::getWord(ArsLexis::String word)
+void iNoahSession::getWord(ArsLexis::String word, ArsLexis::String& ret)
 {
 	if ((!cookieReceived)&&(getCookie()))
-		return content;
-	return sendRequest(script+protocolVersion+sep+clientVersion+sep+
-		cookieParam+cookie+sep+getWordParam+word,definitionStr);
+    {
+		ret=content;
+        return;
+    }
+    ArsLexis::String tmp;
+    tmp.reserve(script.length()+protocolVersion.length()+sep.length()+
+        clientVersion.length()+sep.length()+cookieParam.length()+
+        cookie.length()+sep.length()+getWordParam.length()+word.length());
+    
+    tmp+=script; tmp+=protocolVersion; tmp+=sep;
+    tmp+=clientVersion;tmp+=sep; tmp+=cookieParam;
+    tmp+=cookie;tmp+=sep;tmp+=getWordParam;tmp+=word;
+	
+    sendRequest(tmp,definitionStr,ret);
 }
 
-ArsLexis::String iNoahSession::getWordList()
+void iNoahSession::getWordList(ArsLexis::String& ret )
 {
 	if ((!cookieReceived)&&(getCookie()))
-		return content;
-	return sendRequest(script+protocolVersion+sep+clientVersion+sep+
-		cookieParam+cookie+sep+recentRequest,wordListStr);
+    {
+		ret=content;
+        return;
+    }
+    ArsLexis::String tmp;
+    tmp.reserve(script.length()+protocolVersion.length()+sep.length()+
+        clientVersion.length()+sep.length()+cookieParam.length()+
+        cookie.length()+sep.length()+recentRequest.length());
+
+    tmp+=script;tmp+=protocolVersion;tmp+=sep;tmp+=clientVersion;
+    tmp+=sep; tmp+=cookieParam; tmp+=cookie;
+    tmp+=sep;tmp+=recentRequest;
+	sendRequest(tmp,wordListStr,ret);
 }
 
-ArsLexis::String iNoahSession::sendRequest(ArsLexis::String url,
-												ArsLexis::String answer)
+void iNoahSession::sendRequest(ArsLexis::String url,
+							ArsLexis::String answer,
+                            ArsLexis::String& ret)
 {
 
 	Transmission tr(server, url);
-	ArsLexis::String tmp = tr.getResponse();
-	if(checkErrors(tr,tmp)) 
-		return content;
-	
-	if (tmp.find(answer, 0) == 0 )
-	{
-		content = tmp.substr(errorStr.length());
-		return content;
-	}
-	return content;	
+	ArsLexis::String tmp;
+    tr.getResponse(tmp);
+	if(checkErrors(tr,tmp)) ; 
+	else 
+        if (tmp.find(answer, 0) == 0 )
+		    content.assign(tmp,answer.length()+1,-1);
+	ret=content;
+    return;
 }
 
 bool iNoahSession::getCookie()
 {
-	ArsLexis::String deviceInfo = deviceInfoParam + getDeviceInfo();
-	Transmission tr(server,script+protocolVersion+sep+clientVersion+sep+
-		deviceInfo +sep+cookieRequest);
-	ArsLexis::String tmp;
-	if(checkErrors(tr,tmp)) return true;
-    int pos = tmp.find(cookieStr);
-	if ( pos == 0 )
+	ArsLexis::String deviceInfo =deviceInfoParam + getDeviceInfo();
+    ArsLexis::String tmp;
+    tmp.reserve(script.length()+protocolVersion.length()+
+        sep.length()+clientVersion.length()+sep.length()+
+        deviceInfo.length()+sep.length()+cookieRequest.length());
+	tmp+=script; tmp+=protocolVersion; tmp+=sep; tmp+=clientVersion;
+    tmp+=sep; tmp+=deviceInfo; tmp+=sep; tmp+=cookieRequest;
+    
+    Transmission tr(server,tmp);
+	ArsLexis::String tmp2;
+	if(checkErrors(tr,tmp2)) return true;
+	if ( tmp2.find(cookieStr) == 0 )
 	{
-		cookie = tmp.substr(errorStr.length()+1);
+		cookie.assign(tmp2,cookieStr.length()+1,-1);
 		cookieReceived = true;
 		return false;
 	}

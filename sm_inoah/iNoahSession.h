@@ -27,9 +27,9 @@ public:
 
 	iNoahSession();
 	
-	ArsLexis::String getRandomWord();
-	ArsLexis::String getWord(ArsLexis::String word);
-	ArsLexis::String getWordList();
+	void getRandomWord(ArsLexis::String& ret);
+	void getWord(ArsLexis::String word, ArsLexis::String& ret);
+	void getWordList(ArsLexis::String& ret);
 	
 	ArsLexis::String getLastResponse() { return content; }
 	ResponseCode getLastResponseCode() { return responseCode; }
@@ -42,7 +42,7 @@ private:
 
 	ArsLexis::String cookie;
 	ArsLexis::String content;
-	ArsLexis::String sendRequest(ArsLexis::String url,ArsLexis::String answer);
+	void sendRequest(ArsLexis::String url,ArsLexis::String answer,ArsLexis::String& ret);
 	bool checkErrors(Transmission &tr, ArsLexis::String &ret);
 	
 	bool getCookie();

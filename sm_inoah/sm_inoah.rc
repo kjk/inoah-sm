@@ -25,10 +25,8 @@ BEGIN
     POPUP "&Dummy"
     BEGIN
         MENUITEM "Recent lookups",  IDM_MENU_RECENT
-        MENUITEM SEPARATOR
-        MENUITEM "Regular",         IDM_MENU_REGULAR
-        MENUITEM "Compact",         IDM_MENU_COMPACT
-        MENUITEM SEPARATOR
+        MENUITEM "Compact View",    IDM_MENU_COMPACT
+        MENUITEM "Register",        IDM_MENU_REGISTER
         MENUITEM "Quit",            IDOK
     END
 END
