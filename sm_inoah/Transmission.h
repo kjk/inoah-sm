@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "..\ipedia\src\BaseTypes.hpp"
+#include "BaseTypes.hpp"
 #include "wininet.h"
 
 

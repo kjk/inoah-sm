@@ -1,8 +1,14 @@
 #include "Graphics.hpp"
+#include "sm_inoah.h"
 #include <Wingdi.h>
 
 namespace ArsLexis
 {
+    Graphics::Graphics():
+        handle_(GetDC(hwndMain))
+    {
+        
+    }
     Graphics::Graphics(const NativeGraphicsHandle_t& handle):
         handle_(handle)
     {
@@ -28,6 +34,10 @@ namespace ArsLexis
         RestoreDC(handle_,-1);
     }
     
+    Graphics::~Graphics()
+    {
+        ReleaseDC(hwndMain,this->handle_);
+    }
     
     void Graphics::drawText(const char_t* text, uint_t length, const Point& topLeft)
     {

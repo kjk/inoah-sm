@@ -9,7 +9,7 @@
 #include "BulletElement.hpp"
 #include "ParagraphElement.hpp"
 #include "HorizontalLineElement.hpp"
-
+#include "Definition.hpp"
 #include <windows.h>
 #include <tpcshell.h>
 
@@ -19,8 +19,64 @@ HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 
 TCHAR szAppName[] = TEXT("iNoah");
 TCHAR szTitle[]   = TEXT("iNoah");
+Definition definition_ = Definition();
 
 iNoahSession session;
+void initialize()
+{
+    //Err error=iPediaForm::initialize();
+    //if (!error)
+    //{
+        ParagraphElement* parent=0;
+        definition_.appendElement(parent=new ParagraphElement());
+        parent->setChildIndentation(16);
+        DefinitionElement* element=0;
+        definition_.appendElement(element=new GenericTextElement(
+            TEXT("For large UNIX projects, the traditional method of building the project is to use recursive ")
+            TEXT("make. On some projects, this results in build times which are unacceptably large, when ")
+            TEXT("all you want to do is change one file. In examining the source of the overly long build ")
+            TEXT("times, it became evident that a number of apparently unrelated problems combine to produce ")
+            TEXT("the delay, but on analysis all have the same root cause. ")
+        ));
+        element->setParent(parent);
+        definition_.appendElement(element=new LineBreakElement());
+        element->setParent(parent);
+        definition_.appendElement(element=new GenericTextElement(
+            TEXT("This paper explores a number of problems regarding the use of recursive make, and ")
+            TEXT("shows that they are all symptoms of the same problem. Symptoms that the UNIX community ")
+            TEXT("have long accepted as a fact of life, but which need not be endured any longer. ")
+            TEXT("These problems include recursive makes which take ‘‘forever’’ to work out that they need ")
+            TEXT("to do nothing, recursive makes which do too much, or too little, recursive makes which ")
+            TEXT("are overly sensitive to changes in the source code and require constant Makefile intervention ")
+            TEXT("to keep them working. ")
+        ));
+        element->setParent(parent);
+        definition_.appendElement(new LineBreakElement());
+        BulletElement* bullet=0;
+        definition_.appendElement(bullet=new BulletElement());
+        definition_.appendElement(element=new GenericTextElement(
+            TEXT("The resolution of these problems can be found by looking at what make does, from first ")
+            TEXT("principles, and then analyzing the effects of introducing recursive make to this activity. ")
+            TEXT("The analysis shows that the problem stems from the artificial partitioning of the build into ")
+            TEXT("separate subsets. This, in turn, leads to the symptoms described. To avoid the symptoms, ")
+            TEXT("it is only necessary to avoid the separation; to use a single make session to build the ")
+            TEXT("whole project, which is not quite the same as a single Makefile. ")
+        ));
+        element->setParent(bullet);
+        definition_.appendElement(element=new HorizontalLineElement());
+        element->setParent(bullet);
+        definition_.appendElement(element=new GenericTextElement(
+            TEXT("This conclusion runs counter to much accumulated folk wisdom in building large projects ")
+            TEXT("on UNIX. Some of the main objections raised by this folk wisdom are examined and ")
+            TEXT("shown to be unfounded. The results of actual use are far more encouraging, with routine ")
+            TEXT("development performance improvements significantly faster than intuition may indicate, ")
+            TEXT("and without the intuitvely expected compromise of modularity. The use of a whole ")
+            TEXT("project make is not as difficult to put into practice as it may at first appear. ")
+        ));
+        element->setParent(bullet);
+    //}
+    //return error;
+}
 			
 //
 //  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
@@ -41,6 +97,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     static HWND hwndEdit;
     static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("Enter word and press look up");
+    
 	switch(msg)
 	{
 		case WM_CREATE:
@@ -74,7 +131,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	        (void)SendMessage(mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
 		        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
 		        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));            
-            
+            initialize();
 			break;
 		}
         case WM_SIZE:
@@ -259,5 +316,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	return (msg.wParam);
 }
+
 
 // end sm_inoah.cpp

@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "RenderingPreferences.hpp"
+#include <RenderingPreferences.hpp>
 #include "FontEffects.hpp"
 #include "WinFont.h"
 #include "sm_inoah.h"
@@ -43,5 +43,5 @@ RenderingPreferences::RenderingPreferences():
     bullet[2]=TCHAR('\0');
     Graphics graphics(GetDC(hwndMain));
     Graphics::FontSetter setFont(graphics, font);
-    standardIndentation_=graphics.textWidth(bullet, 2);
+    //standardIndentation_=graphics.textWidth(bullet, 2);
 }

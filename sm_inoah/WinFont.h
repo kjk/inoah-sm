@@ -16,6 +16,9 @@ class FontWrapper
 {
     friend class WinFont;
     FontWrapper(HFONT fnt);
+    
+    
+
 
     virtual ~FontWrapper();
 
@@ -36,8 +39,11 @@ public:
     WinFont& operator=(const WinFont& r);
     void setEffects(ArsLexis::FontEffects& fx);
     WinFont(const WinFont& copy);
+    void addEffects(ArsLexis::FontEffects& fx);
+    ArsLexis::FontEffects& effects() const;
     HFONT getHandle() const;
 	virtual ~WinFont();
+    static WinFont getSymbolFont();
 private:
     FontWrapper* fntWrapper;
 };

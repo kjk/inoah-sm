@@ -12,6 +12,10 @@ WinFont::WinFont()
 {
 
 }
+WinFont WinFont::getSymbolFont()
+{
+    return WinFont(HFONT(GetStockObject(SYSTEM_FONT))); 
+}
 
 WinFont::WinFont(HFONT fnt)
 {
@@ -40,10 +44,22 @@ HFONT WinFont::getHandle() const
 {
     return fntWrapper->font;
 }
-void WinFont::SetEffects(ArsLexis::FontEffects& fx)
+void WinFont::setEffects(ArsLexis::FontEffects& fx)
 {
 
 }
+
+void WinFont::addEffects(ArsLexis::FontEffects& fx)
+{
+
+}
+
+ArsLexis::FontEffects& WinFont::effects() const
+{
+    return ArsLexis::FontEffects();
+}
+
+
 WinFont::~WinFont()
 {
     fntWrapper->detach();

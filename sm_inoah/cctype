@@ -1,0 +1,15 @@
+#ifndef ARSLEXIS_CCTYPE_H_
+#define ARSLEXIS_CCTYPE_H_
+#include <stdlib.h>
+#if defined(isspace)
+#undef isspace
+namespace std
+{
+    bool isspace(TCHAR c)
+    {
+        return c==TCHAR(' ');
+    }
+}
+#endif
+
+#endif//ARSLEXIS_CCTYPE_H_
