@@ -5,7 +5,6 @@
 #include "iNoahSession.h"
 #include "Transmission.h"
 #include "sm_inoah.h"
-#include <ceutil.h>
 #include <aygshell.h>
 #include <tpcshell.h>
 #include <winuserm.h>
