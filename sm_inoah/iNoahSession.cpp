@@ -182,31 +182,29 @@ void iNoahSession::getWordList(String& ret )
     sendRequest(tmp,wordListStr,ret);
 }
 
-void iNoahSession::sendRequest(String url,
-                               String answer,
-                               String& ret)
+void iNoahSession::sendRequest(String url, String answer, String& ret)
 {
-    
     Transmission tr(server, serverPort, url);
     String tmp;
     tr.getResponse(tmp);
-    if(checkErrors(tr,tmp))
+
+    if (checkErrors(tr,tmp))
         ; 
-    else 
-        if (tmp.find(answer, 0) == 0 )
+    else
+        if (0 == tmp.find(answer, 0))
         {
-            content_.assign(tmp,answer.length()+1,-1);
-            this->responseCode=definition;
+            content_.assign(tmp, answer.length()+1, -1);
+            this->responseCode = definition;
         }
-    ret=content_;
+    ret = content_;
     return;
 }
 
 bool iNoahSession::getCookie()
 {
-    String storedCookie = loadCookie();
+    String storedCookie = loadString(cookieFile);
 
-    if (storedCookie.length())
+    if (0==storedCookie.length())
     {
         cookie = storedCookie;
         cookieReceived = true;
@@ -245,11 +243,6 @@ bool iNoahSession::getCookie()
     content_ = TEXT("Bad answer received.");
     responseCode = error;
     return true;
-}
-
-String iNoahSession::loadCookie()
-{
-    return loadString(cookieFile);
 }
 
 void iNoahSession::storeCookie(String cookie)

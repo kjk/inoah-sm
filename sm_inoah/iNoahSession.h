@@ -44,7 +44,6 @@ private:
     void storeCookie(ArsLexis::String cookie);
     ArsLexis::String loadString(ArsLexis::String fileName);
     void iNoahSession::storeString(ArsLexis::String fileName, ArsLexis::String str);
-    ArsLexis::String loadCookie();
     ArsLexis::String cookie;
     ArsLexis::String content_;
     void sendRequest(ArsLexis::String url,ArsLexis::String answer,ArsLexis::String& ret);
