@@ -22,8 +22,8 @@ class Transmission
     ArsLexis::String    localInfo;
     ArsLexis::String    host;
     INTERNET_PORT       port;
-    HINTERNET           hIConnect;
-    HINTERNET           hIRequest;
+    HINTERNET           hIConnect_;
+    HINTERNET           hIRequest_;
     DWORD               setError();
 
     ArsLexis::String    content;
@@ -35,7 +35,7 @@ public:
     virtual DWORD  sendRequest();
     virtual void   getResponse(ArsLexis::String& ret);
     static void    closeInternet();
-    virtual ~Transmission();
+    virtual        ~Transmission();
 
 };
 
