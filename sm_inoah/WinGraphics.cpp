@@ -1,11 +1,10 @@
 #include "Graphics.hpp"
-#include "sm_inoah.h"
 #include <Wingdi.h>
 
 namespace ArsLexis
 {
-    Graphics::Graphics(const NativeGraphicsHandle_t& handle):
-        handle_(handle)
+    Graphics::Graphics(const NativeGraphicsHandle_t& handle, HWND hwnd):
+        handle_(handle), hwnd_(hwnd)
     {
         //support_.font.setFontId(FntGetFont());
     }
@@ -31,7 +30,10 @@ namespace ArsLexis
     
     Graphics::~Graphics()
     {
-        ReleaseDC(hwndMain,this->handle_);
+        if(hwnd_)
+            ReleaseDC(this->hwnd_,this->handle_);
+        else
+            DeleteDC(this->handle_);
     }
 
     void Graphics::drawText(const char_t* text, uint_t length, const Point& topLeft, bool inverted)

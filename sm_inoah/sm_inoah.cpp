@@ -278,7 +278,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         
         case WM_HOTKEY:
         {
-            ArsLexis::Graphics gr(GetDC(hwndMain));
+            ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
             int page=0;
             if (definition_)
                 page=definition_->shownLinesCount();
@@ -458,7 +458,7 @@ void paint(HWND hwnd, HDC hdc)
     }
     else
     {
-        ArsLexis::Graphics gr(hdc);
+        ArsLexis::Graphics gr(hdc, hwnd);
         RECT b;
         GetClientRect(hwnd, &b);
         ArsLexis::Rectangle bounds=b;
@@ -470,7 +470,7 @@ void paint(HWND hwnd, HDC hdc)
             if (bitmap) {
                 HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
                 {
-                    ArsLexis::Graphics offscreen(offscreenDc);
+                    ArsLexis::Graphics offscreen(offscreenDc, NULL);
                     definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
                     offscreen.copyArea(defRect, gr, defRect.topLeft);
                 }
@@ -519,7 +519,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     ArsLexis::Rectangle bounds=b;
                     ArsLexis::Rectangle defRect=bounds;
                     defRect.explode(2, 22, -9, -24);
-                    ArsLexis::Graphics gr(GetDC(hwndMain));
+                    ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
                     bool doubleBuffer=true;
                     
                     HDC offscreenDc=::CreateCompatibleDC(gr.handle());
@@ -528,7 +528,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         if (bitmap) {
                             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
                             {
-                                ArsLexis::Graphics offscreen(offscreenDc);
+                                ArsLexis::Graphics offscreen(offscreenDc, NULL);
                                 definition_->scroll(offscreen,*prefs, page);
                                 offscreen.copyArea(defRect, gr, defRect.topLeft);
                             }
@@ -724,7 +724,7 @@ void setDefinition(ArsLexis::String& defs, HWND hwnd)
             int start=0;
             iNoahParser parser;
             definition_=parser.parse(defs);
-            ArsLexis::Graphics gr(GetDC(hwndMain));
+            ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
             rec=true;
             InvalidateRect(hwnd,NULL,TRUE);
         }
