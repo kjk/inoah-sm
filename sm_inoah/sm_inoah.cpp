@@ -203,6 +203,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             prefs->setClassicView();
 
                        }
+                       rec=true;
                        InvalidateRect(hwnd,NULL,TRUE);
                     }
 				    break;
@@ -241,8 +242,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     if(definition_)
                         definition_->scroll(gr,*prefs,page);
                     setScrollBar(definition_);
-                    break;       
-            }                    
+                    break;
+            }
             break;
         }    
 		case WM_PAINT:
@@ -269,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             else
             {
-                ArsLexis::Graphics gr(hdc);   
+                ArsLexis::Graphics gr(hdc);
                 definition_->render(gr, rect, *prefs, true);
             }
             if(rec)

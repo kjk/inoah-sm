@@ -180,7 +180,6 @@ DEP_CPP_BULLE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\BulletElement.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -190,12 +189,13 @@ DEP_CPP_BULLE=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_BULLE=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -206,7 +206,6 @@ DEP_CPP_BULLE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\BulletElement.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -216,12 +215,13 @@ DEP_CPP_BULLE=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_BULLE=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -257,7 +257,6 @@ DEP_CPP_BULLE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\BulletElement.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -270,6 +269,7 @@ DEP_CPP_BULLE=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
@@ -322,7 +322,6 @@ SOURCE=..\ipedia\Src\CommonGraphics.cpp
 DEP_CPP_COMMON=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -331,6 +330,7 @@ DEP_CPP_COMMON=\
 	"..\ipedia\Src\PalmGraphicsInline.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_COMMON=\
 	".\stdint"\
@@ -342,7 +342,6 @@ NODEP_CPP_COMMON=\
 DEP_CPP_COMMON=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -351,6 +350,7 @@ DEP_CPP_COMMON=\
 	"..\ipedia\Src\PalmGraphicsInline.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_COMMON=\
 	".\stdint"\
@@ -381,7 +381,6 @@ NODEP_CPP_COMMON=\
 DEP_CPP_COMMON=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -391,6 +390,7 @@ DEP_CPP_COMMON=\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -406,7 +406,6 @@ SOURCE=..\ipedia\Src\Definition.cpp
 DEP_CPP_DEFIN=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -416,12 +415,13 @@ DEP_CPP_DEFIN=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFIN=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -431,7 +431,6 @@ NODEP_CPP_DEFIN=\
 DEP_CPP_DEFIN=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -441,12 +440,13 @@ DEP_CPP_DEFIN=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFIN=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -481,7 +481,6 @@ NODEP_CPP_DEFIN=\
 DEP_CPP_DEFIN=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -494,6 +493,7 @@ DEP_CPP_DEFIN=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
@@ -511,7 +511,6 @@ SOURCE=..\ipedia\Src\DefinitionElement.cpp
 DEP_CPP_DEFINI=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -521,11 +520,12 @@ DEP_CPP_DEFINI=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFINI=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -535,7 +535,6 @@ NODEP_CPP_DEFINI=\
 DEP_CPP_DEFINI=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -545,11 +544,12 @@ DEP_CPP_DEFINI=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_DEFINI=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -582,7 +582,6 @@ NODEP_CPP_DEFINI=\
 DEP_CPP_DEFINI=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -595,6 +594,113 @@ DEP_CPP_DEFINI=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DynamicNewLineElement.cpp
+
+!IF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Release"
+
+DEP_CPP_DYNAM=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE ARM) Debug"
+
+DEP_CPP_DYNAM=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Release"
+
+DEP_CPP_DYNAM=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\RenderingPreferences.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
+	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"stdint.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_inoah - Win32 (WCE x86) Debug"
+
+DEP_CPP_DYNAM=\
+	"..\ipedia\Src\BaseTypes.hpp"\
+	"..\ipedia\Src\Debug.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	"..\ipedia\Src\Geometry.hpp"\
+	"..\ipedia\Src\Graphics.hpp"\
+	"..\ipedia\Src\NativeGeometry.hpp"\
+	"..\ipedia\Src\NativeGraphics.hpp"\
+	"..\ipedia\Src\PalmFont.hpp"\
+	"..\ipedia\Src\PalmGraphicsInline.hpp"\
+	"..\ipedia\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
+	".\RenderingPreferences.hpp"\
+	".\WinFont.h"\
+	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"Definition.hpp"\
+	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
+	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
@@ -611,7 +717,7 @@ SOURCE=..\ipedia\Src\FontEffects.cpp
 DEP_CPP_FONTE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_FONTE=\
 	".\stdint"\
@@ -623,7 +729,7 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_FONTE=\
 	".\stdint"\
@@ -635,7 +741,7 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_FONTE=\
 	".\stdint"\
@@ -647,8 +753,8 @@ NODEP_CPP_FONTE=\
 DEP_CPP_FONTE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -716,7 +822,6 @@ NODEP_CPP_FORMA=\
 DEP_CPP_FORMA=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\FormattedTextElement.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
@@ -730,6 +835,7 @@ DEP_CPP_FORMA=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
@@ -747,7 +853,6 @@ SOURCE=..\ipedia\Src\GenericTextElement.cpp
 DEP_CPP_GENER=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -758,12 +863,13 @@ DEP_CPP_GENER=\
 	"..\ipedia\Src\Utility.hpp"\
 	".\cctype"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_GENER=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -773,7 +879,6 @@ NODEP_CPP_GENER=\
 DEP_CPP_GENER=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -784,12 +889,13 @@ DEP_CPP_GENER=\
 	"..\ipedia\Src\Utility.hpp"\
 	".\cctype"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"GenericTextElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_GENER=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\enericTextElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -824,7 +930,6 @@ NODEP_CPP_GENER=\
 DEP_CPP_GENER=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -838,6 +943,7 @@ DEP_CPP_GENER=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
@@ -855,7 +961,6 @@ SOURCE=..\ipedia\Src\HorizontalLineElement.cpp
 DEP_CPP_HORIZ=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\HorizontalLineElement.hpp"\
@@ -866,11 +971,12 @@ DEP_CPP_HORIZ=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_HORIZ=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -880,7 +986,6 @@ NODEP_CPP_HORIZ=\
 DEP_CPP_HORIZ=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\HorizontalLineElement.hpp"\
@@ -891,11 +996,12 @@ DEP_CPP_HORIZ=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_HORIZ=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -929,7 +1035,6 @@ NODEP_CPP_HORIZ=\
 DEP_CPP_HORIZ=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\HorizontalLineElement.hpp"\
@@ -943,6 +1048,7 @@ DEP_CPP_HORIZ=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
@@ -1003,7 +1109,7 @@ NODEP_CPP_INOAH=\
 DEP_CPP_INOAH=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\HorizontalLineElement.hpp"\
@@ -1013,12 +1119,14 @@ DEP_CPP_INOAH=\
 	"..\ipedia\Src\PalmGraphicsInline.hpp"\
 	"..\ipedia\Src\ParagraphElement.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
 	".\iNoahParser.h"\
 	".\RenderingPreferences.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"LineBreakElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
@@ -1096,7 +1204,6 @@ SOURCE=..\ipedia\Src\LineBreakElement.cpp
 DEP_CPP_LINEB=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1106,12 +1213,13 @@ DEP_CPP_LINEB=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_LINEB=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\ineBreakElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1121,7 +1229,6 @@ NODEP_CPP_LINEB=\
 DEP_CPP_LINEB=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1131,12 +1238,13 @@ DEP_CPP_LINEB=\
 	"..\ipedia\Src\RenderingPreferences.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Definition.hpp"\
-	{$(INCLUDE)}"DefinitionElement.hpp"\
-	{$(INCLUDE)}"LineBreakElement.hpp"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_LINEB=\
+	".\efinition.hpp"\
+	".\efinitionElement.hpp"\
+	".\endering.hpp"\
+	".\ineBreakElement.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1170,7 +1278,6 @@ NODEP_CPP_LINEB=\
 DEP_CPP_LINEB=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1183,6 +1290,7 @@ DEP_CPP_LINEB=\
 	{$(INCLUDE)}"cstdint"\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"LineBreakElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
@@ -1200,7 +1308,6 @@ SOURCE=..\ipedia\Src\Rendering.cpp
 DEP_CPP_RENDE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1209,9 +1316,10 @@ DEP_CPP_RENDE=\
 	"..\ipedia\Src\PalmGraphicsInline.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_RENDE=\
+	".\endering.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1221,7 +1329,6 @@ NODEP_CPP_RENDE=\
 DEP_CPP_RENDE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1230,9 +1337,10 @@ DEP_CPP_RENDE=\
 	"..\ipedia\Src\PalmGraphicsInline.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
-	{$(INCLUDE)}"Rendering.hpp"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	
 NODEP_CPP_RENDE=\
+	".\endering.hpp"\
 	".\stdint"\
 	".\tdint.h"\
 	
@@ -1262,7 +1370,6 @@ NODEP_CPP_RENDE=\
 DEP_CPP_RENDE=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1272,6 +1379,7 @@ DEP_CPP_RENDE=\
 	"..\ipedia\Src\Utility.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
@@ -1329,7 +1437,6 @@ NODEP_CPP_RENDER=\
 DEP_CPP_RENDER=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1341,6 +1448,7 @@ DEP_CPP_RENDER=\
 	".\sm_inoah.h"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1395,7 +1503,7 @@ DEP_CPP_SM_IN=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\BulletElement.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\HorizontalLineElement.hpp"\
@@ -1405,6 +1513,7 @@ DEP_CPP_SM_IN=\
 	"..\ipedia\Src\PalmGraphicsInline.hpp"\
 	"..\ipedia\Src\ParagraphElement.hpp"\
 	"..\ipedia\Src\Utility.hpp"\
+	".\DynamicNewLineElement.h"\
 	".\iNoahParser.h"\
 	".\iNoahSession.h"\
 	".\RenderingPreferences.hpp"\
@@ -1416,6 +1525,7 @@ DEP_CPP_SM_IN=\
 	{$(INCLUDE)}"Definition.hpp"\
 	{$(INCLUDE)}"DefinitionElement.hpp"\
 	{$(INCLUDE)}"ExTAPI.h"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"GenericTextElement.hpp"\
 	{$(INCLUDE)}"LineBreakElement.hpp"\
 	{$(INCLUDE)}"Rendering.hpp"\
@@ -1592,9 +1702,9 @@ DEP_CPP_WINFO=\
 DEP_CPP_WINFO=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1682,7 +1792,6 @@ NODEP_CPP_WINGR=\
 DEP_CPP_WINGR=\
 	"..\ipedia\Src\BaseTypes.hpp"\
 	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\FontEffects.hpp"\
 	"..\ipedia\Src\Geometry.hpp"\
 	"..\ipedia\Src\Graphics.hpp"\
 	"..\ipedia\Src\NativeGeometry.hpp"\
@@ -1693,6 +1802,7 @@ DEP_CPP_WINGR=\
 	".\sm_inoah.h"\
 	".\WinFont.h"\
 	{$(INCLUDE)}"cstdint"\
+	{$(INCLUDE)}"FontEffects.hpp"\
 	{$(INCLUDE)}"stdint.h"\
 	
 
@@ -1722,6 +1832,10 @@ SOURCE=..\ipedia\Src\Definition.hpp
 # Begin Source File
 
 SOURCE=..\ipedia\Src\DefinitionElement.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DynamicNewLineElement.h
 # End Source File
 # Begin Source File
 
