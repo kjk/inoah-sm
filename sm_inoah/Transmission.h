@@ -26,7 +26,7 @@ class Transmission
     HINTERNET           hIRequest_;
     DWORD               setError();
 
-    ArsLexis::String    content;
+    ArsLexis::String    content_;
 
 public:
 

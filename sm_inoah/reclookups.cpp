@@ -100,12 +100,13 @@ BOOL InitRecentLookups(HWND hDlg)
     for (iter=words.begin();!(iter==words.end());iter++) 
         delete [] (*iter);
 
-    int last=wordList.find_first_of(TCHAR('\n'));
+    int last = g_wordList.find_first_of(_T('\n'));
     int first=0;
-    while((last!=-1)&&(last-wordList.length()!=0))
+
+    while((last!=-1)&&(last-g_wordList.length()!=0))
     {
-        ArsLexis::String tmp=wordList.substr(first,last-first);
-        if (tmp.compare(TEXT(""))!=0)
+        ArsLexis::String tmp=g_wordList.substr(first,last-first);
+        if (tmp.compare(_T(""))!=0)
         {
             TCHAR *str  =new TCHAR [tmp.length()+1];
             wcscpy(str,tmp.c_str());
@@ -117,7 +118,7 @@ BOOL InitRecentLookups(HWND hDlg)
             words.push_back(str);
         }
         first=last+1;
-        last=wordList.find_first_of(TCHAR('\n'),first);
+        last=g_wordList.find_first_of(TCHAR('\n'),first);
     }
     SendMessage (ctrl, LB_SETCURSEL, 0, 0);
     //UpdateWindow(ctrl);

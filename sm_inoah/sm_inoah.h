@@ -14,9 +14,9 @@ extern HINSTANCE g_hInst;  // Local copy of hInstance
 extern HWND      g_hwndMain;    // Handle to Main window returned from CreateWindow
 
 extern ArsLexis::String recentWord;
-extern ArsLexis::String wordList;
+extern ArsLexis::String g_wordList;
 extern ArsLexis::String regCode;
-extern iNoahSession session;
+extern iNoahSession     g_session;
 
 TCHAR szAppName[];
 TCHAR szTitle[];

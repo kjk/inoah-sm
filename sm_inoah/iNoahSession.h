@@ -32,8 +32,8 @@ public:
     void getWordList(ArsLexis::String& ret);
     void registerNoah(ArsLexis::String registerCode, ArsLexis::String& ret);
 
-    ArsLexis::String getLastResponse() { return content; }
-    ResponseCode getLastResponseCode() { return responseCode; }
+    ArsLexis::String getLastResponse() { return content_; }
+    ResponseCode     getLastResponseCode() { return responseCode; }
     
     ArsLexis::String getDeviceInfo();
     void clearCache();
@@ -46,7 +46,7 @@ private:
     void iNoahSession::storeString(ArsLexis::String fileName, ArsLexis::String str);
     ArsLexis::String loadCookie();
     ArsLexis::String cookie;
-    ArsLexis::String content;
+    ArsLexis::String content_;
     void sendRequest(ArsLexis::String url,ArsLexis::String answer,ArsLexis::String& ret);
     bool checkErrors(Transmission &tr, ArsLexis::String &ret);
     int CreateAppFolder (HWND hWnd, TCHAR *pszAppFolder, int nMax);

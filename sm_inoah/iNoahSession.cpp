@@ -53,20 +53,20 @@ const String regCodeFile = TEXT ("\\RegCode");
 
 
 iNoahSession::iNoahSession()
-: cookieReceived(false),
-responseCode(error),
-content(TEXT("No request."))
+ : cookieReceived(false),
+   responseCode(error),
+   content_(TEXT("No request."))
 {
     
 }
 
 bool iNoahSession::checkErrors(Transmission &tr, String &ret)
 {
-    if(tr.sendRequest() != NO_ERROR)
+    if (tr.sendRequest() != NO_ERROR)
     {
         //TODO: Better error handling
         responseCode = error;
-        tr.getResponse(content);
+        tr.getResponse(content_);
         return true;
     }
     
@@ -75,14 +75,14 @@ bool iNoahSession::checkErrors(Transmission &tr, String &ret)
     // Check whether server returned errror
     if (ret.find(errorStr, 0) == 0 )
     {
-        content.assign(ret,errorStr.length()+1,-1);
+        content_.assign(ret,errorStr.length()+1,-1);
         responseCode = srverror;
         return true;
     }
     
     if (ret.find(messageStr, 0) == 0 )
     {
-        content.assign(ret,messageStr.length()+1,-1);
+        content_.assign(ret,messageStr.length()+1,-1);
         responseCode = srvmessage;
         return true;
     }
@@ -93,7 +93,7 @@ void iNoahSession::getRandomWord(String& ret)
 {
     if ((!cookieReceived)&&(getCookie()))
     {
-        ret=content;
+        ret=content_;
         return;
     }
     String tmp;
@@ -109,9 +109,9 @@ void iNoahSession::getRandomWord(String& ret)
 
 void iNoahSession::registerNoah(String registerCode, String& ret)
 {
-    if ((!cookieReceived)&&(getCookie()))
+    if ((!cookieReceived) && (getCookie()))
     {
-        ret=content;
+        ret=content_;
         return;
     }
     
@@ -143,7 +143,7 @@ void iNoahSession::getWord(String word, String& ret)
 {
     if ((!cookieReceived)&&(getCookie()))
     {
-        ret=content;
+        ret=content_;
         return;
     }
     String rc=loadString(regCodeFile);
@@ -168,7 +168,7 @@ void iNoahSession::getWordList(String& ret )
 {
     if ((!cookieReceived)&&(getCookie()))
     {
-        ret=content;
+        ret=content_;
         return;
     }
     String tmp;
@@ -195,16 +195,17 @@ void iNoahSession::sendRequest(String url,
     else 
         if (tmp.find(answer, 0) == 0 )
         {
-            content.assign(tmp,answer.length()+1,-1);
+            content_.assign(tmp,answer.length()+1,-1);
             this->responseCode=definition;
         }
-    ret=content;
+    ret=content_;
     return;
 }
 
 bool iNoahSession::getCookie()
 {
-    String storedCookie=loadCookie();
+    String storedCookie = loadCookie();
+
     if (storedCookie.length())
     {
         cookie = storedCookie;
@@ -217,13 +218,22 @@ bool iNoahSession::getCookie()
     tmp.reserve(script.length()+protocolVersion.length()+
         sep.length()+clientVersion.length()+sep.length()+
         deviceInfo.length()+sep.length()+cookieRequest.length());
-    tmp+=script; tmp+=protocolVersion; tmp+=sep; tmp+=clientVersion;
-    tmp+=sep; tmp+=deviceInfo; tmp+=sep; tmp+=cookieRequest;
+
+    tmp += script; 
+    tmp += protocolVersion; 
+    tmp += sep; 
+    tmp += clientVersion;
+    tmp += sep; 
+    tmp += deviceInfo; 
+    tmp += sep; 
+    tmp += cookieRequest;
     
     Transmission tr(server, serverPort, tmp);
     String tmp2;
-    if(checkErrors(tr,tmp2))
+
+    if (checkErrors(tr,tmp2))
         return true;
+
     if ( tmp2.find(cookieStr) == 0 )
     {
         cookie.assign(tmp2,cookieStr.length()+1,-1);
@@ -232,7 +242,7 @@ bool iNoahSession::getCookie()
         return false;
     }
     
-    content = TEXT("Bad answer received.");
+    content_ = TEXT("Bad answer received.");
     responseCode = error;
     return true;
 }

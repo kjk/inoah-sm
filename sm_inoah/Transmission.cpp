@@ -112,12 +112,12 @@ DWORD Transmission::sendRequest()
     CHAR sbcsbuffer[255]; 
     TCHAR wcsbuffer[255];
     DWORD dwRead;
-    content.clear();
+    content_.clear();
     while( InternetReadFile( hIRequest_, sbcsbuffer, 255, &dwRead ) && dwRead)
     {
         sbcsbuffer[dwRead] = 0;
         _stprintf( wcsbuffer , TEXT("%hs"), sbcsbuffer);
-        content += ArsLexis::String(wcsbuffer);
+        content_ += ArsLexis::String(wcsbuffer);
     };
     assert(NULL!=hIRequest_);
     InternetCloseHandle(hIRequest_);
@@ -130,7 +130,7 @@ DWORD Transmission::sendRequest()
 
 void Transmission::getResponse(ArsLexis::String& ret)
 {
-    ret=content;
+    ret=content_;
 }
 
 DWORD Transmission::setError()
@@ -153,29 +153,30 @@ DWORD Transmission::setError()
     memset(buffer,0,sizeof(buffer));
     _itow(lastError_, buffer, 10);
     
-    content.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
-    content+=buffer;
+    content_.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
+    content_ += buffer;
+
     if (ERROR_INTERNET_CANNOT_CONNECT==lastError_)
     {
-        content += TEXT(" (cannot connect to ");
-        content += host;
-        content += TEXT(":");
+        content_ += TEXT(" (cannot connect to ");
+        content_ += host;
+        content_ += TEXT(":");
         memset(buffer,0,sizeof(buffer));
         _itow(port, buffer, 10);
-        content += buffer;
-        content += TEXT(")");
+        content_ += buffer;
+        content_ += TEXT(")");
     }
 
     if (ERROR_INTERNET_NAME_NOT_RESOLVED==lastError_)
     {
-        content += TEXT(" (can't resolve name ");
-        content += host;
-        content += TEXT(":");
+        content_ += TEXT(" (can't resolve name ");
+        content_ += host;
         memset(buffer,0,sizeof(buffer));
         _itow(port, buffer, 10);
-        content += buffer;
-        content += TEXT(")");
+        content_ += buffer;
+        content_ += TEXT(")");
     }
+    content_ += TEXT(":");
 
     //LocalFree( lpMsgBuf );
     if (hIConnect_)
