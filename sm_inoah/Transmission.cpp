@@ -98,18 +98,18 @@ DWORD Transmission::sendRequest()
         fullURL.c_str(),
     NULL,0,0, context=transContextCnt++);*/
 
-    if(!succ)
+    if (!succ)
         return setError();
     //InternetSetStatusCallback(hIRequest, dispatchCallback);
     //if(!HttpSendRequestEx(hIRequest,NULL,NULL,HSR_ASYNC,context))
     if(!HttpSendRequest(hIRequest_,NULL,0,NULL,0))
         return setError();
     
-    CHAR sbcsbuffer[255]; 
-    TCHAR wcsbuffer[255];
-    DWORD dwRead;
+    CHAR   sbcsbuffer[255]; 
+    TCHAR  wcsbuffer[255];
+    DWORD  dwRead;
     content_.clear();
-    while( InternetReadFile( hIRequest_, sbcsbuffer, 255, &dwRead ) && dwRead)
+    while (InternetReadFile( hIRequest_, sbcsbuffer, 255, &dwRead ) && (dwRead!=0))
     {
         sbcsbuffer[dwRead] = 0;
         _stprintf( wcsbuffer , TEXT("%hs"), sbcsbuffer);

@@ -10,6 +10,9 @@
 #include <winbase.h>
 #include <sms.h>
 
+#include <BaseTypes.hpp>
+#include <Debug.hpp>
+
 #ifndef WIN32_PLATFORM_PSPC
     #define STORE_FOLDER CSIDL_APPDATA
 #else
@@ -17,17 +20,18 @@
 #endif
 
 using ArsLexis::String;
+using ArsLexis::char_t;
 
-const String errorStr        = TEXT("ERROR");
-const String cookieStr       = TEXT("COOKIE");
-const String messageStr      = TEXT("MESSAGE");
-const String definitionStr   = TEXT("DEF");
-const String wordListStr     = TEXT("WORDLIST");
-const String registrationStr = TEXT("REGISTRATION");
-const String requestsLeftStr = TEXT("REQUESTS_LEFT");
-const String pronunciationStr= TEXT("PRON");
-const String regFailedStr    = TEXT("REGISTRATION_FAILED");
-const String regOkStr        = TEXT("REGISTRATION_OK");
+const char_t * errorStr        = _T("ERROR");
+const char_t * cookieStr       = _T("COOKIE");
+const char_t * messageStr      = _T("MESSAGE");
+const char_t * definitionStr   = _T("DEF");
+const char_t * wordListStr     = _T("WORDLIST");
+// const char_t * registrationStr = _T("REGISTRATION");
+const char_t * requestsLeftStr = _T("REQUESTS_LEFT");
+const char_t * pronunciationStr= _T("PRON");
+const char_t * regFailedStr    = _T("REGISTRATION_FAILED");
+const char_t * regOkStr        = _T("REGISTRATION_OK");
 
 const String script          = TEXT("/dict-2.php?");
 const String protocolVersion = TEXT("pv=2");
@@ -48,9 +52,69 @@ const String iNoahFolder     = TEXT ("\\iNoah");
 const String cookieFile      = TEXT ("\\Cookie");
 const String regCodeFile     = TEXT ("\\RegCode");
 
+// those are ids representing all fields that a server can possibly send
+// must start with 0 and increase by 1 because we're using them as indexes
+// to arrays.
+enum eFieldId {
+    fieldIdInvalid = -1,
+    fieldIdFirst = 0,
+    errorField  = fieldIdFirst,
+    cookieField,
+    messageField,
+    definitionField,
+    wordListField,
+    requestsLeftField,
+    pronField,
+    registrationFailedField,
+    registrationOkField,
+    fieldsCount = registrationOkField + 1 // because we start from 0
+};
+
+enum eFieldType {
+    fieldNoValue,     // field has no value e.g. "REGISTRATION_OK\n"
+    fieldValueInline,  // field has arguments before new-line e.g. "REQUESTS_LEFT 5\n"
+    fieldValueFollow,  // field has arguments after new-line e.g. "WORD\nhero\n"
+    fieldValueFollowNoSep  // a special case for COOKIE where we don't put "\n" after field value
+};
+
+typedef struct _fieldDef {
+    const char_t *  fieldName;
+    eFieldType      fieldType;
+} FieldDef;
+    
+
+// those must be in the same order as fieldId. They describe the format
+// of each field
+static FieldDef fieldsDef[fieldsCount] = {
+    { errorStr, fieldValueFollow },
+    { cookieStr, fieldValueFollowNoSep },
+    { messageStr, fieldValueFollow },
+    { definitionStr, fieldValueFollow },
+    { wordListStr, fieldValueFollow },
+    { requestsLeftStr, fieldValueInline },
+    { pronunciationStr,fieldValueInline },
+    { regFailedStr, fieldNoValue },
+    { regOkStr, fieldNoValue }
+};
+
+static String::size_type FieldStrLen(eFieldId fieldId)
+{
+    const char_t *    fieldName = fieldsDef[(int)fieldId].fieldName;
+    String::size_type fieldLen = tstrlen(fieldName);
+    return fieldLen;
+}
+
+static bool fFieldHasValue(eFieldId fieldId)
+{
+    if (fieldNoValue==fieldsDef[(int)fieldId].fieldType)
+        return false;
+    return true;
+}
+
 static void SaveStringToFile(const String& fileName, const String& str)
 {
     TCHAR szPath[MAX_PATH];
+
     BOOL fOk = SHGetSpecialFolderPath(g_hwndMain, szPath, STORE_FOLDER, FALSE);
     if (!fOk)
         return;
@@ -73,24 +137,185 @@ static void SaveStringToFile(const String& fileName, const String& str)
     CloseHandle(handle);
 }
 
-
-
+    
 // this class does parsing of the response returned by iNoah server
 // and a high-level interface for accessing various parts of this response.
 class ServerResponseParser
 {
 public:
     ServerResponseParser(String &content);
+    bool    fMalformed();
+    bool    fHasValue(eFieldId fieldId);
+    void    GetFieldValue(eFieldId fieldId, String& fieldValueOut);
 
 private:
+    void   ParseResponse();
     String _content;
-    bool   _fParsed;
+    bool   _fParsed;    // did we parse the response already?
+    bool   _fMalformed; // was the response malformed (having incorrect format)?
+
+    // contains results of parsing. 3 values per each field. All values are
+    // offsets into _content. First value is an offset of the field itself
+    // - not strictly necessary. Second and third are beginning/end of 
+    // field's value, without the separating new-line. String::npos marks
+    // non-existing value (e.g. field or its value do not exist).
+    String::size_type _fieldPos[3*fieldsCount];
+
+    String::size_type GetFieldStart(eFieldId fieldId) { return _fieldPos[3*(int)fieldId]; }
+    String::size_type GetFieldValueStart(eFieldId fieldId) { return _fieldPos[(3*(int)fieldId)+1]; }
+    String::size_type GetFieldValueLen(eFieldId fieldId) { return _fieldPos[(3*(int)fieldId)+2]; }
+
+    void SetFieldStart(eFieldId fieldId, String::size_type pos) { _fieldPos[3*(int)fieldId]=pos; }
+    void SetFieldValueStart(eFieldId fieldId, String::size_type pos) { _fieldPos[(3*(int)fieldId)+1]=pos; }
+    void SetFieldValueLen(eFieldId fieldId, String::size_type len) { _fieldPos[(3*(int)fieldId)+2]=len; }
+
 };
 
 ServerResponseParser::ServerResponseParser(String &content)
 {
-    _content = content;
-    _fParsed = false;
+    _content    = content;
+    _fParsed    = false;
+    _fMalformed = false;
+
+    for (int id=(int)fieldIdFirst; id<(int)fieldsCount; id++)
+    {
+        SetFieldStart((eFieldId)id,String::npos);
+        SetFieldValueStart((eFieldId)id,String::npos);
+        SetFieldValueLen((eFieldId)id,String::npos);
+    }
+}
+
+bool ServerResponseParser::fHasValue(eFieldId fieldId)
+{
+    assert(_fParsed);
+    if (String::npos==GetFieldStart(fieldId))
+        return false;
+        
+    return true;
+}
+
+void ServerResponseParser::GetFieldValue(eFieldId fieldId, String& fieldValueOut)
+{
+    assert(_fParsed);
+    if (String::npos==GetFieldStart(fieldId))
+    {
+        fieldValueOut.assign(_T(""));
+        return;
+    }
+    if (!fFieldHasValue(fieldId))
+    {
+        assert(String::npos==GetFieldValueStart(fieldId));
+        assert(String::npos==GetFieldValueLen(fieldId));
+        fieldValueOut.assign(_T(""));
+        return;
+    }        
+
+    assert(String::npos!=GetFieldValueStart(fieldId));
+    assert(String::npos!=GetFieldValueLen(fieldId));
+
+    fieldValueOut.assign(_content, GetFieldValueStart(fieldId), GetFieldValueLen(fieldId));
+}
+
+// given a string and a start position in that string, returned
+// fieldId represented by that string at this position. Return
+// field id or fieldIdInvalid if the string doesn't represent any
+// known field.
+// Just compare field strings with a given string starting with startPos
+static eFieldId GetFieldId(String &str, String::size_type startPos)
+{
+    const char_t *      fieldStr;
+    String::size_type   fieldStrLen;
+
+    for (int id=(int)fieldIdFirst; id<(int)fieldsCount; id++)
+    {
+        fieldStr = fieldsDef[id].fieldName;
+        fieldStrLen = tstrlen(fieldStr);
+        if (0==str.compare(startPos, fieldStrLen, fieldStr))
+        {
+            return (eFieldId)id;
+        }
+    }
+    return fieldIdInvalid;
+}
+
+void ServerResponseParser::ParseResponse()
+{
+    if (_fParsed)
+        return;
+
+    String::size_type curPos = 0;
+    String::size_type delimEndPos;
+    eFieldId          fieldId;
+    while (true)
+    {
+        fieldId = GetFieldId(_content,curPos);
+        if (fieldIdInvalid==fieldId)
+        {
+            _fMalformed = true;
+            break;
+        }
+
+        eFieldType fieldType = fieldsDef[(int)fieldId].fieldType;
+
+        delimEndPos = _content.find(_T("\n"), curPos);
+        if (String::npos == delimEndPos)
+        {
+            _fMalformed = true;
+            break;
+        }
+
+        if (fieldNoValue==fieldType)
+        {
+            if (delimEndPos!=curPos+FieldStrLen(fieldId))
+            {
+                _fMalformed = true;
+                break;
+            }
+            curPos = delimEndPos+1;
+        } else if (fieldValueInline==fieldType)
+        {
+            String::size_type valueStart = curPos+FieldStrLen(fieldId);
+            if ( _T(' ') != _content[valueStart])
+            {
+                _fMalformed = true;
+                break;
+            }
+
+            valueStart += 1;
+            String::size_type valueLen = delimEndPos-valueStart;
+            if (0==valueLen)
+            {
+                _fMalformed = true;
+                break;
+            }
+        }
+        else if (fieldValueFollow==fieldType)
+        {
+            // TODO:
+        }
+        else if (fieldValueFollowNoSep==fieldType)
+        {
+            //TODO:
+        }
+#ifndef NDEBUG
+        else
+            assert(false);
+#endif
+
+        if (curPos == _content.length())
+        {
+            // this is the last character in the response, so we successfully
+            // parsed the whole response
+            break;
+        }
+
+    }
+}
+
+bool ServerResponseParser::fMalformed()
+{
+    ParseResponse();
+    return _fMalformed;
 }
 
 iNoahSession::iNoahSession()
@@ -115,8 +340,8 @@ bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
     }
     
     tr.getResponse(ret);
-    
-    // Check whether server returned errror
+
+/*    // Check whether server returned errror
     if (0==ret.find(errorStr, 0))
     {
         content_.assign(ret,errorStr.length()+1,-1);
@@ -129,7 +354,19 @@ bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
         content_.assign(ret,messageStr.length()+1,-1);
         responseCode = serverMessage;
         return true;
+    } */
+
+    ServerResponseParser responseParser(ret); 
+
+    if (responseParser.fMalformed())
+    {
+        tr.getResponse(content_); // TODO: does it make sense?
+        responseCode = resultMalformed;
+        return true;
     }
+
+    
+
     return false;
 }
 
@@ -183,8 +420,8 @@ void iNoahSession::registerNoah(String registerCode, String& ret)
     tmp += registerParam;
     tmp += registerCode;
 
-    sendRequest(tmp,registrationStr,ret);
-    if(ret.compare(TEXT("OK\n"))==0)
+    //TODO: sendRequest(tmp,registrationStr,ret);
+    if (ret.compare(TEXT("OK\n"))==0)
     {
         ret.assign(TEXT("Registration successful."));
         responseCode = serverMessage;
@@ -312,7 +549,7 @@ bool iNoahSession::getCookie()
 
     if (0==tmp2.find(cookieStr))
     {
-        cookie.assign(tmp2,cookieStr.length()+1,-1);
+        cookie.assign(tmp2,tstrlen(cookieStr)+1,-1);
         fCookieReceived_ = true;
         SaveStringToFile(cookieFile,cookie);
         return false;

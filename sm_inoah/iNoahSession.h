@@ -20,7 +20,8 @@ public:
         serverError,
         error,       // connection errors e.g. unable to connect, 
         definition,
-        wordlist
+        wordlist,
+        resultMalformed
     };
     
     iNoahSession();
