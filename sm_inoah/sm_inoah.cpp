@@ -20,7 +20,9 @@
 #include <connmgr.h>
 
 #include <windows.h>
+#ifndef PPC
 #include <tpcshell.h>
+#endif
 #include <wingdi.h>
 #include <fonteffects.hpp>
 #include <sms.h>
@@ -276,8 +278,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             switch(HIWORD(lp))
             {
                 case VK_TBACK:
+                #ifndef PPC
                     if ( 0 != (MOD_KEYUP & LOWORD(lp)))
                         SHSendBackToFocusWindow( msg, wp, lp );
+                #endif
                     break;
                 case VK_TDOWN:
                     if(NULL!=g_definition)

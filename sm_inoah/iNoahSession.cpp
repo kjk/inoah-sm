@@ -6,10 +6,19 @@
 #include "Transmission.h"
 #include "sm_inoah.h"
 #include <aygshell.h>
+#ifndef PPC
 #include <tpcshell.h>
 #include <winuserm.h>
+#endif
+#include <shellapi.h>
 #include <winbase.h>
 #include <sms.h>
+
+#ifndef PPC
+    #define STORE_FOLDER CSIDL_APPDATA
+#else
+    #define STORE_FOLDER CSIDL_PROGRAMS
+#endif
 
 using ArsLexis::String;
 
@@ -242,7 +251,9 @@ String iNoahSession::loadString(String fileName)
 {
     TCHAR szPath[MAX_PATH];
     // It doesn't help to have a path longer than MAX_PATH
-    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, CSIDL_APPDATA, FALSE);
+    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, 
+        STORE_FOLDER,
+        FALSE);
     // Append directory separator character as needed
     
     String fullPath = szPath +  iNoahFolder + fileName;
@@ -274,7 +285,9 @@ String iNoahSession::loadString(String fileName)
 void iNoahSession::storeString(String fileName, String str)
 {
     TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, CSIDL_APPDATA, FALSE);
+    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, 
+        STORE_FOLDER, 
+        FALSE);
     String fullPath = szPath + iNoahFolder;
     CreateDirectory (fullPath.c_str(), NULL);    
     fullPath+=fileName;
@@ -311,7 +324,7 @@ void stringAppendHexified(String& str, const String& toHexify)
 void iNoahSession::clearCache()
 {
     TCHAR szPath[MAX_PATH];
-    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, CSIDL_APPDATA, FALSE);
+    BOOL f = SHGetSpecialFolderPath(hwndMain, szPath, STORE_FOLDER, FALSE);
     String fullPath = szPath + iNoahFolder;
     CreateDirectory (fullPath.c_str(), NULL);
     fullPath+=cookieFile;
@@ -333,13 +346,14 @@ String iNoahSession::getDeviceInfo()
     TCHAR            buffer[INFO_BUF_SIZE];
 
     memset(&address,0,sizeof(SMS_ADDRESS));
+    #ifndef PPC
     HRESULT res = SmsGetPhoneNumber(&address); 
     if (SUCCEEDED(res))
     {
         text.assign(TEXT("PN"));
         stringAppendHexified(text, address.ptsAddress);
     }
-
+    #endif
     memset(&buffer,0,sizeof(buffer));
     if (SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0))
     {
