@@ -1,11 +1,6 @@
-// those 3 must be in this sequence in order to get IID_DestNetInternet
-// http://www.smartphonedn.com/forums/viewtopic.php?t=360
-#include <objbase.h>
-#include <initguid.h>
-#include <connmgr.h>
-
 #include <BaseTypes.hpp>
 #include <DeviceInfo.hpp>
+#include <WinSysUtils.hpp>
 #include "ServerResponseParser.hpp"
 #include "sm_inoah.h"
 #include "Transmission.hpp"
@@ -24,53 +19,6 @@ const String getWordParam    = _T("get_word=");
 
 const String randomRequest   = _T("get_random_word=");
 const String recentRequest   = _T("recent_lookups=");
-
-HANDLE    g_hConnection = NULL;
-
-// try to establish internet connection.
-// If can't (e.g. because tcp/ip stack is not working), display a dialog box
-// informing about that and return false
-// Return true if established connection.
-// Can be called multiple times - will do nothing if connection is already established.
-bool FInitConnection()
-{
-#ifdef WIN32_PLATFORM_PSPC
-        return true; // not needed on Pocket PC
-#endif
-    if (NULL!=g_hConnection)
-        return true;
-
-    CONNMGR_CONNECTIONINFO ccInfo = {0};
-    ccInfo.cbSize      = sizeof(ccInfo);
-    ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
-    ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
-    ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
-    ccInfo.guidDestNet = IID_DestNetInternet;
-    
-    DWORD dwStatus  = 0;
-    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
-    HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &g_hConnection, dwTimeout, &dwStatus);
-
-    if (FAILED(res))
-    {
-        assert(NULL==g_hConnection);
-        g_hConnection = NULL;
-    }
-
-    if (NULL==g_hConnection)
-        return false;
-    else
-        return true;
-}
-
-void DeinitConnection()
-{
-    if (NULL != g_hConnection)
-    {
-        ConnMgrReleaseConnection(g_hConnection,1);
-        g_hConnection = NULL;
-    }
-}
 
 HINTERNET g_hInternet = NULL;
 
@@ -108,8 +56,15 @@ DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& ur
     HANDLE  hConnect = NULL;
     HANDLE  hRequest = NULL;
 
-    if (!FInitConnection())
+    if (!InitDataConnection())
+    {
+#ifdef WIN32_PLATFORM_WFSP
         return errConnectionFailed;
+#else
+        // just ignore on Pocket PC. I don't know how to make it work 
+        // reliably across both Pocket PC and Pocket PC Phone Edition
+#endif
+    }
 
     if (NULL==InitWinet())
         goto Error;
@@ -255,6 +210,7 @@ static void HandleConnectionError(DWORD errorCode)
             _T("Connection error. Please contact support@arslexis.com if the problem persists."),
             _T("Error"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
     }
+    InvalidateRect(g_hwndMain,NULL,TRUE);
 }    
 
 static void HandleMalformedResponse()
@@ -263,6 +219,7 @@ static void HandleMalformedResponse()
         _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists."),
         _T("Error"), 
         MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    InvalidateRect(g_hwndMain,NULL,TRUE);
 }
 
 static void HandleServerError(const String& errorStr)
@@ -271,6 +228,7 @@ static void HandleServerError(const String& errorStr)
         errorStr.c_str(),
         _T("Error"), 
         MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    InvalidateRect(g_hwndMain,NULL,TRUE);
 }
 
 static void HandleServerMessage(const String& msg)
@@ -279,6 +237,7 @@ static void HandleServerMessage(const String& msg)
         msg.c_str(),
        _T("Information"), 
         MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    InvalidateRect(g_hwndMain,NULL,TRUE);
 }
 
 // handle common error cases for parsed message:

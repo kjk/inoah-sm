@@ -30,6 +30,8 @@ HWND      g_hwndEdit   = NULL;
 
 WNDPROC   g_oldEditWndProc = NULL;
 
+SHACTIVATEINFO g_sai;
+
 static bool g_forceLayoutRecalculation=false;
 
 String      g_currentWord;
@@ -461,12 +463,14 @@ static void RepaintDefinition(int scrollDelta)
     GetClientRect(g_hwndMain, &clientRect);
     ArsLexis::Rectangle bounds = clientRect;
 
-    ArsLexis::Rectangle defRect = clientRect;
-    defRect.top    += 24;
-    defRect.left   += 2;
-    defRect.right  -= 2 + GetScrollBarDx();
-    clientRect.bottom -= 2 + GetMenuDy();
+    RECT defRectTmp = clientRect;
+    defRectTmp.top    += 24;
+    defRectTmp.left   += 2;
+    defRectTmp.right  -= 2 + GetScrollBarDx();
+    /* defRectTmp.bottom -= 2 + GetMenuDy(); */
+    defRectTmp.bottom -= 2;
 
+    ArsLexis::Rectangle defRect = defRectTmp;
     Graphics gr(GetDC(g_hwndMain), g_hwndMain);
 
     bool fDidDoubleBuffer = false;
@@ -519,7 +523,7 @@ static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
             break;
     }
 
-    RepintDefinition(units);
+    RepaintDefinition(units);
 
     SetScrollBar(GetDefinition());
 }
@@ -694,6 +698,82 @@ static void DoRecentLookups(HWND hwnd)
     SetDefinition(def);
 }
 
+HWND g_hwndMenuBar = NULL;
+
+static void OverrideBackButton(HWND hwndMenuBar)
+{
+#ifdef WIN32_PLATFORM_WFSP
+    // In order to make Back work properly, it's necessary to 
+    // override it and then call the appropriate SH API
+    // Only needed on smartphone
+    (void)SendMessage(
+        hwndMenuBar, SHCMBM_OVERRIDEKEY, VK_TBACK,
+        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
+        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
+        );
+#else
+    // do nothing on Pocket PC
+#endif
+}
+
+static int RectDx(RECT *rect)
+{
+    int dx = rect->right - rect->left;
+    return dx;
+}
+
+static int RectDy(RECT *rect)
+{
+    int dy = rect->bottom - rect->top;
+    return dy;
+}
+
+// doesn't make much sense to me but this piece of magic comes
+// Programmin Windows CE 3rd ed page 841
+// the logic seems to be the opposite of the description
+// Comment from the book:
+// "If the sip is not shown, or showing but not docked, the desktop
+// rect deosn't include the height (dy) of the menu bar"
+static bool FDesktopIncludesMenuBar(SIPINFO *si)
+{
+    if (!(si->fdwFlags & SIPF_ON) ||
+        ((si->fdwFlags & SIPF_ON) && !(si->fdwFlags & SIPF_DOCKED)))
+    {
+        return true;
+    }
+    return false;
+}
+
+#if 0
+static bool FDesktopIncludesMenuBarAlternate(SIPINFO *si)
+{
+    // sip is not on
+    if (!(si->fdwFlags & SIPF_ON))
+        return true;
+
+    // SIP is on but not docked
+    if ( !(si->fdwFlags & SIPF_DOCKED))
+        return true;
+
+    return false;
+}
+#endif
+
+static void OnSettingChange(HWND hwnd, WPARAM wp, LPARAM lp)
+{
+    SHHandleWMSettingChange(hwnd, wp, lp, &g_sai);
+}
+
+static void OnActivateMain(HWND hwnd, WPARAM wp, LPARAM lp)
+{
+    SHHandleWMActivate(hwnd, wp, lp, &g_sai, 0);
+}
+
+static void OnHibernate(HWND hwnd, WPARAM wp, LPARAM lp)
+{
+    // do nothing
+}
+
 static void OnCreate(HWND hwnd)
 {
     SHMENUBARINFO mbi = {0};
@@ -707,7 +787,32 @@ static void OnCreate(HWND hwnd)
         PostQuitMessage(0);
         return;
     }
-    
+
+    g_hwndMenuBar = mbi.hwndMB;
+    OverrideBackButton(mbi.hwndMB);
+
+#ifdef WIN32_PLATFORM_PSPC
+    ZeroMemory(&g_sai, sizeof(g_sai));
+    g_sai.cbSize = sizeof(g_sai);
+
+    // size the main window taking into account SIP state and menu bar size
+    SIPINFO si = {0};
+    si.cbSize = sizeof(si);
+    SHSipInfo(SPI_GETSIPINFO, 0, (PVOID)&si, FALSE);
+
+    int visibleDx = RectDx(&si.rcVisibleDesktop);
+    int visibleDy = RectDy(&si.rcVisibleDesktop);
+
+    if ( FDesktopIncludesMenuBar(&si) )
+    {
+        RECT rectMenuBar;
+        GetWindowRect(mbi.hwndMB, &rectMenuBar);
+        int menuBarDy = RectDy(&rectMenuBar);
+        visibleDy -= menuBarDy;
+    }
+    SetWindowPos(hwnd, NULL, 0, 0, visibleDx, visibleDy, SWP_NOMOVE | SWP_NOZORDER);
+#endif
+
     g_hwndEdit = CreateWindow( _T("edit"), NULL,
         WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL,
         0, 0, 0, 0, hwnd,
@@ -721,14 +826,6 @@ static void OnCreate(HWND hwnd)
         (HMENU) ID_SCROLL, g_hInst, NULL);
 
     SetScrollBar(GetDefinition());
-
-    // In order to make Back work properly, it's necessary to 
-    // override it and then call the appropriate SH API
-    (void)SendMessage(
-        mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
-        );
 
     int fontSize = GetPrefsFontSize();
     SetFontSize(fontSize, hwnd);
@@ -895,7 +992,7 @@ static void OnSize(HWND hwnd, LPARAM lp)
     int dy = HIWORD(lp);
 
     // total hack for ppc
-    if (g_fNotFirstOnSize)
+/*    if (g_fNotFirstOnSize)
     {
         g_menuDy = 0;
     }
@@ -904,10 +1001,11 @@ static void OnSize(HWND hwnd, LPARAM lp)
         g_fNotFirstOnSize = true;
     }
 
-    int menuDy = GetMenuDy();
+    int menuDy = GetMenuDy();*/
+    int menuDy = 0;
 
     int scrollStartY = 24;
-    int scrollDy = dy - menuDy - scrollStartY - 2;
+    int scrollDy = dy - menuDy - scrollStartY + 1;
 
 #ifdef WIN32_PLATFORM_PSPC
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
@@ -995,6 +1093,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case WM_CLOSE:
             DestroyWindow(hwnd);
+            break;
+
+        case WM_SETTINGCHANGE:
+            OnSettingChange(hwnd, wp, lp);
+            break;
+
+        case WM_ACTIVATE:
+            OnActivateMain(hwnd, wp, lp);
+            break;
+
+        case WM_HIBERNATE:
+            OnHibernate(hwnd, wp, lp);
             break;
 
         case WM_DESTROY:
@@ -1121,7 +1231,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         DispatchMessage(&msg);
     }
 
-    DeinitConnection();
+    DeinitDataConnection();
     DeinitWinet();
     DeleteDefinition();
 
