@@ -5,9 +5,8 @@
 #include <Debug.hpp>
 #include <Text.hpp>
 
-#include "sm_inoah.h"
-#include "Transmission.h"
-#include "iNoahSession.h"
+//#include "sm_inoah.h"
+#include "ServerResponseParser.hpp"
 
 using namespace ArsLexis;
 
@@ -238,72 +237,3 @@ bool ServerResponseParser::fMalformed()
     return _fMalformed;
 }
 
-#if 0
-// not used anymore
-
-TCHAR numToHex(TCHAR num)
-{    
-    if (num>=0 && num<=9)
-        return TCHAR('0')+num;
-    // assert (num<16);
-    return TCHAR('A')+num-10;
-}
-
-
-// Append hexbinary-encoded string toHexify to the input/output string str
-void stringAppendHexified(String& str, const String& toHexify)
-{
-    size_t toHexifyLen = toHexify.length();
-    for(size_t i=0;i<toHexifyLen;i++)
-    {
-        str += numToHex((toHexify[i] & 0xF0) >> 4);
-        str += numToHex(toHexify[i] & 0x0F);
-    }
-}
-
-// According to this msdn info:
-// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnppc2k/html/ppc_hpocket.asp
-// 128 is enough for buffer size
-#define INFO_BUF_SIZE 128
-String getDeviceInfo()
-{
-    SMS_ADDRESS      address;
-    ArsLexis::String regsInfo;
-    ArsLexis::String text;
-    TCHAR            buffer[INFO_BUF_SIZE];
-    BOOL             fOk;
-
-    ZeroMemory(&address, sizeof(address));
-#ifdef WIN32_PLATFORM_WFSP
-    HRESULT res = SmsGetPhoneNumber(&address); 
-    if (SUCCEEDED(res))
-    {
-        text.assign(TEXT("PN"));
-        stringAppendHexified(text, address.ptsAddress);
-    }
-#endif
-
-    ZeroMemory(buffer,sizeof(buffer));
-    fOk = SystemParametersInfo(SPI_GETOEMINFO, sizeof(buffer), buffer, 0);
-
-    if (fOk)
-    {
-        if (text.length()>0)
-            text += TEXT(":");
-        text += TEXT("OC");
-        stringAppendHexified(text,buffer);
-    }
-
-    ZeroMemory(buffer,sizeof(buffer));
-    fOk = SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(buffer), buffer, 0);
-
-    if (fOk)
-    {
-        if (text.length()>0)
-            text += TEXT(":");
-        text += TEXT("OD");
-        stringAppendHexified(text,buffer);
-    }
-    return text;
-}
-#endif

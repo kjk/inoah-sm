@@ -1,8 +1,4 @@
 #include <windows.h>
-#include <wingdi.h>
-#include <fonteffects.hpp>
-#include <uniqueid.h>
-#include <sms.h>
 
 #ifdef WIN32_PLATFORM_WFSP
 #include <tpcshell.h>
@@ -10,21 +6,18 @@
 
 #include <BaseTypes.hpp>
 #include <Debug.hpp>
-#include <WinSysUtils.hpp>
-#include <GenericTextElement.hpp>
-#include <BulletElement.hpp>
-#include <ParagraphElement.hpp>
-#include <HorizontalLineElement.hpp>
+#include <SysUtils.hpp>
 #include <Definition.hpp>
 
-#include "sm_inoah.h"
-#include "resource.h"
 #include "Transmission.h"
-#include "iNoahSession.h"
 #include "iNoahParser.h"
 #include "TAPIDevice.h"
 #include "reclookups.h"
 #include "registration.h"
+#include "sm_inoah.h"
+#include "resource.h"
+
+using ArsLexis::String;
 
 const String iNoahFolder  = _T("\\iNoah");
 const String cookieFile   = _T("\\Cookie");
@@ -42,8 +35,8 @@ static bool g_forceLayoutRecalculation=false;
 Definition *g_definition = NULL;
 bool        g_fRec=false;
 
-ArsLexis::String g_wordList;
-ArsLexis::String g_recentWord;
+String g_wordList;
+String g_recentWord;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -628,7 +621,6 @@ bool InitInstance (HINSTANCE hInstance, int CmdShow )
 
     ShowWindow(g_hwndMain, CmdShow );
     UpdateWindow(g_hwndMain);
-    TAPIDevice::initInstance();    
     return true;
 }
 

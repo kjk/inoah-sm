@@ -6,7 +6,7 @@
 
 #include <BaseTypes.hpp>
 #include <DeviceInfo.hpp>
-#include "iNoahSession.h"
+#include "ServerResponseParser.hpp"
 #include "sm_inoah.h"
 #include "Transmission.h"
 
