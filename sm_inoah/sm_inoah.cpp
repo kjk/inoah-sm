@@ -709,29 +709,6 @@ static void OnCreate(HWND hwnd)
     SetFocus(g_hwndEdit);
 }
 
-static void OnHotKey(WPARAM wp, LPARAM lp)
-{
-    int keyCode = HIWORD(lp);
-
-#ifdef WIN32_PLATFORM_WFSP
-    if (VK_TBACK==keyCode)
-    {
-        if (0 != (MOD_KEYUP & LOWORD(lp)))
-        {
-            SHSendBackToFocusWindow(WM_HOTKEY, wp, lp);
-        }
-        return;
-    }
-#endif
-    if (VK_TBACK==keyCode)
-    {
-        if (NULL!=GetDefinition())
-        {
-            ScrollDefinition(1, scrollPage, false);
-        }
-    }
-}
-
 // Try to launch IE with a given url
 static void OnRegister(HWND hwnd)
 {
@@ -931,9 +908,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             OnCommand(hwnd, msg, wp, lp);
             break;
 
+#ifdef WIN32_PLATFORM_WFSP
         case WM_HOTKEY:
-            OnHotKey(wp,lp);
+		    SHSendBackToFocusWindow(msg, wp, lp);
             break;
+#endif
 
         case WM_VSCROLL:
             OnScroll(wp);
