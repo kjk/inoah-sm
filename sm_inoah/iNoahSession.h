@@ -1,14 +1,9 @@
-#ifndef _INOAH_SESSION_H_
-#define _INOAH_SESSION_H_
+#ifndef _SERVER_RESPONSE_PARSER_H_
+#define _SERVER_RESPONSE_PARSER_H_
 
 #include "BaseTypes.hpp"
 
 using ArsLexis::String;
-
-bool    FGetRandomDef(String& defOut);
-bool    FGetWord(const String& word, String& defOut);
-bool    FGetRecentLookups(String& wordListOut);
-bool    FCheckRegCode(const String& regCode, bool& fRegCodeValid);
 
 // those are ids representing all fields that a server can possibly send
 // must start with 0 and increase by 1 because we're using them as indexes
@@ -21,8 +16,6 @@ enum eFieldId {
     messageField,
     definitionField,
     wordListField,
-   // requestsLeftField,
-   // pronField,
     registrationFailedField,
     registrationOkField,
     fieldsCount = registrationOkField + 1 // because we start from 0

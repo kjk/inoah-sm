@@ -5,7 +5,25 @@
 #include <connmgr.h>
 
 #include <BaseTypes.hpp>
+#include <DeviceInfo.hpp>
+#include "iNoahSession.h"
+#include "sm_inoah.h"
 #include "Transmission.h"
+
+#define urlCommon    _T("/dict-2.php?pv=2&cv=1.0&")
+#define urlCommonLen sizeof(urlCommon)/sizeof(urlCommon[0])
+
+const String sep             = _T("&");
+const String cookieRequest   = _T("get_cookie=");
+const String deviceInfoParam = _T("di=");
+
+const String cookieParam     = _T("c=");
+const String registerParam   = _T("register=");
+const String regCodeParam    = _T("rc=");
+const String getWordParam    = _T("get_word=");
+
+const String randomRequest   = _T("get_random_word=");
+const String recentRequest   = _T("recent_lookups=");
 
 HANDLE    g_hConnection = NULL;
 
@@ -83,7 +101,7 @@ DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& ur
 {
     String  hostHdr = _T("Host: ");
     DWORD   buffSize=2048;
-	BOOL    fOk;
+    BOOL    fOk;
     String  content;
     HANDLE  hConnect = NULL;
     HANDLE  hRequest = NULL;
@@ -144,4 +162,331 @@ Error:
         InternetCloseHandle(hConnect);
     return GetLastError();
 }
+
+#define SIZE_FOR_REST_OF_URL 64
+static String BuildCommonWithCookie(const String& cookie, const String& optionalOne=_T(""), const String& optionalTwo=_T(""))
+{
+    String url;
+    url.reserve(urlCommonLen +
+                cookieParam.length() + cookie.length() +
+                sep.length() +
+                optionalOne.length() +
+                optionalTwo.length() +
+                SIZE_FOR_REST_OF_URL);
+
+    url.assign(urlCommon);
+    url.append(cookieParam);
+    url.append(cookie);
+    url.append(sep);
+    url.append(optionalOne);
+    url.append(optionalTwo);
+    return url;
+}
+
+static String BuildGetCookieUrl()
+{
+    String deviceInfo = deviceInfoToken();
+    String url;
+    url.reserve(urlCommonLen +
+                cookieRequest.length() +
+                sep.length() + 
+                deviceInfoParam.length() +
+                deviceInfo.length());
+
+    url.assign(urlCommon);
+    url.append(cookieRequest);
+    url.append(sep); 
+    url.append(deviceInfoParam);
+    url.append(deviceInfo); 
+    return url;
+}
+
+static String BuildGetRandomUrl(const String& cookie)
+{    
+    String url = BuildCommonWithCookie(cookie,randomRequest);
+    return url;
+}
+
+static String BuildGetWordListUrl(const String& cookie)
+{    
+    String url = BuildCommonWithCookie(cookie,recentRequest);
+    return url;
+}
+
+static String BuildGetWordUrl(const String& cookie, const String& word)
+{
+    String url = BuildCommonWithCookie(cookie,getWordParam,word);
+    String regCode = GetRegCode();
+    if (!regCode.empty())
+    {
+        url.append(sep);
+        url.append(regCodeParam);
+        url.append(regCode);
+    }
+    return url;
+}
+
+static String BuildRegisterUrl(const String& cookie, const String& regCode)
+{
+    String url = BuildCommonWithCookie(cookie,registerParam,regCode);
+    return url;
+}
+
+static void HandleConnectionError(DWORD errorCode)
+{
+    if (errConnectionFailed==errorCode)
+    {
+#ifdef DEBUG
+        ArsLexis::String errorMsg = _T("Unable to connect to ");
+        errorMsg += server;
+#else
+        ArsLexis::String errorMsg = _T("Unable to connect");
+#endif
+        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+        MessageBox(g_hwndMain,errorMsg.c_str(),
+            TEXT("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
+    }
+    else
+    {
+        // TODO: show errorCode in the message as well?
+        MessageBox(g_hwndMain,
+            _T("Connection error. Please contact support@arslexis.com if the problem persists."),
+            _T("Error"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    }
+}    
+
+static void HandleMalformedResponse()
+{
+    MessageBox(g_hwndMain,
+        _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists."),
+        _T("Error"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}
+
+static void HandleServerError(const String& errorStr)
+{
+    MessageBox(g_hwndMain,
+        errorStr.c_str(),
+        _T("Error"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}
+
+static void HandleServerMessage(const String& msg)
+{
+    MessageBox(g_hwndMain,
+        msg.c_str(),
+       _T("Information"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}
+
+// handle common error cases for parsed message:
+// * response returned from the server is malformed
+// * server indicated error during processing
+// * server sent a message instead of response
+// Returns true if response is none of the above and we can proceed
+// handling the message. Returns false if further processing should be aborted
+bool FHandleParsedResponse(ServerResponseParser& responseParser)
+{
+    if (responseParser.fMalformed())
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    if (responseParser.fHasField(errorField))
+    {
+        String errorStr;
+        responseParser.GetFieldValue(errorField,errorStr);
+        HandleServerError(errorStr);
+        return false;
+    }
+
+    if (responseParser.fHasField(messageField))
+    {
+        String msg;
+        responseParser.GetFieldValue(messageField,msg);
+        HandleServerMessage(msg);
+        return false;
+    }
+
+    return true;
+}
+
+// Returns a cookie in cookieOut. If cookie is not present, it'll get it from
+// the server. If there's a problem retrieving the cookie, it'll display
+// appropriate error messages to the client and return false.
+// Return true if cookie was succesfully obtained.
+bool FGetCookie(String& cookieOut)
+{
+
+    cookieOut = GetCookie();
+    if (!cookieOut.empty())
+    {
+        return true;
+    }
+
+    String url = BuildGetCookieUrl();
+    String response;
+    DWORD  err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    bool fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(cookieField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(cookieField,cookieOut);
+    SetCookie(cookieOut);
+    return true;
+}
+
+bool FGetRandomDef(String& defOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetRandomUrl(cookie);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(definitionField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(definitionField,defOut);
+    return true;
+}
+
+bool FGetWord(const String& word, String& defOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetWordUrl(cookie,word);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(definitionField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(definitionField,defOut);
+    return true;
+}
+
+bool FGetRecentLookups(String& wordListOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetWordListUrl(cookie);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(wordListField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(wordListField,wordListOut);
+    return true;
+}
+
+// send the register request to the server to find out, if a registration
+// code regCode is valid. Return false if there was a connaction error.
+// If return true, fRegCodeValid indicates if regCode was valid or not
+bool FCheckRegCode(const String& regCode, bool& fRegCodeValid)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildRegisterUrl(cookie, regCode);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (errNone != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (responseParser.fHasField(registrationOkField))
+    {
+        fRegCodeValid = true;
+    }
+    else if (responseParser.fHasField(registrationFailedField))
+    {
+        fRegCodeValid = false;
+    }
+    else
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    return true;
+}
+
 
