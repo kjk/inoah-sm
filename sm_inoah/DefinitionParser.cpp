@@ -7,7 +7,7 @@
 #include <ParagraphElement.hpp>
 #include <HorizontalLineElement.hpp>
 
-#include "iNoahParser.h"
+#include "DefinitionParser.hpp"
 
 using namespace ArsLexis;
 
