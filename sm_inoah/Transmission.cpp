@@ -32,11 +32,20 @@ DWORD Transmission::openInternet()
     return GetLastError();
 }
 
+void Transmission::closeInternet()
+{
+    if (hInternet)
+    {
+        InternetCloseHandle(hInternet);
+        hInternet = NULL;
+    }
+}
+
 DWORD Transmission::sendRequest()
 {
     if (!hInternet)
         return lastError;
-    
+
     HINTERNET hIConnect = InternetConnect(
         hInternet,host.c_str(),port,
         TEXT(" "),TEXT(" "),
@@ -95,8 +104,7 @@ void Transmission::getResponse(ArsLexis::String& ret)
 }
 
 DWORD Transmission::setError()
-{
-    
+{    
     //LPVOID lpMsgBuf;
     lastError = GetLastError();
     /*FormatMessage( 
@@ -112,10 +120,22 @@ DWORD Transmission::setError()
     ); FUCK DOESN'T WORK AT ALL*/
     //content=ArsLexis::String((TCHAR*)lpMsgBuf);
     TCHAR buffer[20];
-    _itow(lastError, buffer, 10 );
+    memset(buffer,0,sizeof(buffer));
+    _itow(lastError, buffer, 10);
     
     content.assign(TEXT("Network connection unavailable. iNoah cannot retrieve information. Error code:"));
     content+=buffer;
+    if (ERROR_INTERNET_CANNOT_CONNECT==lastError)
+    {
+        content += TEXT(" (cannot connect to ");
+        content += host;
+        content += TEXT(":");
+        memset(buffer,0,sizeof(buffer));
+        _itow(port, buffer, 10);
+        content += buffer;
+        content += TEXT(")");
+    }
+
     //LocalFree( lpMsgBuf );
     InternetCloseHandle(hIConnect);
     InternetCloseHandle(hIRequest);

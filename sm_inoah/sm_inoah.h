@@ -23,4 +23,14 @@ TCHAR szTitle[];
 
 #define MENU_HEIGHT 26
 
+// KJK_BUILD is defined in sm_inoah_kjk.vcp project so that my builds
+// always go against my server
+#ifdef KJK_BUILD
+#define server     TEXT("dict-pc.arslex.com")
+#define serverPort 4080
+#else
+#define server     TEXT("arslex.no-ip.info")
+#define serverPort 80
+#endif
+
 #endif // !defined(AFX_SM_INOAH_H__7A9C1511_DE39_4376_A573_C6693074425B__INCLUDED_)

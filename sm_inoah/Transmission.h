@@ -34,7 +34,7 @@ public:
 
     virtual DWORD  sendRequest();
     virtual void   getResponse(ArsLexis::String& ret);
-
+    static void    closeInternet();
     virtual ~Transmission();
 
 };

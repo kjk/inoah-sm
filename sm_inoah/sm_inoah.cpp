@@ -2,6 +2,7 @@
 //
 
 #include "resource.h"
+#include "sm_inoah.h"
 #include "iNoahSession.h"
 #include "iNoahParser.h"
 #include "TAPIDevice.h"
@@ -45,24 +46,18 @@ HANDLE hConnection = NULL;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 WNDPROC oldEditWndProc;
-void drawProgressInfo(HWND hwnd, TCHAR* text);
-void setFontSize(int diff,HWND hwnd);
-void paint(HWND hwnd, HDC hdc);
+void    drawProgressInfo(HWND hwnd, TCHAR* text);
+void    setFontSize(int diff,HWND hwnd);
+void    paint(HWND hwnd, HDC hdc);
+bool    initConnection();
+void    setScrollBar(Definition* definition_);
+void    setDefinition(ArsLexis::String& defs, HWND hwnd);
 //void displayPhoneInfo();
-bool initConnection();
-void setScrollBar(Definition* definition_);
-void setDefinition(ArsLexis::String& defs, HWND hwnd);
 
-//
-//  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
-//  WM_COMMAND	- process the application menu
-//  WM_PAINT	- Paint the main window
-//  WM_DESTROY	- post a quit message and return
-//
-//
+// Processed messages:
+//  WM_COMMAND  - process the application menu
+//  WM_PAINT    - Paint the main window
+//  WM_DESTROY  - post a quit message and return
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT     lResult = TRUE;
@@ -72,17 +67,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     static bool compactView=FALSE;
     static ArsLexis::String text=TEXT("");
-    
+
     switch(msg)
     {
         case WM_CREATE:
         {
-            //if (
             if (!initConnection())
             {
+#ifdef DEBUG
+                ArsLexis::String errorMsg = TEXT("Can't establish connection to ");
+                errorMsg += server;
+#else
+                ArsLexis::String errorMsg = TEXT("Can't establish connection.");
+#endif
+                // TODO: should we exit now? Maybe just display an error
+                // information on the screen instead of message box?
                 MessageBox(
                     hwnd,
-                    TEXT("Can't establish connection."),
+                    errorMsg.c_str(),
                     TEXT("Error"),
                     MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
                     );
@@ -413,6 +415,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
         TranslateMessage (&msg);
         DispatchMessage(&msg);
     }
+
+    Transmission::closeInternet();
+
     return (msg.wParam);
 }
 
@@ -437,9 +442,11 @@ void paint(HWND hwnd, HDC hdc)
 
         RECT tmpRect=rect;
         DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += fontDy*3;
+        //tmpRect.top += (fontDy*3);
+        tmpRect.top += 46;
         DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += fontDy+6;
+        // tmpRect.top += fontDy+6;
+        tmpRect.top += 18;
         DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
         SelectObject(hdc,fnt);
         DeleteObject(fnt2);
@@ -625,15 +632,15 @@ void setFontSize(int diff, HWND hwnd)
 bool initConnection()
 {
     // Establish a synchronous connection
-    
-    DWORD dwStatus = 0;
+
+    DWORD dwStatus  = 0;
     DWORD dwTimeout = 5000;
     
     // Get the network information where we want to establish a
     // connection
     TCHAR tchRemoteUrl[256] = TEXT("\0");
-    wsprintf(tchRemoteUrl,
-        TEXT("http://arslex.no-ip.info"));
+    assert( sizeof(server) < sizeof(tchRemoteUrl) );
+    wsprintf(tchRemoteUrl, server);
     GUID guidNetworkObject;
     DWORD dwIndex = 0;
     
@@ -721,4 +728,3 @@ void setDefinition(ArsLexis::String& defs, HWND hwnd)
     }
 }
 
-// end sm_inoah.cpp

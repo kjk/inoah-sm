@@ -17,16 +17,6 @@ using ArsLexis::String;
 // TODO: It should be clear text (for a while just some objects)
 // It's really intresting how they will be expanded
 
-// KJK_BUILD is defined in sm_inoah_kjk.vcp project so that my builds
-// always go against my server
-#ifdef KJK_BUILD
-const String server     = TEXT("dict-pc.arslex.com");
-const INTERNET_PORT serverPort = 4080;
-#else
-const String server     = TEXT("arslex.no-ip.info");
-const INTERNET_PORT serverPort = INTERNET_DEFAULT_HTTP_PORT;
-#endif
-
 const String errorStr        = TEXT("ERROR");
 const String cookieStr       = TEXT("COOKIE");
 const String messageStr      = TEXT("MESSAGE");
@@ -224,7 +214,8 @@ bool iNoahSession::getCookie()
     
     Transmission tr(server, serverPort, tmp);
     String tmp2;
-    if(checkErrors(tr,tmp2)) return true;
+    if(checkErrors(tr,tmp2))
+        return true;
     if ( tmp2.find(cookieStr) == 0 )
     {
         cookie.assign(tmp2,cookieStr.length()+1,-1);
