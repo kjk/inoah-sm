@@ -2,11 +2,29 @@
 
 ID_ICON ICON "inoah.ico"
 
+ID_ACCEL ACCELERATORS DISCARDABLE
+BEGIN
+    "Q", IDM_EXIT, VIRTKEY, CONTROL, NOINVERT
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+  IDS_MENU_BTN         "Menu"
+  IDS_OPTIONS_MENU_BTN "Options"
+
+  IDS_LOOKUP          "Lookup"
+  IDS_SELECT          "Lookup"
+  IDS_CANCEL          "Cancel"
+  IDS_REGISTER        "Register"
+  IDS_LATER           "Later"
+  IDS_MAIN_MENU_BTN   "Main"
+END
+
 #ifdef WIN32_PLATFORM_PSPC
   IDR_MAIN_MENUBAR RCDATA
   BEGIN
     IDR_MENU_MAIN,
-    4,
+    2,
     I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
     TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
     IDS_MAIN_MENU_BTN, 0, 0,
@@ -87,16 +105,6 @@ BEGIN
   END
 END
 #endif
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-  IDS_LOOKUP          "Lookup"
-  IDS_MENU_BTN        "Menu"
-  IDS_SELECT          "Lookup"
-  IDS_CANCEL          "Cancel"
-  IDS_REGISTER        "Register"
-  IDS_LATER           "Later"
-END
 
 IDR_STRING_LIST_MENUBAR RCDATA
 BEGIN

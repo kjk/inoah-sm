@@ -47,6 +47,13 @@
 #define IDM_MENU_ABOUT                  135
 #define IDM_LATER                       136
 #define IDS_LATER                       137
+#define IDM_SEARCH                      138
+#define IDM_MENU_CLIPBOARD              139 
+#define IDS_MAIN_MENU_BTN               140
+#define IDS_OPTIONS_MENU_BTN            141
+#define ID_OPTIONS_MENU_BTN             142
+#define ID_ACCEL                        143
+#define IDM_EXIT                        144
 
 #define IDC_STRING_LIST                 1000
 #define IDC_EDIT_REGCODE                1001

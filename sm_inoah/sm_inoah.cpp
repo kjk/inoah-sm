@@ -654,7 +654,7 @@ static void OnHibernate(HWND hwnd, WPARAM wp, LPARAM lp)
 static void OnCreate(HWND hwnd)
 {
     SHMENUBARINFO mbi = {0};
-    mbi.cbSize     = sizeof(SHMENUBARINFO);
+    mbi.cbSize     = sizeof(mbi);
     mbi.hwndParent = hwnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR;
     mbi.hInstRes   = g_hInst;
@@ -755,12 +755,13 @@ DoItAgain:
 
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    LRESULT result = TRUE;
+    LRESULT result = 0;
 
     switch (wp)
     {
+        case IDM_EXIT: // intentional no break
         case IDOK:
-            SendMessage(hwnd,WM_CLOSE,0,0);
+            SendMessage(hwnd, WM_CLOSE, 0, 0);
             break;
 
         case IDM_MENU_COMPACT:
@@ -1056,12 +1057,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     if (!InitInstance(hInstance, CmdShow))
         return FALSE;
-    
+
+    HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(ID_ACCEL));
     MSG     msg;
     while (TRUE == GetMessage( &msg, NULL, 0,0 ))
     {
-        TranslateMessage (&msg);
-        DispatchMessage(&msg);
+        if (!TranslateAccelerator(g_hwndMain, hAccel, &msg))
+        {
+            TranslateMessage (&msg);
+            DispatchMessage(&msg);
+        }
     }
 
     DeinitDataConnection();
