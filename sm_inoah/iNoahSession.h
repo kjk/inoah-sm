@@ -11,6 +11,7 @@
 using ArsLexis::String;
 
 String  getDeviceInfo();
+bool    FGetRandomDef(String& defOut);
 
 class iNoahSession
 {
@@ -96,10 +97,11 @@ private:
     String::size_type GetFieldValueStart(eFieldId fieldId) { return _fieldPos[(3*(int)fieldId)+1]; }
     String::size_type GetFieldValueLen(eFieldId fieldId) { return _fieldPos[(3*(int)fieldId)+2]; }
 
+    String::size_type GetFollowValueEnd(String::size_type fieldValueStart);
+
     void SetFieldStart(eFieldId fieldId, String::size_type pos) { _fieldPos[3*(int)fieldId]=pos; }
     void SetFieldValueStart(eFieldId fieldId, String::size_type pos) { _fieldPos[(3*(int)fieldId)+1]=pos; }
     void SetFieldValueLen(eFieldId fieldId, String::size_type len) { _fieldPos[(3*(int)fieldId)+2]=len; }
-
 };
 
 #endif

@@ -192,3 +192,14 @@ Transmission::~Transmission()
 {
     
 }
+
+DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& url, String& bodyOut)
+{
+    Transmission tr(host,port,url);
+    DWORD err = tr.sendRequest();
+    if (NO_ERROR != err)
+        return err;
+    tr.getResponse(bodyOut);
+    return NO_ERROR;
+}
+

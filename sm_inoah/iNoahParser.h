@@ -6,6 +6,7 @@
 #include "DynamicNewLineElement.h"
 #include <list>
 #include <algorithm>
+
 class iNoahParser
 {
 public:
@@ -13,7 +14,7 @@ public:
         : explanation(NULL), examples(NULL), synonyms(NULL)
     {
     }
-    Definition* parse(ArsLexis::String text);
+    Definition* parse(const ArsLexis::String& text);
     void appendElement(DefinitionElement* element);
 private:
     class ElementsList
@@ -58,4 +59,6 @@ private:
     ElementsList* parseSynonymsList(ArsLexis::String &text, ArsLexis::String &word);
     ElementsList* parseExamplesList(ArsLexis::String &text);
 };
+
+Definition *parseDefinition(ArsLexis::String& def);
 #endif

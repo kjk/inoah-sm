@@ -55,7 +55,6 @@ enum eFieldType {
     fieldNoValue,     // field has no value e.g. "REGISTRATION_OK\n"
     fieldValueInline,  // field has arguments before new-line e.g. "REQUESTS_LEFT 5\n"
     fieldValueFollow,  // field has arguments after new-line e.g. "WORD\nhero\n"
-    fieldValueFollowNoSep  // a special case for COOKIE where we don't put "\n" after field value
 };
 
 typedef struct _fieldDef {
@@ -67,7 +66,7 @@ typedef struct _fieldDef {
 // of each field
 static FieldDef fieldsDef[fieldsCount] = {
     { errorStr, fieldValueFollow },
-    { cookieStr, fieldValueFollowNoSep },
+    { cookieStr, fieldValueFollow},
     { messageStr, fieldValueFollow },
     { definitionStr, fieldValueFollow },
     { wordListStr, fieldValueFollow },
@@ -222,6 +221,34 @@ static eFieldId GetFieldId(String &str, String::size_type startPos)
     return fieldIdInvalid;
 }
 
+// This is kind of broken.
+// It looks for the end of the value that follows a field. Value can be multi-line so basically
+// we look until the first line that looks like one of fields or the end of text.
+String::size_type ServerResponseParser::GetFollowValueEnd(String::size_type fieldValueStart)
+{
+    String::size_type fieldValueEnd;
+    String::size_type newLineStart;
+    eFieldId          fieldId;
+
+    String::size_type startLookingFrom = fieldValueStart;
+    while (true)
+    {
+        fieldValueEnd = _content.find(_T("\n"), startLookingFrom);
+        if (String::npos==fieldValueEnd)
+        {
+            fieldValueEnd = _content.length();
+            break;        
+        }
+
+        newLineStart = fieldValueEnd + 1;
+        fieldId = GetFieldId(_content, newLineStart);
+        if (fieldId!=fieldIdInvalid)
+            break;
+        startLookingFrom = newLineStart;
+    }
+    return fieldValueEnd;
+}
+
 void ServerResponseParser::ParseResponse()
 {
     if (_fParsed)
@@ -291,49 +318,19 @@ void ServerResponseParser::ParseResponse()
                 break;
             }
             String::size_type fieldValueStart = curPos+FieldStrLen(fieldId)+1;
-            String::size_type fieldValueEnd = _content.find(_T("\n"), fieldValueStart);
-            if (String::npos==fieldValueEnd)
-            {
-                _fMalformed = true;
-                break;
-            }
-            --fieldValueEnd;
+            String::size_type fieldValueEnd = GetFollowValueEnd(fieldValueStart);
             String::size_type fieldValueLen = fieldValueEnd - fieldValueStart;
+
             SetFieldStart(fieldId, curPos);
             SetFieldValueStart(fieldId, fieldValueStart);
             SetFieldValueLen(fieldId, fieldValueLen);
             curPos = fieldValueEnd+1;
-        }
-        else if (fieldValueFollowNoSep==fieldType)
-        {
-            // A special case for COOKIE which doesn't have a value terminated
-            // by a '\n' - a mistake in the server code
-            // Another assumption: this is the last field in the response
-            assert (fieldId==cookieField);
-            String::size_type fieldNameEnd = curPos+FieldStrLen(fieldId)-1;
-            if ( _T('\n') != _content[fieldNameEnd+1] )
+#ifdef DEBUG
             {
-                // for fields where value follows, field name should be
-                // immediately followed by '\n'
-                _fMalformed = true;
-                break;
+                String fldValue;
+                GetFieldValue(fieldId,fldValue);
             }
-            String::size_type fieldValueStart = curPos+FieldStrLen(fieldId)+1;
-
-            // it should be the last field in the response
-            String::size_type delimPos = _content.find(_T("\n"), fieldValueStart);
-            assert (String::npos == delimPos);
-            if (String::npos != delimPos)
-            {
-                _fMalformed = true;
-                break;
-            }
-            String::size_type fieldValueEnd = contentLen;
-            String::size_type fieldValueLen = fieldValueEnd - fieldValueStart;
-            SetFieldStart(fieldId, curPos);
-            SetFieldValueStart(fieldId, fieldValueStart);
-            SetFieldValueLen(fieldId, fieldValueLen);
-            break;
+#endif
         }
 #ifdef DEBUG
         else
@@ -347,6 +344,148 @@ bool ServerResponseParser::fMalformed()
     ParseResponse();
     return _fMalformed;
 }
+
+static String BuildGetCookieUrl()
+{
+    String deviceInfo = getDeviceInfo();
+    String url;
+    url.reserve(urlCommonLen +
+                cookieRequest.length() +
+                sep.length() + 
+                deviceInfoParam.length() +
+                deviceInfo.length());
+
+    url.assign(urlCommon);
+
+    url.append(cookieRequest);
+    url.append(sep); 
+    url.append(deviceInfoParam);
+    url.append(deviceInfo); 
+    return url;
+}
+
+static String BuildGetRandomUrl(String& cookie)
+{    
+    String url;
+    url.reserve(urlCommonLen +
+                cookieParam.length() +
+                cookie.length() +
+                sep.length() + 
+                randomRequest.length());
+
+    url.assign(urlCommon);
+    url.append(cookieParam);
+    url.append(cookie);
+    url.append(sep);
+    url.append(randomRequest);
+    return url;
+}
+
+// TODO: show errorCode in the message as well?
+void HandleConnectionError(DWORD errorCode)
+{
+    MessageBox(g_hwndMain,
+        _T("Connection error. Please contact support@arslexis.com if the problem persists."),
+        _T("Error"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}    
+
+static void HandleMalformedResponse()
+{
+    MessageBox(g_hwndMain,
+        _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists."),
+        _T("Error"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}
+
+static void HandleServerError(const String& errorStr)
+{
+    MessageBox(g_hwndMain,
+        errorStr.c_str(),
+        _T("Error"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}
+
+static void HandleServerMessage(const String& msg)
+{
+    MessageBox(g_hwndMain,
+        msg.c_str(),
+       _T("Information"), 
+        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+}
+
+// handle common error cases for parsed message:
+// * response returned from the server is malformed
+// * server indicated error during processing
+// * server sent a message instead of response
+// Returns true if response is none of the above and we can proceed
+// handling the message. Returns false if further processing should be aborted
+bool FHandleParsedResponse(ServerResponseParser& responseParser)
+{
+    if (responseParser.fMalformed())
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    if (responseParser.fHasField(errorField))
+    {
+        String errorStr;
+        responseParser.GetFieldValue(errorField,errorStr);
+        HandleServerError(errorStr);
+        return false;
+    }
+
+    if (responseParser.fHasField(messageField))
+    {
+        String msg;
+        responseParser.GetFieldValue(messageField,msg);
+        HandleServerMessage(msg);
+        return false;
+    }
+
+    return true;
+}
+
+String g_cookie;
+
+// Returns a cookie in cookieOut. If cookie is not present, it'll get it from
+// the server. If there's a problem retrieving the cookie, it'll display
+// appropriate error messages to the client and return false.
+// Return true if cookie was succesfully obtained.
+bool FGetCookie(String& cookieOut)
+{
+    if (!g_cookie.empty())
+    {
+        cookieOut = g_cookie;
+        return true;
+    }
+
+    String  url = BuildGetCookieUrl();
+    String  response;
+    DWORD   err = GetHttpBody(server,serverPort,url,response);
+    if (NO_ERROR != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    bool fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(cookieField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(cookieField,cookieOut);
+    return true;
+}
+
 
 iNoahSession::iNoahSession()
  : fCookieReceived_(false),
@@ -387,6 +526,38 @@ bool iNoahSession::fErrorPresent(Transmission &tr, String &ret)
     }*/
 
     return false;
+}
+
+bool FGetRandomDef(String& defOut)
+{
+    String cookie;
+    bool fOk = FGetCookie(cookie);
+    if (!fOk)
+        return false;
+
+    String  url = BuildGetRandomUrl(cookie);
+    String  response;
+    DWORD err = GetHttpBody(server,serverPort,url,response);
+    if (NO_ERROR != err)
+    {
+        HandleConnectionError(err);
+        return false;
+    }
+
+    ServerResponseParser responseParser(response);
+
+    fOk = FHandleParsedResponse(responseParser);
+    if (!fOk)
+        return false;
+
+    if (!responseParser.fHasField(definitionField))
+    {
+        HandleMalformedResponse();
+        return false;
+    }
+
+    responseParser.GetFieldValue(definitionField,defOut);
+    return true;
 }
 
 void iNoahSession::getRandomWord(String& ret)

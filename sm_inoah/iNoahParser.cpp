@@ -32,7 +32,7 @@ const String iNoahParser::pOfSpeach[2][5] =
     }
 };
 
-Definition* iNoahParser::parse(String text)
+Definition* iNoahParser::parse(const String& text)
 {
     int sep = text.find_first_of(char_t('\n'));
     String word(text.substr(0, sep));
@@ -42,7 +42,7 @@ Definition* iNoahParser::parse(String text)
     {
         int nextIdx = 0;
         char_t currBeg = meanings[0];
-        String metBegs(TEXT(""));
+        String metBegs();
         while (true)
         {
             char_t nextBeg;
@@ -333,3 +333,11 @@ void iNoahParser::ElementsList::push_front(DefinitionElement* el)
 {
     lst.push_front(el);
 }
+
+Definition *parseDefinition(ArsLexis::String& defTxt)
+{
+    iNoahParser  parser;
+    Definition * parsedDef = parser.parse(defTxt);
+    return parsedDef;
+}
+    

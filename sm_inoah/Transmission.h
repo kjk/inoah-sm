@@ -4,21 +4,21 @@
 #include "BaseTypes.hpp"
 #include "wininet.h"
 
-const TCHAR HTTPver[]=TEXT("HTTP/1.0");
+using ArsLexis::String;
 
 class Transmission
 {
     static  HINTERNET   hInternet_;
     static  HINTERNET   openInternet();
     DWORD               lastError_;
-    ArsLexis::String    localInfo;
-    ArsLexis::String    host;
+    String              localInfo;
+    String              host;
     INTERNET_PORT       port;
     HINTERNET           hIConnect_;
     HINTERNET           hIRequest_;
     DWORD               setError();
 
-    ArsLexis::String    content_;
+    String              content_;
 
 public:
 
@@ -30,5 +30,7 @@ public:
     virtual        ~Transmission();
 
 };
+
+DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& url, String& bodyOut);
 
 #endif

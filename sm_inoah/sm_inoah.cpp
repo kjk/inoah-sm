@@ -135,6 +135,21 @@ static RenderingPreferences& renderingPrefs(void)
     return *g_renderingPrefs;
 }
 
+static void setDefinition2(ArsLexis::String& defTxt)
+{
+    Definition * newDef = parseDefinition(defTxt);
+
+    if (NULL==newDef)
+        return;
+
+    delete g_definition;
+    g_definition = newDef;
+
+    ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
+    g_fRec = true;
+    InvalidateRect(g_hwndMain,NULL,TRUE);
+}
+
 static void setDefinition(ArsLexis::String& defs, HWND hwnd)
 {
     iNoahSession::ResponseCode code=g_session.getLastResponseCode();
@@ -156,15 +171,7 @@ static void setDefinition(ArsLexis::String& defs, HWND hwnd)
         }
         default:
         {
-            delete g_definition;
-            g_definition = NULL;
-            ParagraphElement* parent=0;
-            int start=0;
-            iNoahParser parser;
-            g_definition=parser.parse(defs);
-            ArsLexis::Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-            g_fRec = true;
-            InvalidateRect(hwnd,NULL,TRUE);
+            setDefinition2(defs);
         }
     }
 }
@@ -206,9 +213,14 @@ static void DoRandom(HWND hwnd)
     ReleaseDC(hwnd, hdc);
     drawProgressInfo(hwnd, TEXT("random definition..."));
 
-    ArsLexis::String word;
+    String def;
+    bool fOk = FGetRandomDef(def);
+    if (!fOk)
+        return;
+    setDefinition2(def);
+/*    ArsLexis::String word;
     g_session.getRandomWord(word);
-    setDefinition(word,hwnd);
+    setDefinition(word,hwnd); */
 }
 
 static void DoCompact(HWND hwnd)
@@ -604,13 +616,16 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
     ArsLexis::Graphics gr(hdc, hwnd);
     RECT b;
     GetClientRect(hwnd, &b);
-    ArsLexis::Rectangle bounds=b;
-    ArsLexis::Rectangle defRect=rect;
-    bool doubleBuffer=true;
-    HDC offscreenDc=::CreateCompatibleDC(hdc);
-    if (offscreenDc) {
+    ArsLexis::Rectangle bounds = b;
+    ArsLexis::Rectangle defRect = rect;
+
+    bool fCouldntDoubleBuffer = false;
+    HDC offscreenDc = ::CreateCompatibleDC(hdc);
+    if (offscreenDc) 
+	{
         HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-        if (bitmap) {
+        if (bitmap) 
+		{
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             {
                 ArsLexis::Graphics offscreen(offscreenDc, NULL);
@@ -621,13 +636,13 @@ static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
             ::DeleteObject(bitmap);
         }
         else
-            doubleBuffer=false;
+            fCouldntDoubleBuffer = true;
         ::DeleteDC(offscreenDc);
     }
     else
-        doubleBuffer=false;
-    
-    if (!doubleBuffer)
+        fCouldntDoubleBuffer = true;
+
+    if (fCouldntDoubleBuffer)
         g_definition->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
     g_forceLayoutRecalculation=false;
 }
