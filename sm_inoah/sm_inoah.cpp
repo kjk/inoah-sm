@@ -32,18 +32,12 @@ WNDPROC   g_oldEditWndProc = NULL;
 static bool g_forceLayoutRecalculation=false;
 
 String      g_currentWord;
-Definition *g_definition = NULL;
 bool        g_fRec=false;
 
 String g_wordList;
 String g_recentWord;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
-
-void    DrawProgressInfo(HWND hwnd, TCHAR* text);
-void    SetFontSize(int diff,HWND hwnd);
-void    Paint(HWND hwnd, HDC hdc);
-void    SetScrollBar(Definition* definition);
 
 RenderingPreferences* g_renderingPrefs = NULL;
 
@@ -63,6 +57,25 @@ static RenderingPreferences& renderingPrefs(void)
     return *g_renderingPrefs;
 }
 
+Definition *g_definition = NULL;
+
+static Definition *GetDefinition()
+{
+    return g_definition;
+
+}
+static void ReplaceDefinition(Definition *newDefinition)
+{
+    delete g_definition;
+    g_definition = newDefinition;
+}
+
+static void DeleteDefinition()
+{
+    ReplaceDefinition(NULL);
+}
+    
+
 static void SetDefinition(ArsLexis::String& defTxt)
 {
     String word;
@@ -71,8 +84,7 @@ static void SetDefinition(ArsLexis::String& defTxt)
     if (NULL==newDef)
         return;
 
-    delete g_definition;
-    g_definition = newDef;
+    ReplaceDefinition(newDef);
     g_currentWord = word;
 
     SetEditWinText(g_hwndEdit, word);
@@ -221,6 +233,21 @@ static void ClearCache()
     DeleteRegCode();
 }
 
+static void SetScrollBar(Definition* definition)
+{
+    int first=0;
+    int range=0;
+
+    if (definition)
+    {
+        first = definition->firstShownLine();
+        range = definition->totalLinesCount() - definition->shownLinesCount();
+    }
+    
+    SetScrollPos(g_hwndScroll, SB_CTL, first, TRUE);
+    SetScrollRange(g_hwndScroll, SB_CTL, 0, range, TRUE);
+}
+
 static void ScrollDefinition(int page)
 {
     RECT b;
@@ -240,7 +267,7 @@ static void ScrollDefinition(int page)
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             {
                 ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                g_definition->scroll(offscreen, renderingPrefs(), page);
+                GetDefinition()->scroll(offscreen, renderingPrefs(), page);
                 offscreen.copyArea(defRect, gr, defRect.topLeft);
             }
             ::SelectObject(offscreenDc, oldBitmap);
@@ -251,11 +278,173 @@ static void ScrollDefinition(int page)
     }
 
     if (!fCouldDoubleBuffer)
-        g_definition->scroll(gr, renderingPrefs(), page);
+        GetDefinition()->scroll(gr, renderingPrefs(), page);
 
-    SetScrollBar(g_definition);
+    SetScrollBar(GetDefinition());
 }
 
+static void PaintAbout(HDC hdc, RECT& rect)
+{
+    LOGFONT logfnt;
+    HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfHeight+=1;
+    int fontDy = logfnt.lfHeight;
+    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+    SelectObject(hdc, fnt2);
+    
+    RECT tmpRect=rect;
+    DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    tmpRect.top += 46;
+    DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    tmpRect.top += 18;
+    DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    tmpRect.top += 18;
+
+    if (FRegCodeExists())
+        DrawText(hdc, TEXT("Registered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    else
+        DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
+    SelectObject(hdc,fnt);
+    DeleteObject(fnt2);
+}
+
+static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
+{
+    ArsLexis::Graphics gr(hdc, hwnd);
+    RECT b;
+    GetClientRect(hwnd, &b);
+    ArsLexis::Rectangle bounds = b;
+    ArsLexis::Rectangle defRect = rect;
+
+    bool fCouldDoubleBuffer = false;
+    HDC  offscreenDc = ::CreateCompatibleDC(hdc);
+    if (offscreenDc) 
+    {
+        HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+        if (bitmap) 
+        {
+            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+            {
+                ArsLexis::Graphics offscreen(offscreenDc, NULL);
+                GetDefinition()->render(offscreen, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+                offscreen.copyArea(defRect, gr, defRect.topLeft);
+            }
+            ::SelectObject(offscreenDc, oldBitmap);
+            ::DeleteObject(bitmap);
+            fCouldDoubleBuffer = true;
+        }
+        ::DeleteDC(offscreenDc);
+    }
+
+    if (!fCouldDoubleBuffer)
+        GetDefinition()->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+    g_forceLayoutRecalculation=false;
+}
+
+static void Paint(HWND hwnd, HDC hdc)
+{
+    RECT  rect;
+    GetClientRect(hwnd, &rect);
+    FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+
+    rect.top    += 22;
+    rect.left   += 2;
+    rect.right  -= 7;
+    rect.bottom -= 2;
+
+    if (NULL==GetDefinition())
+        PaintAbout(hdc,rect);
+    else
+        PaintDefinition(hwnd, hdc, rect);
+
+    if (g_fRec && (NULL!=GetDefinition()))
+    {
+        SetScrollBar(GetDefinition());
+        g_fRec = false;
+    }
+}
+
+
+static void DrawProgressInfo(HWND hwnd, TCHAR* text)
+{
+    RECT rect;
+    HDC hdc=GetDC(hwnd);
+    GetClientRect (hwnd, &rect);
+    rect.top+=22;
+    rect.left+=2;
+    rect.right-=7;
+    rect.bottom-=2;
+    LOGFONT logfnt;
+    
+    Rectangle(hdc, 18, 83, 152, 123);
+    
+    POINT p[2];
+    p[0].y=85;
+    p[1].y=121;
+    LOGPEN pen;
+    HGDIOBJ hgdiobj = GetCurrentObject(hdc,OBJ_PEN);
+    GetObject(hgdiobj, sizeof(pen), &pen);
+    for(p[0].x=20;p[0].x<150;p[0].x++)
+    {                           
+        HPEN newPen=CreatePenIndirect(&pen);
+        pen.lopnColor = RGB(0,0,p[0].x+100);
+        SelectObject(hdc,newPen);
+        DeleteObject(hgdiobj);
+        hgdiobj=newPen;
+        p[1].x=p[0].x;
+        Polyline(hdc, p, 2);
+    }
+    DeleteObject(hgdiobj);
+    
+    SelectObject(hdc,GetStockObject(HOLLOW_BRUSH));
+    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+    GetObject(fnt, sizeof(logfnt), &logfnt);
+    logfnt.lfHeight+=1;
+    logfnt.lfWeight=800;
+    SetTextColor(hdc,RGB(255,255,255));
+    SetBkMode(hdc, TRANSPARENT);
+    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+    SelectObject(hdc, fnt2);
+    rect.top-=10;
+    DrawText (hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
+    rect.top+=32;
+    DrawText (hdc, text, -1, &rect, DT_VCENTER|DT_CENTER);
+    SelectObject(hdc,fnt);
+    DeleteObject(fnt2);
+    ReleaseDC(hwnd,hdc);
+}
+
+static void SetFontSize(int diff, HWND hwnd)
+{
+    int delta=0;
+    HWND hwndMB = SHFindMenuBar (hwnd);
+    if (hwndMB) 
+    {
+        HMENU hMenu;
+        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+        CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_UNCHECKED | MF_BYCOMMAND);
+        CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
+        CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
+        switch(diff)
+        {
+            case IDM_FNT_LARGE:
+                CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
+                delta=-2;
+                break;
+            case IDM_FNT_STANDARD:
+                CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
+                break;
+            case IDM_FNT_SMALL:
+                CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
+                delta=2;
+                break;
+        }
+    }
+    g_forceLayoutRecalculation=true;
+    renderingPrefsPtr()->setFontSize(delta);
+    InvalidateRect(hwnd,NULL,TRUE);
+}
 
 #define MAX_WORD_LEN 64
 static void DoLookup(HWND hwnd)
@@ -379,7 +568,7 @@ static void OnCreate(HWND hwnd)
         0, 0, 0, 0, hwnd,
         (HMENU) ID_SCROLL, g_hInst, NULL);
 
-    SetScrollBar(g_definition);
+    SetScrollBar(GetDefinition());
 
     // In order to make Back work properly, it's necessary to 
     // override it and then call the appropriate SH API
@@ -393,7 +582,7 @@ static void OnCreate(HWND hwnd)
     SetFocus(g_hwndEdit);
 }
 
-void static OnHotKey(WPARAM wp, LPARAM lp)
+static void OnHotKey(WPARAM wp, LPARAM lp)
 {
     int keyCode = HIWORD(lp);
 
@@ -409,9 +598,9 @@ void static OnHotKey(WPARAM wp, LPARAM lp)
 #endif
     if (VK_TBACK==keyCode)
     {
-        if (NULL!=g_definition)
+        if (NULL!=GetDefinition())
         {
-            ScrollDefinition(g_definition->shownLinesCount());
+            ScrollDefinition(GetDefinition()->shownLinesCount());
         }
     }
 }
@@ -488,7 +677,6 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case ID_LOOKUP:
             DoLookup(hwnd);
-            InvalidateRect(hwnd,NULL,TRUE);
             break;
 
         case IDM_MENU_RANDOM:
@@ -508,7 +696,6 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_HOME:
-            // Try to open hyperlink
             GotoURL(_T("http://arslexis.com/pda/sm.html"));
             break;
         
@@ -517,9 +704,8 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_ABOUT:
-            // TODO:
-            //isAboutVisible = true;
-            //setMenu(hwnd);
+            DeleteDefinition();
+            g_currentWord.clear();
             InvalidateRect(hwnd,NULL,TRUE);
             break;
 
@@ -531,7 +717,6 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     SetFocus(g_hwndEdit);
     return result;
 }
-
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -583,7 +768,50 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return lResult;
 }
 
-bool InitInstance (HINSTANCE hInstance, int CmdShow )
+// return true if no more processing is needed, false otherwise
+static bool OnEditKeyDown(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    if (VK_TACTION==wp)
+    {
+        DoLookup(GetParent(hwnd));
+        return true;
+    }
+
+    // check for up/down to see if we should do scrolling
+    if (NULL==GetDefinition())
+    {
+        // no definition => no need for scrolling
+        return false;
+    }
+
+    if (VK_DOWN==wp)
+    {
+        ScrollDefinition(GetDefinition()->shownLinesCount());
+        return true;
+    }
+
+    if (VK_UP==wp)
+    {
+        ScrollDefinition(-static_cast<int>(GetDefinition()->shownLinesCount()));
+        return true;
+    }
+
+    return false;
+}
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    if (WM_KEYDOWN==msg)
+    {
+        bool fDone = OnEditKeyDown(hwnd, msg, wp, lp);
+        if (fDone)
+            return 0;
+    }
+
+    return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
+}
+
+static bool InitInstance (HINSTANCE hInstance, int CmdShow )
 {
     g_hInst = hInstance;
 
@@ -604,7 +832,7 @@ bool InitInstance (HINSTANCE hInstance, int CmdShow )
     return true;
 }
 
-BOOL InitApplication ( HINSTANCE hInstance )
+static BOOL InitApplication ( HINSTANCE hInstance )
 {
     WNDCLASS wc;
     
@@ -655,228 +883,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     DeinitConnection();
     DeinitWinet();
+    DeleteDefinition();
 
     return msg.wParam;
-}
-
-static void PaintAbout(HDC hdc, RECT& rect)
-{
-    LOGFONT logfnt;
-    HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-    GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight+=1;
-    int fontDy = logfnt.lfHeight;
-    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-    SelectObject(hdc, fnt2);
-    
-    RECT tmpRect=rect;
-    DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    tmpRect.top += 46;
-    DrawText(hdc, TEXT("ArsLexis iNoah 1.0"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    tmpRect.top += 18;
-    DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    tmpRect.top += 18;
-
-    if (FRegCodeExists())
-        DrawText(hdc, TEXT("Registered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    else
-        DrawText(hdc, TEXT("Unregistered"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
-    SelectObject(hdc,fnt);
-    DeleteObject(fnt2);
-}
-
-static void PaintDefinition(HWND hwnd, HDC hdc, RECT& rect)
-{
-    ArsLexis::Graphics gr(hdc, hwnd);
-    RECT b;
-    GetClientRect(hwnd, &b);
-    ArsLexis::Rectangle bounds = b;
-    ArsLexis::Rectangle defRect = rect;
-
-    bool fCouldDoubleBuffer = false;
-    HDC  offscreenDc = ::CreateCompatibleDC(hdc);
-    if (offscreenDc) 
-    {
-        HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-        if (bitmap) 
-        {
-            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            {
-                ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                g_definition->render(offscreen, defRect, renderingPrefs(), g_forceLayoutRecalculation);
-                offscreen.copyArea(defRect, gr, defRect.topLeft);
-            }
-            ::SelectObject(offscreenDc, oldBitmap);
-            ::DeleteObject(bitmap);
-            fCouldDoubleBuffer = true;
-        }
-        ::DeleteDC(offscreenDc);
-    }
-
-    if (!fCouldDoubleBuffer)
-        g_definition->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
-    g_forceLayoutRecalculation=false;
-}
-
-void Paint(HWND hwnd, HDC hdc)
-{
-    RECT  rect;
-    GetClientRect(hwnd, &rect);
-    FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
-
-    rect.top    += 22;
-    rect.left   += 2;
-    rect.right  -= 7;
-    rect.bottom -= 2;
-
-    if (NULL==g_definition)
-        PaintAbout(hdc,rect);
-    else
-        PaintDefinition(hwnd, hdc, rect);
-
-    if (g_fRec)
-    {
-        SetScrollBar(g_definition);
-        g_fRec = false;
-    }
-}
-
-// return true if no more processing is needed, false otherwise
-bool OnEditKeyDown(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    if (VK_TACTION==wp)
-    {
-        DoLookup(GetParent(hwnd));
-        return true;
-    }
-
-    // check for up/down to see if we should do scrolling
-    if (NULL==g_definition)
-    {
-        // no definition => no need for scrolling
-        return false;
-    }
-
-    if (VK_DOWN==wp)
-    {
-        ScrollDefinition(g_definition->shownLinesCount());
-        return true;
-    }
-
-    if (VK_UP==wp)
-    {
-        ScrollDefinition(-static_cast<int>(g_definition->shownLinesCount()));
-        return true;
-    }
-
-    return false;
-}
-
-LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    if (WM_KEYDOWN==msg)
-    {
-        bool fDone = OnEditKeyDown(hwnd, msg, wp, lp);
-        if (fDone)
-            return 0;
-    }
-
-    return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
-}
-
-void DrawProgressInfo(HWND hwnd, TCHAR* text)
-{
-    RECT rect;
-    HDC hdc=GetDC(hwnd);
-    GetClientRect (hwnd, &rect);
-    rect.top+=22;
-    rect.left+=2;
-    rect.right-=7;
-    rect.bottom-=2;
-    LOGFONT logfnt;
-    
-    Rectangle(hdc, 18, 83, 152, 123);
-    
-    POINT p[2];
-    p[0].y=85;
-    p[1].y=121;
-    LOGPEN pen;
-    HGDIOBJ hgdiobj = GetCurrentObject(hdc,OBJ_PEN);
-    GetObject(hgdiobj, sizeof(pen), &pen);
-    for(p[0].x=20;p[0].x<150;p[0].x++)
-    {                           
-        HPEN newPen=CreatePenIndirect(&pen);
-        pen.lopnColor = RGB(0,0,p[0].x+100);
-        SelectObject(hdc,newPen);
-        DeleteObject(hgdiobj);
-        hgdiobj=newPen;
-        p[1].x=p[0].x;
-        Polyline(hdc, p, 2);
-    }
-    DeleteObject(hgdiobj);
-    
-    SelectObject(hdc,GetStockObject(HOLLOW_BRUSH));
-    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-    GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight+=1;
-    logfnt.lfWeight=800;
-    SetTextColor(hdc,RGB(255,255,255));
-    SetBkMode(hdc, TRANSPARENT);
-    HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-    SelectObject(hdc, fnt2);
-    rect.top-=10;
-    DrawText (hdc, TEXT("Downloading"), -1, &rect, DT_VCENTER|DT_CENTER);
-    rect.top+=32;
-    DrawText (hdc, text, -1, &rect, DT_VCENTER|DT_CENTER);
-    SelectObject(hdc,fnt);
-    DeleteObject(fnt2);
-    ReleaseDC(hwnd,hdc);
-}
-
-void SetFontSize(int diff, HWND hwnd)
-{
-    int delta=0;
-    HWND hwndMB = SHFindMenuBar (hwnd);
-    if (hwndMB) 
-    {
-        HMENU hMenu;
-        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
-        CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_UNCHECKED | MF_BYCOMMAND);
-        CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_UNCHECKED | MF_BYCOMMAND);
-        CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
-        switch(diff)
-        {
-            case IDM_FNT_LARGE:
-                CheckMenuItem(hMenu, IDM_FNT_LARGE, MF_CHECKED | MF_BYCOMMAND);
-                delta=-2;
-                break;
-            case IDM_FNT_STANDARD:
-                CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_CHECKED | MF_BYCOMMAND);
-                break;
-            case IDM_FNT_SMALL:
-                CheckMenuItem(hMenu, IDM_FNT_SMALL, MF_CHECKED | MF_BYCOMMAND);
-                delta=2;
-                break;
-        }
-    }
-    g_forceLayoutRecalculation=true;
-    renderingPrefsPtr()->setFontSize(delta);
-    InvalidateRect(hwnd,NULL,TRUE);
-}
-
-void SetScrollBar(Definition* definition)
-{
-    int first=0;
-    int range=0;
-
-    if (definition)
-    {
-        first = definition->firstShownLine();
-        range = definition->totalLinesCount() - definition->shownLinesCount();
-    }
-    
-    SetScrollPos(g_hwndScroll, SB_CTL, first, TRUE);
-    SetScrollRange(g_hwndScroll, SB_CTL, 0, range, TRUE);
 }
 
 void ArsLexis::handleBadAlloc()
