@@ -4,8 +4,8 @@
 #include "BaseTypes.hpp"
 #include <DefinitionElement.hpp>
 #include "DynamicNewLineElement.h"
-#include <list.h>
-
+#include <list>
+#include <algorithm>
 class iNoahParser
 {
 public:
@@ -28,7 +28,7 @@ private:
         {   
             std::list<DefinitionElement*>::iterator iter;
             for (iter=r.lst.begin();!(iter==r.lst.end());iter++ )
-                back_inserter(this->lst) = *iter;
+                std::back_inserter(this->lst) = *iter;
             r.lst.clear();
         }
         void merge(Definition::Elements_t& el)

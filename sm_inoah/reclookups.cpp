@@ -1,6 +1,6 @@
 #include "reclookups.h"
 #include "sm_inoah.h"
-#include <list.h>
+#include <list>
 #include <windows.h>
 
 using namespace ArsLexis;
@@ -8,7 +8,7 @@ using namespace ArsLexis;
 WNDPROC oldListWndProc;
 HWND hRecentLookupaDlg=NULL;
 
-list<TCHAR*> words;
+std::list<TCHAR*> words;
 
 const int hotKeyCode=0x32;
 

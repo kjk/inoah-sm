@@ -1,9 +1,9 @@
 #include "iNoahParser.h"
 #include <DefinitionElement.hpp>
-#include "DynamicNewLineElement.h"
+#include <DynamicNewLineElement.h>
 #include <ParagraphElement.hpp>
 #include <HorizontalLineElement.hpp>
-
+#include <list>
 using namespace ArsLexis;
 
 const String iNoahParser::arabNums[] = 
@@ -36,7 +36,7 @@ Definition* iNoahParser::parse(String text)
 {
     int sep = text.find_first_of(char_t('\n'));
     String word(text.substr(0, sep));
-    list<ElementsList*> sorted[pOfSpeechCnt];
+    std::list<ElementsList*> sorted[pOfSpeechCnt];
     String meanings(text.substr(sep+1,text.length()-sep-1));
     while(meanings.compare(TEXT(""))!=0)
     {
