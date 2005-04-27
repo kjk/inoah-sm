@@ -173,7 +173,8 @@ static String BuildGetWordListUrl(const String& cookie)
 static String BuildGetWordUrl(const String& cookie, const String& word)
 {
     String url = BuildCommonWithCookie(cookie,getWordParam,word);
-    String regCode = GetRegCode();
+    String regCode;
+	GetRegCode(regCode);
     if (!regCode.empty())
     {
         url.append(sep);
@@ -280,7 +281,7 @@ bool FHandleParsedResponse(ServerResponseParser& responseParser)
 bool FGetCookie(String& cookieOut)
 {
 
-    cookieOut = GetCookie();
+    GetCookie(cookieOut);
     if (!cookieOut.empty())
     {
         return true;

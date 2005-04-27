@@ -18,8 +18,6 @@
 #include "sm_inoah.h"
 #include "resource.h"
 
-using namespace ArsLexis;
-
 // this is not really used, it's just needed by a framework needed in sm_ipedia
 HWND g_hwndForEvents = NULL;
 
@@ -42,77 +40,53 @@ String g_recentWord;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
-RenderingPreferences* g_renderingPrefs = NULL;
+Definition* g_definition = NULL;
+bool g_showAbout = true;
 
-static RenderingPreferences* renderingPrefsPtr(void)
-{
-    if (NULL==g_renderingPrefs)
-        g_renderingPrefs = new RenderingPreferences();
-
-    return g_renderingPrefs;
-}
-
-static RenderingPreferences& renderingPrefs(void)
-{
-    if (NULL==g_renderingPrefs)
-        g_renderingPrefs = new RenderingPreferences();
-
-    return *g_renderingPrefs;
-}
-
-Definition *g_definition = NULL;
-
-static Definition *GetDefinition()
-{
-    return g_definition;
-
-}
-static void ReplaceDefinition(Definition *newDefinition)
-{
-    delete g_definition;
-    g_definition = newDefinition;
-}
-
-static void DeleteDefinition()
-{
-    ReplaceDefinition(NULL);
-}
 
 static void SetDefinition(ArsLexis::String& defTxt)
 {
     String word;
-    Definition * newDef = ParseAndFormatDefinition(defTxt, word);
-    if (NULL==newDef)
-        return;
+    DefinitionModel* model = ParseAndFormatDefinition(defTxt, word);
+	assert(NULL != g_definition);
 
-    ReplaceDefinition(newDef);
+	g_definition->setModel(model, Definition::ownModel);
+	g_showAbout = false;
+
     g_currentWord = word;
 
     SetEditWinText(g_hwndEdit, word);
-    SendMessage(g_hwndEdit, EM_SETSEL, 0,-1);
+    SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
     g_fUpdateScrollbars = true;
-    InvalidateRect(g_hwndMain,NULL,TRUE);
+    InvalidateRect(g_hwndMain, NULL, TRUE);
 }
 
-#define FONT_SIZE_SMALL  1
-#define FONT_SIZE_MEDIUM 2
-#define FONT_SIZE_BIG    3
-typedef struct Preferences_ {
+struct Preferences {
     String cookie;
     String regCode;
-    int    fontSize;
-} Preferences_t;
 
-Preferences_t g_prefs;
+    int    fontSize;
+
+	enum ViewType {
+		viewCompact,
+		viewClassic
+	};
+	int viewType;
+
+	Preferences(): fontSize(fontSizeMedium), viewType(viewCompact) {}
+};
+
+Preferences g_prefs;
 
 enum PreferenceId 
 {
     cookiePrefId,
     regCodePrefId,
-    fontSizePrefId
+    fontSizePrefId,
+	viewTypePrefId,
 };
 
-#define PREFS_FILE_NAME _T("iPedia.prefs")
+#define PREFS_FILE_NAME _T("iNoah.prefs")
 
 static void LoadPreferences()
 {
@@ -122,25 +96,24 @@ static void LoadPreferences()
 
     std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(PREFS_FILE_NAME));
 
-    Preferences_t   prefs;
+    Preferences  prefs;
     status_t        error;
     const char_t*   text;
 
-    // those are default values in case preferences file doesn't exist
-    prefs.cookie.assign(_T(""));
-    prefs.regCode.assign(_T(""));
-    prefs.fontSize = FONT_SIZE_MEDIUM;
-
-    if (errNone!=(error=reader->ErrGetStr(cookiePrefId, &text))) 
+    if (errNone != (error = reader->ErrGetStr(cookiePrefId, &text))) 
         goto Exit;
     prefs.cookie = text;
 
-    if (errNone!=(error=reader->ErrGetStr(regCodePrefId, &text))) 
+    if (errNone != (error = reader->ErrGetStr(regCodePrefId, &text))) 
         goto Exit;
     prefs.regCode = text;
     
-    if (errNone!=(error=reader->ErrGetInt(fontSizePrefId, &prefs.fontSize))) 
+    if (errNone != (error = reader->ErrGetInt(fontSizePrefId, &prefs.fontSize))) 
         goto Exit;
+
+    if (errNone != (error = reader->ErrGetInt(viewTypePrefId, &prefs.viewType))) 
+        goto Exit;
+	
 Exit:
     fLoaded = true;
     g_prefs = prefs;
@@ -151,28 +124,35 @@ static void SavePreferences()
     status_t error;
     std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(PREFS_FILE_NAME));
 
-    if (errNone!=(error=writer->ErrSetStr(cookiePrefId, g_prefs.cookie.c_str())))
+    if (errNone != (error = writer->ErrSetStr(cookiePrefId, g_prefs.cookie.c_str())))
         goto OnError;
-    if (errNone!=(error=writer->ErrSetStr(regCodePrefId, g_prefs.regCode.c_str())))
+
+    if (errNone != (error = writer->ErrSetStr(regCodePrefId, g_prefs.regCode.c_str())))
         goto OnError;
-    if (errNone!=(error=writer->ErrSetInt(fontSizePrefId, g_prefs.fontSize)))
+
+    if (errNone != (error = writer->ErrSetInt(fontSizePrefId, g_prefs.fontSize)))
         goto OnError;
+
+    if (errNone != (error = writer->ErrSetInt(viewTypePrefId, g_prefs.viewType)))
+        goto OnError;
+
     if (errNone!=(error=writer->ErrSavePreferences()))
         goto OnError;
+
     return;        
 OnError:
     return; 
 }
 
-String GetRegCode()
+void GetRegCode(String& code)
 {
     LoadPreferences();
-    return g_prefs.regCode;
+    code = g_prefs.regCode;
 }
 
 void SetRegCode(const String& regCode)
 {
-    g_prefs.regCode.assign(regCode);
+    g_prefs.regCode = regCode;
     SavePreferences();
 }
 
@@ -191,15 +171,15 @@ static bool FRegCodeExists()
         return true;
 }
 
-String GetCookie()
+void GetCookie(String& cookie)
 {
     LoadPreferences();
-    return g_prefs.cookie;
+    cookie = g_prefs.cookie;
 }
 
 void SetCookie(const String& cookie)
 {    
-    g_prefs.cookie.assign(cookie);
+    g_prefs.cookie = cookie;
     SavePreferences();
 }
 
@@ -228,11 +208,11 @@ void SetPrefsFontSize(int size)
     SavePreferences();
 }
 
-void *g_ClipboardText = NULL;
+void* g_ClipboardText = NULL;
 
 static void FreeClipboardData()
 {
-    if (NULL!=g_ClipboardText)
+    if (NULL != g_ClipboardText)
     {
         LocalFree(g_ClipboardText);
         g_ClipboardText = NULL;
@@ -245,29 +225,29 @@ static void* CreateNewClipboardData(const String& str)
 
     int     strLen = str.length();
 
-    g_ClipboardText = LocalAlloc(LPTR, (strLen+1)*sizeof(char_t));
-    if (NULL==g_ClipboardText)
+    g_ClipboardText = LocalAlloc(LPTR, (strLen + 1) * sizeof(char_t));
+    if (NULL == g_ClipboardText)
         return NULL;
 
-    ZeroMemory(g_ClipboardText, (strLen+1)*sizeof(char_t));
-    memcpy(g_ClipboardText, str.c_str(), strLen*sizeof(char_t));
+    ZeroMemory(g_ClipboardText, (strLen + 1) * sizeof(char_t));
+    memcpy(g_ClipboardText, str.data(), strLen * sizeof(char_t));
     return g_ClipboardText;
 }
 
 // copy definition to clipboard
-static void CopyToClipboard(HWND hwndMain, Definition *def)
+static void CopyToClipboard(HWND hwndMain, const Definition* def)
 {
-    void *    clipData;
+	if (NULL == def || def->empty())
+		return;
+
+    void*    clipData;
     String    text;
 
-    if (def->empty())
-        return;
-
-    if (0==OpenClipboard(hwndMain))
+    if (0 == OpenClipboard(hwndMain))
         return;
 
     // TODO: should we put it anyway?
-    if (0==EmptyClipboard())
+    if (0 == EmptyClipboard())
     {
         // EmptyClipboard() failed to free the clipboard
         goto Exit;
@@ -276,7 +256,7 @@ static void CopyToClipboard(HWND hwndMain, Definition *def)
     def->selectionToText(text);
 
     clipData = CreateNewClipboardData(text);
-    if (NULL==clipData)
+    if (NULL == clipData)
         goto Exit;
     
     SetClipboardData(CF_UNICODETEXT, clipData);
@@ -284,20 +264,39 @@ Exit:
     CloseClipboard();
 }
 
-static void SetScrollBar(Definition* definition)
+static void SetScrollBar(const Definition* definition)
 {
-    int first=0;
-    int range=0;
+    int first = 0;
+    int total = 0;
+    int shown = 0;
 
-    if (definition)
+    if (!g_showAbout && !definition->empty())
     {
         first = definition->firstShownLine();
-        range = definition->totalLinesCount() - definition->shownLinesCount();
+        total = definition->totalLinesCount();
+        shown = definition->shownLinesCount();
     }
-    
-    SetScrollPos(g_hwndScroll, SB_CTL, first, TRUE);
-    SetScrollRange(g_hwndScroll, SB_CTL, 0, range, TRUE);
+
+	SCROLLINFO si;
+	ZeroMemory(&si, sizeof(si));
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL;
+	si.nMin = 0;
+	if (shown == total)
+	{
+		si.nMax = 0;
+		si.nPage = 0;
+	}
+	else
+	{
+		si.nMax = total - 1;
+		si.nPage = shown;
+	}
+	si.nPos = first;
+
+	SetScrollInfo(g_hwndScroll, SB_CTL, &si, TRUE);
 }
+
 
 enum ScrollUnit
 {
@@ -470,7 +469,8 @@ static void RepaintDefinition(int scrollDelta)
 {
     RECT    clientRect;
     GetClientRect(g_hwndMain, &clientRect);
-    ArsLexis::Rectangle bounds = clientRect;
+
+    ArsRectangle bounds = clientRect;
 
     RECT defRectTmp = clientRect;
     defRectTmp.top    += 24;  // TODO: should it depend on the size of edit window?
@@ -478,39 +478,37 @@ static void RepaintDefinition(int scrollDelta)
     defRectTmp.right  -= 2 + GetScrollBarDx();
     defRectTmp.bottom -= 2;
 
-    ArsLexis::Rectangle defRect = defRectTmp;
-    Graphics gr(GetDC(g_hwndMain), g_hwndMain);
+    ArsRectangle defRect = defRectTmp;
+    Graphics gr(g_hwndMain);
 
     bool fDidDoubleBuffer = false;
     HDC  offscreenDc = ::CreateCompatibleDC(gr.handle());
-
     if (offscreenDc) 
     {
+        Graphics offscreen(offscreenDc);
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
         if (bitmap) 
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            ArsLexis::Graphics offscreen(offscreenDc, NULL);
             gr.copyArea(defRect, offscreen, defRect.topLeft);
             if (0 != scrollDelta)
-                GetDefinition()->scroll(offscreen, renderingPrefs(), scrollDelta);
+                g_definition->scroll(offscreen, scrollDelta);
             else
-                GetDefinition()->render(offscreen, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+                g_definition->render(offscreen, defRect, g_forceLayoutRecalculation);
 
             offscreen.copyArea(defRect, gr, defRect.topLeft);
             ::SelectObject(offscreenDc, oldBitmap);
             ::DeleteObject(bitmap);
             fDidDoubleBuffer = true;
         }
-        ::DeleteDC(offscreenDc);
     }
 
     if (!fDidDoubleBuffer)
     {
         if (0 != scrollDelta)
-            GetDefinition()->scroll(gr, renderingPrefs(), scrollDelta);
+            g_definition->scroll(gr, scrollDelta);
         else
-            GetDefinition()->render(gr, defRect, renderingPrefs(), g_forceLayoutRecalculation);
+            g_definition->render(gr, defRect, g_forceLayoutRecalculation);
     }
     g_forceLayoutRecalculation = false;
 }
@@ -520,22 +518,22 @@ static void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
     switch (unit)
     {
         case scrollPage:
-            units = units * GetDefinition()->shownLinesCount();
+            units = units * g_definition->shownLinesCount();
             break;
         case scrollEnd:
-            units = GetDefinition()->totalLinesCount();
+            units = g_definition->totalLinesCount();
             break;
         case scrollHome:
-            units = -(int)GetDefinition()->totalLinesCount();
+            units = -int(g_definition->totalLinesCount());
             break;
         case scrollPosition:
-            units = units - GetDefinition()->firstShownLine();
+            units -= g_definition->firstShownLine();
             break;
     }
 
     RepaintDefinition(units);
 
-    SetScrollBar(GetDefinition());
+    SetScrollBar(g_definition);
 }
 
 static void Paint(HWND hwnd, HDC hdc)
@@ -549,17 +547,14 @@ static void Paint(HWND hwnd, HDC hdc)
     rect.right  -= 7;
     rect.bottom -= 2;
 
-    if (NULL==GetDefinition())
-    {
-        PaintAbout(hdc,rect);
-        //DrawProgressInfo(hwnd, _T("Hello"));
-    }
+    if (g_showAbout)
+        PaintAbout(hdc, rect);
     else
         RepaintDefinition(0);
 
     if (g_fUpdateScrollbars)
     {
-        SetScrollBar(GetDefinition());
+        SetScrollBar(g_definition);
         g_fUpdateScrollbars = false;
     }
 }
@@ -567,7 +562,7 @@ static void Paint(HWND hwnd, HDC hdc)
 static void SetFontSize(int fontSize, HWND hwnd)
 {
     HWND hwndMB = SHFindMenuBar(hwnd);
-    if (NULL==hwndMB) 
+    if (NULL == hwndMB) 
         return;
 
 #ifdef WIN32_PLATFORM_PSPC
@@ -581,21 +576,18 @@ static void SetFontSize(int fontSize, HWND hwnd)
     CheckMenuItem(hMenu, IDM_FNT_STANDARD, MF_UNCHECKED | MF_BYCOMMAND);
 
     int menuItemId = IDM_FNT_STANDARD;
-    int delta = 0;
     switch (fontSize)
     {
-        case FONT_SIZE_SMALL:
+        case fontSizeSmall:
             menuItemId = IDM_FNT_SMALL;
-            delta = -2;
             break;
-        case FONT_SIZE_MEDIUM:
+        case fontSizeMedium:
             menuItemId = IDM_FNT_STANDARD;
-            delta = 0;
             break;
-        case FONT_SIZE_BIG:
+        case fontSizeLarge:
             menuItemId = IDM_FNT_LARGE;
-            delta = 2;
-           break;
+            break;
+
         default:
             assert(false);
             break;
@@ -604,8 +596,7 @@ static void SetFontSize(int fontSize, HWND hwnd)
     CheckMenuItem(hMenu, menuItemId, MF_CHECKED | MF_BYCOMMAND);
     g_forceLayoutRecalculation = true;
     g_fUpdateScrollbars = true;
-    renderingPrefsPtr()->setFontSize(delta);
-    InvalidateRect(hwnd,NULL,TRUE);
+    InvalidateRect(hwnd, NULL, TRUE);
 }
 
 #define MAX_WORD_LEN 64
@@ -614,15 +605,16 @@ static void DoLookup(HWND hwnd)
     String word;
     GetEditWinText(g_hwndEdit, word);
 
-    if (word==g_currentWord)
+    if (word == g_currentWord)
         return;
 
     DrawProgressInfo(hwnd, _T("definition..."));
 
     String def;
-    bool fOk = FGetWord(word,def);
+    bool fOk = FGetWord(word, def);
     if (!fOk)
         return;
+		 
     SetDefinition(def);
 }
 
@@ -642,8 +634,6 @@ static void DoRandom(HWND hwnd)
 
 static void DoCompact(HWND hwnd)
 {
-    static bool fCompactView = false;
-
     HWND hwndMB = SHFindMenuBar(hwnd);
     if (!hwndMB)
     {
@@ -653,17 +643,17 @@ static void DoCompact(HWND hwnd)
 
     HMENU hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
 
-    if (fCompactView)
+    if (Preferences::viewCompact == g_prefs.viewType)
     {
         CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
-        renderingPrefsPtr()->setClassicView();
-        fCompactView = false;
+		g_prefs.viewType = Preferences::viewClassic;
+		SavePreferences();
     }
     else
     {
         CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
-        renderingPrefsPtr()->setCompactView();
-        fCompactView = true;
+		g_prefs.viewType = Preferences::viewCompact;
+		SavePreferences();
     }
 
     g_forceLayoutRecalculation = true;
@@ -696,13 +686,13 @@ static void DoRecentLookups(HWND hwnd)
 
     CharPtrList_t strList;
     wordCount = AddLinesToList(recentLookups, strList);
-    if (0==wordCount)
+    if (0 == wordCount)
         return;
 
-    std::reverse( strList.begin(), strList.end() );
+    std::reverse(strList.begin(), strList.end());
 
     String selectedString;
-    bool fSelected = FGetStringFromList(hwnd, strList, selectedString);
+    bool fSelected = FGetStringFromList(hwnd, strList, NULL, selectedString);
     if (!fSelected)
         return;
 
@@ -792,7 +782,7 @@ static void OnCreate(HWND hwnd)
         0, 0, 0, 0, hwnd,
         (HMENU) ID_SCROLL, g_hInst, NULL);
 
-    SetScrollBar(GetDefinition());
+    SetScrollBar(g_definition);
 
     int fontSize = GetPrefsFontSize();
     SetFontSize(fontSize, hwnd);
@@ -803,7 +793,8 @@ static void OnCreate(HWND hwnd)
 static void OnRegister(HWND hwnd)
 {
     String newRegCode;
-    String oldRegCode = GetRegCode();
+    String oldRegCode;
+	GetRegCode(oldRegCode);
 DoItAgain:
     bool fOk = FGetRegCodeFromUser(hwnd, oldRegCode, newRegCode);
     if (!fOk)
@@ -864,18 +855,18 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_FNT_LARGE:
-            SetFontSize(FONT_SIZE_BIG, hwnd);
-            SetPrefsFontSize(FONT_SIZE_BIG);
+            SetFontSize(fontSizeLarge, hwnd);
+            SetPrefsFontSize(fontSizeLarge);
             break;
 
         case IDM_FNT_STANDARD:
-            SetFontSize(FONT_SIZE_MEDIUM, hwnd);
-            SetPrefsFontSize(FONT_SIZE_MEDIUM);
+            SetFontSize(fontSizeMedium, hwnd);
+            SetPrefsFontSize(fontSizeMedium);
             break;
 
         case IDM_FNT_SMALL:
-            SetFontSize(FONT_SIZE_SMALL, hwnd);
-            SetPrefsFontSize(FONT_SIZE_SMALL);
+            SetFontSize(fontSizeSmall, hwnd);
+            SetPrefsFontSize(fontSizeSmall);
             break;
 
         case ID_SEARCH_BTN:
@@ -919,8 +910,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_ABOUT:
-            DeleteDefinition();
-            g_currentWord.clear();
+            g_showAbout = true;
             g_fUpdateScrollbars = true;
             InvalidateRect(hwnd,NULL,TRUE);
             break;
@@ -1060,18 +1050,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 // return true if no more processing is needed, false otherwise
 static bool OnEditKeyDown(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    if (VK_TACTION==wp)
+    if (VK_TACTION == wp)
     {
         DoLookup(GetParent(hwnd));
         return true;
     }
 
     // check for up/down to see if we should do scrolling
-    if (NULL==GetDefinition())
-    {
-        // no definition => no need for scrolling
+    if (g_showAbout)
         return false;
-    }
+
+	assert(NULL != g_definition);
 
     if (VK_DOWN==wp)
     {
@@ -1166,6 +1155,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
     if (!InitInstance(hInstance, CmdShow))
         return FALSE;
 
+	PrepareStaticStyles();
+	g_definition = new Definition();
+	g_showAbout = true;
+
     HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(ID_ACCEL));
     MSG     msg;
     while (TRUE == GetMessage( &msg, NULL, 0,0 ))
@@ -1179,25 +1172,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     DeinitDataConnection();
     DeinitWinet();
-    DeleteDefinition();
+
+	delete g_definition;
+	g_definition = NULL;
+	DisposeStaticStyles();
 
     return msg.wParam;
 }
 
 void ArsLexis::handleBadAlloc()
 {
-    RaiseException(1,0,0,NULL);    
+    RaiseException(1, 0, 0, NULL);    
 }
-
-void* ArsLexis::allocate(size_t size)
-{
-    void* ptr=0;
-    if (size) 
-        ptr=malloc(size);
-    else
-        ptr=malloc(1);
-    if (!ptr)
-        handleBadAlloc();
-    return ptr;
-}
-

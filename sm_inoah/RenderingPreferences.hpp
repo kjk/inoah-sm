@@ -4,7 +4,7 @@
 #include "Debug.hpp"
 #include "BaseTypes.hpp"
 #include "Graphics.hpp"
-#include "WinFont.h"
+#include <WindowsCE/WinFont.h>
 
 enum HyperlinkType
 {

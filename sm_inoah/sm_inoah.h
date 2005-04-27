@@ -4,13 +4,12 @@
 #include <BaseTypes.hpp>
 #include "resource.h"
 
-using ArsLexis::String;
-
 extern HINSTANCE g_hInst;       // Local copy of hInstance
 extern HWND      g_hwndMain;    // Handle to Main window returned from CreateWindow
 
-String GetRegCode();
-String GetCookie();
+void GetRegCode(String& code);
+void GetCookie(String& cookie);
+
 void   SetCookie(const String& cookie);
 
 #define APP_NAME      _T("iNoah")
@@ -29,5 +28,13 @@ void   SetCookie(const String& cookie);
 
 //#define server     _T("dict-pc.local.org")
 //#define serverPort 4080
+
+enum FontSize {
+	fontSizeSmall,
+	fontSizeMedium,
+	fontSizeLarge
+};
+
+int GetPrefFontSize();
 
 #endif
