@@ -148,7 +148,7 @@ struct AllSynsetDefs {
     SynsetDefVector_t adv;
 };    
 
-static void AddDynamicLine(const String& txt, ElementStyle type, const char* style, ParagraphElement* parent, Definition::Elements_t& elements)
+static void AddDynamicLine(const String& txt, ElementStyle type, const char* style, ParagraphElement* parent, Definition::Elements_t& elements, bool newLine)
 {
 	DefinitionElement* el = new DynamicNewLineElement(type);
 	elements.push_back(el);
@@ -158,6 +158,13 @@ static void AddDynamicLine(const String& txt, ElementStyle type, const char* sty
 	el->setParent(parent);
 	if (NULL != style)
 		el->setStyle(StyleGetStaticStyle(style));
+
+	if (!newLine)
+		return;
+
+	el = new LineBreakElement();
+	el->setParent(parent);
+	elements.push_back(el);
 }
 
 static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphElement* parent, Definition::Elements_t& elements)
@@ -167,15 +174,15 @@ static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphE
 
     String synsetNoTxt(numberBuf);
     synsetNoTxt += _T(") ");
-    AddDynamicLine(synsetNoTxt, styleDefinitionList, styleNameDefinitionList, parent, elements);
+    AddDynamicLine(synsetNoTxt, styleDefinitionList, styleNameDefinitionList, parent, elements, false);
 
     String synsetDefNew(synsetDef.definition);
-    AddDynamicLine(synsetDefNew, styleDefinition, styleNameDefinition, parent, elements);
+    AddDynamicLine(synsetDefNew, styleDefinition, styleNameDefinition, parent, elements, true);
 
     uint_t synCount = synsetDef.synonyms.size();
     if (synCount>0)
     {
-        AddDynamicLine(_T("Synonyms: "), styleSynonymsList, NULL, parent, elements);
+        AddDynamicLine(_T("Synonyms: "), styleSynonymsList, styleNameSynonymsList, parent, elements, false);
 
         String synLine;
         for (uint_t i=0; i<synCount; i++)
@@ -184,7 +191,7 @@ static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphE
             if (i != synCount - 1)
                 synLine += _T(", ");
         }
-        AddDynamicLine(synLine, styleSynonyms, NULL, parent, elements);
+        AddDynamicLine(synLine, styleSynonyms, styleNameSynonyms, parent, elements, true);
     }
 
     uint_t examplesCount = synsetDef.examples.size();
@@ -196,7 +203,7 @@ static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphE
             exampleLine = _T("\"");
             exampleLine += synsetDef.examples[i];
             exampleLine += _T('\"');
-            AddDynamicLine(exampleLine, styleExample, NULL, parent, elements);
+            AddDynamicLine(exampleLine, styleExample, styleNameExample, parent, elements, true);
         }
     }
 }
@@ -208,10 +215,10 @@ static void FormatSynsetVector(const SynsetDefVector_t& synsetDefVector, int pos
 
     String posNumber = GetRomanNumber(posNo);
     posNumber += _T(' ');
-    AddDynamicLine(posNumber, stylePOfSpeechList, NULL, parent, elements);
+    AddDynamicLine(posNumber, stylePOfSpeechList, styleNamePOfSpeechList, parent, elements, false);
 
     String posFull = getFullPosFromAbbrev(posAbbrev);
-    AddDynamicLine(posFull, stylePOfSpeech, NULL, parent, elements);
+    AddDynamicLine(posFull, stylePOfSpeech, styleNamePOfSpeech, parent, elements, true);
 
     assert(!synsetDefVector.empty());
 
@@ -227,7 +234,7 @@ static void FormatSynsets(const String& word, const AllSynsetDefs& allSynsets, D
     ParagraphElement* wordParagraph = new ParagraphElement();
     elements.push_back(wordParagraph);
 
-    AddDynamicLine(word, styleWord, NULL, wordParagraph, elements);
+    AddDynamicLine(word, styleWord, styleNameWord, wordParagraph, elements, true);
 
     if (!allSynsets.verb.empty())
     {

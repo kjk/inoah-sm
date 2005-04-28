@@ -1,5 +1,11 @@
 #include "DynamicNewLineElement.h"
 
+#ifdef _WIN32
+#include "sm_inoah.h"
+#endif
+
+#include "iNoahStyles.hpp"
+
 DynamicNewLineElement::DynamicNewLineElement(ElementStyle style):
 	style_(style)
 {
@@ -7,9 +13,7 @@ DynamicNewLineElement::DynamicNewLineElement(ElementStyle style):
 
 bool DynamicNewLineElement::breakBefore() const
 {
-	// TODO: read this from prefs depending on style_
-    // return prefs.styleFormatting(this->style()).requiresNewLine;
-	return true;
+	return LineBreakForLayoutStyle(GetPrefLayoutType(), style_);
 }
 
 DynamicNewLineElement::~DynamicNewLineElement()
@@ -39,4 +43,12 @@ void DynamicNewLineElement::toText(String& appendTo, uint_t from, uint_t to) con
 #else
         appendTo += _T("\r\n");
 #endif
+}
+
+void DynamicNewLineElement::calculateOrRender(LayoutContext& layoutContext, bool render)
+{
+	if (breakBefore())
+		LineBreakElement::calculateOrRender(layoutContext, render);
+	else
+		layoutContext.markElementCompleted(0);
 }

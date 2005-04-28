@@ -37,4 +37,6 @@ enum FontSize {
 
 int GetPrefFontSize();
 
+int GetPrefLayoutType();
+
 #endif

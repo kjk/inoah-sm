@@ -70,13 +70,9 @@ struct Preferences {
 
     int    fontSize;
 
-	enum ViewType {
-		viewCompact,
-		viewClassic
-	};
-	int viewType;
+	int		layoutType;
 
-	Preferences(): fontSize(fontSizeMedium), viewType(viewCompact) {}
+	Preferences(): fontSize(fontSizeMedium), layoutType(layoutCompact) {}
 };
 
 Preferences g_prefs;
@@ -86,7 +82,7 @@ enum PreferenceId
     cookiePrefId,
     regCodePrefId,
     fontSizePrefId,
-	viewTypePrefId,
+	layoutTypePrefId,
 };
 
 #define PREFS_FILE_NAME _T("iNoah.prefs")
@@ -114,7 +110,7 @@ static void LoadPreferences()
     if (errNone != (error = reader->ErrGetInt(fontSizePrefId, &prefs.fontSize))) 
         goto Exit;
 
-    if (errNone != (error = reader->ErrGetInt(viewTypePrefId, &prefs.viewType))) 
+    if (errNone != (error = reader->ErrGetInt(layoutTypePrefId, &prefs.layoutType))) 
         goto Exit;
 	
 Exit:
@@ -136,7 +132,7 @@ static void SavePreferences()
     if (errNone != (error = writer->ErrSetInt(fontSizePrefId, g_prefs.fontSize)))
         goto OnError;
 
-    if (errNone != (error = writer->ErrSetInt(viewTypePrefId, g_prefs.viewType)))
+    if (errNone != (error = writer->ErrSetInt(layoutTypePrefId, g_prefs.layoutType)))
         goto OnError;
 
     if (errNone!=(error=writer->ErrSavePreferences()))
@@ -149,7 +145,7 @@ OnError:
 
 void GetRegCode(String& code)
 {
-    LoadPreferences();
+    // LoadPreferences();
     code = g_prefs.regCode;
 }
 
@@ -167,7 +163,7 @@ static void DeleteRegCode()
 
 static bool FRegCodeExists()
 {
-    LoadPreferences();
+    // LoadPreferences();
     if (g_prefs.regCode.empty())
         return false;
     else
@@ -176,7 +172,7 @@ static bool FRegCodeExists()
 
 void GetCookie(String& cookie)
 {
-    LoadPreferences();
+    // LoadPreferences();
     cookie = g_prefs.cookie;
 }
 
@@ -201,15 +197,27 @@ static void ClearCache()
 
 int GetPrefFontSize()
 {
-    LoadPreferences();
+    // LoadPreferences();
     return g_prefs.fontSize;
 }
 
-void SetPrefsFontSize(int size)
+int GetPrefLayoutType()
+{
+	// LoadPreferences();
+	return g_prefs.layoutType;
+}
+
+void SetPrefFontSize(int size)
 {
     g_prefs.fontSize = size;
     SavePreferences();
 }
+
+void SetPrefLayoutType(int layoutType)
+{
+	g_prefs.layoutType = layoutType;
+	SavePreferences();
+} 
 
 void* g_ClipboardText = NULL;
 
@@ -658,18 +666,17 @@ static void DoCompact(HWND hwnd)
 
     HMENU hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
 
-    if (Preferences::viewCompact == g_prefs.viewType)
+    if (layoutCompact == g_prefs.layoutType)
     {
         CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_UNCHECKED | MF_BYCOMMAND);
-		g_prefs.viewType = Preferences::viewClassic;
-		SavePreferences();
+		g_prefs.layoutType = layoutClassic;
     }
     else
     {
         CheckMenuItem(hMenu, IDM_MENU_COMPACT, MF_CHECKED | MF_BYCOMMAND);
-		g_prefs.viewType = Preferences::viewCompact;
-		SavePreferences();
+		g_prefs.layoutType = layoutCompact;
     }
+	SavePreferences();
 
     g_forceLayoutRecalculation = true;
     g_fUpdateScrollbars = true;
@@ -871,17 +878,17 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case IDM_FNT_LARGE:
             SetFontSize(fontSizeLarge, hwnd);
-            SetPrefsFontSize(fontSizeLarge);
+            SetPrefFontSize(fontSizeLarge);
             break;
 
         case IDM_FNT_STANDARD:
             SetFontSize(fontSizeMedium, hwnd);
-            SetPrefsFontSize(fontSizeMedium);
+            SetPrefFontSize(fontSizeMedium);
             break;
 
         case IDM_FNT_SMALL:
             SetFontSize(fontSizeSmall, hwnd);
-            SetPrefsFontSize(fontSizeSmall);
+            SetPrefFontSize(fontSizeSmall);
             break;
 
         case ID_SEARCH_BTN:
@@ -1170,9 +1177,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
     if (!InitInstance(hInstance, CmdShow))
         return FALSE;
 
+	LoadPreferences();
 	StylePrepareStaticStyles();
-	g_definition = new Definition();
+
 	g_showAbout = true;
+	g_definition = new Definition();
 
     HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(ID_ACCEL));
     MSG     msg;

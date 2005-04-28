@@ -16,6 +16,10 @@ public:
 
     void toText(String& appendTo, uint_t from, uint_t to) const;
 
+protected:
+
+    void calculateOrRender(LayoutContext& layoutContext, bool render);
+
 private:
 
 	ElementStyle style_;
