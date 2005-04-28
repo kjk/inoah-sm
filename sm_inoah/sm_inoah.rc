@@ -1,5 +1,9 @@
 #include "resource.h"
 
+#if _WIN32_WCE >= 420
+HI_RES_AWARE   CEUX   {1}
+#endif
+
 ID_ICON ICON "inoah.ico"
 
 ID_ACCEL ACCELERATORS DISCARDABLE

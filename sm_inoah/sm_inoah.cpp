@@ -18,6 +18,9 @@
 #include "sm_inoah.h"
 #include "resource.h"
 
+#include "shguim.h"
+#include "iNoahStyles.hpp"
+
 // this is not really used, it's just needed by a framework needed in sm_ipedia
 HWND g_hwndForEvents = NULL;
 
@@ -196,7 +199,7 @@ static void ClearCache()
 }
 
 
-int GetPrefsFontSize()
+int GetPrefFontSize()
 {
     LoadPreferences();
     return g_prefs.fontSize;
@@ -388,10 +391,12 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     ReleaseDC(hwnd,hdc);
 }
 
+
+// TODO: rewrite this lousy leaking piece of crap
 static void PaintAbout(HDC hdc, RECT& rect)
 {
     HFONT   fnt = (HFONT)GetStockObject(SYSTEM_FONT);
-    if (NULL==fnt)
+    if (NULL == fnt)
         return;
 
     rect.top += 2;
@@ -401,10 +406,17 @@ static void PaintAbout(HDC hdc, RECT& rect)
 
     LOGFONT logfnt;
     GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight += 1;
+
+	LONG  dwFontSize = 12;
+	if (S_OK == SHGetUIMetrics(SHUIM_FONTSIZE_PIXEL, &dwFontSize, sizeof(dwFontSize),  NULL))
+		logfnt.lfHeight = -dwFontSize;
+
+	logfnt.lfHeight += 1;
+
     int fontDy = -logfnt.lfHeight;
     HFONT fntSmall = (HFONT)CreateFontIndirect(&logfnt);
-    if (NULL!=fntSmall)
+
+    if (NULL != fntSmall)
         SelectObject(hdc, fntSmall);
     else
         SelectObject(hdc, fnt);
@@ -412,7 +424,7 @@ static void PaintAbout(HDC hdc, RECT& rect)
     logfnt.lfHeight += 2;
     HFONT fntVerySmall = (HFONT)CreateFontIndirect(&logfnt);
 
-    int lineSpace = fontDy+5;
+    int lineSpace = fontDy + 5;
 
     RECT tmpRect = rect;
 #ifdef WIN32_PLATFORM_PSPC
@@ -448,7 +460,7 @@ static void PaintAbout(HDC hdc, RECT& rect)
 #endif
     }
 
-    if (NULL!=fntVerySmall)
+    if (NULL != fntVerySmall)
         SelectObject(hdc, fntVerySmall);
 
 #ifdef WIN32_PLATFORM_WFSP
@@ -594,6 +606,9 @@ static void SetFontSize(int fontSize, HWND hwnd)
     }
 
     CheckMenuItem(hMenu, menuItemId, MF_CHECKED | MF_BYCOMMAND);
+	
+	ScaleStylesFontSizes(fontSize);
+
     g_forceLayoutRecalculation = true;
     g_fUpdateScrollbars = true;
     InvalidateRect(hwnd, NULL, TRUE);
@@ -784,7 +799,7 @@ static void OnCreate(HWND hwnd)
 
     SetScrollBar(g_definition);
 
-    int fontSize = GetPrefsFontSize();
+    int fontSize = GetPrefFontSize();
     SetFontSize(fontSize, hwnd);
     SetFocus(g_hwndEdit);
 }
@@ -1155,7 +1170,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     if (!InitInstance(hInstance, CmdShow))
         return FALSE;
 
-	PrepareStaticStyles();
+	StylePrepareStaticStyles();
 	g_definition = new Definition();
 	g_showAbout = true;
 
@@ -1175,7 +1190,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	delete g_definition;
 	g_definition = NULL;
-	DisposeStaticStyles();
+	StyleDisposeStaticStyles();
 
     return msg.wParam;
 }

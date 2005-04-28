@@ -2,20 +2,7 @@
 #define _DYNAMIC_NEW_LINE_H_
 
 #include <LineBreakElement.hpp>
-
-enum ElementStyle
-{
-    styleDefault,
-    styleWord,
-    styleDefinitionList,
-    styleDefinition,
-    styleExampleList,
-    styleExample,
-    styleSynonymsList,
-    styleSynonyms,
-    stylePOfSpeechList,
-    stylePOfSpeech
-};
+#include "iNOahStyles.hpp"
 
 class DynamicNewLineElement : public LineBreakElement  
 {

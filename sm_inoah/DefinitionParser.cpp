@@ -8,6 +8,8 @@
 
 #include "DefinitionParser.hpp"
 
+#include "iNoahStyles.hpp"
+
 const char_t* romanNumbers[] = 
 { 
     _T("I"), _T("II"), _T("III"), _T("IV"), _T("V"),
@@ -108,14 +110,14 @@ const char_t* reqLeftTxt = _T("REQUESTS_LEFT");
 
 static bool FIsPronunciation(const String& str)
 {
-    if (0 == str.find(pronTxt) )
+    if (StrStartsWith(str, pronTxt))
         return true;
     return false;
 }
 
 static bool FIsReqLeft(const String& str)
 {
-    if (0 == str.find(reqLeftTxt))
+    if (StrStartsWith(str, reqLeftTxt))
         return true;
     return false;
 }
@@ -146,7 +148,7 @@ struct AllSynsetDefs {
     SynsetDefVector_t adv;
 };    
 
-static void AddDynamicLine(const String& txt, ElementStyle type, DefinitionStyle* style, ParagraphElement* parent, Definition::Elements_t& elements)
+static void AddDynamicLine(const String& txt, ElementStyle type, const char* style, ParagraphElement* parent, Definition::Elements_t& elements)
 {
 	DefinitionElement* el = new DynamicNewLineElement(type);
 	elements.push_back(el);
@@ -154,7 +156,8 @@ static void AddDynamicLine(const String& txt, ElementStyle type, DefinitionStyle
 	el = new TextElement(txt);
 	elements.push_back(el);
 	el->setParent(parent);
-	el->setStyle(style);
+	if (NULL != style)
+		el->setStyle(StyleGetStaticStyle(style));
 }
 
 static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphElement* parent, Definition::Elements_t& elements)
@@ -164,10 +167,10 @@ static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphE
 
     String synsetNoTxt(numberBuf);
     synsetNoTxt += _T(") ");
-    AddDynamicLine(synsetNoTxt, styleDefinitionList, NULL, parent, elements);
+    AddDynamicLine(synsetNoTxt, styleDefinitionList, styleNameDefinitionList, parent, elements);
 
     String synsetDefNew(synsetDef.definition);
-    AddDynamicLine(synsetDefNew, styleDefinition, NULL, parent, elements);
+    AddDynamicLine(synsetDefNew, styleDefinition, styleNameDefinition, parent, elements);
 
     uint_t synCount = synsetDef.synonyms.size();
     if (synCount>0)
@@ -302,23 +305,23 @@ DefinitionModel* ParseAndFormatDefinition(const String& defTxt, String& wordOut)
     bool fAfterPos = false;
     while (true)
     {
-        line = GetNextLine(defTxt,curPos,fEnd);
+        line = GetNextLine(defTxt, curPos, fEnd);
         if (fEnd)
             break;
 
         if (FIsPronunciation(line))
         {
-            pronunciation = line.substr(tstrlen(pronTxt)+1,-1);
+            pronunciation.assign(line, tstrlen(pronTxt) + 1, String::npos);
         }
         else if (FIsReqLeft(line))
         {
-            requestsLeft = line.substr(tstrlen(reqLeftTxt)+1,-1);
+            requestsLeft.assign(line, tstrlen(reqLeftTxt) + 1, String::npos);
         }
         else if (FIsPartOfSpeech(line))
         {
             fAfterPos = true;
-            assert(2==line.length());
-            curPosAbbrev = line.substr(1,1);
+            assert(2 == line.length());
+            curPosAbbrev.assign(line, 1, 1);
         }
         else if (FIsSynonim(line))
         {
@@ -328,8 +331,8 @@ DefinitionModel* ParseAndFormatDefinition(const String& defTxt, String& wordOut)
                 curSynset.clear();
                 fAfterPos = false;
             }
-            String syn = line.substr(1,line.length()-1);
-            if (0!=syn.compare(word))
+            String syn(line, 1, line.length() - 1);
+            if (0 != syn.compare(word))
             {
                 curSynset.synonyms.push_back(syn);
             }
@@ -337,12 +340,12 @@ DefinitionModel* ParseAndFormatDefinition(const String& defTxt, String& wordOut)
         else if (FIsDef(line))
         {
             fAfterPos = true;
-            curSynset.definition = line.substr(1,line.length()-1);
+            curSynset.definition.assign(line, 1, line.length() - 1);
         }
         else if (FIsExample(line))
         {
             fAfterPos = true;
-            String example = line.substr(1,line.length()-1);
+            String example(line, 1, line.length() - 1);
             curSynset.examples.push_back(example);
         }            
     }
