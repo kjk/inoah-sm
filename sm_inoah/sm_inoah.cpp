@@ -498,7 +498,7 @@ static void RepaintDefinition(int scrollDelta)
     RECT defRectTmp = clientRect;
     defRectTmp.top    += SCALEY(24);
     defRectTmp.left   += SCALEX(2);
-    defRectTmp.right  -= SCALEX(2) + GetScrollBarDx();
+    defRectTmp.right  -= SCALEX(4) + GetScrollBarDx();
     defRectTmp.bottom -= SCALEY(2);
 
     ArsRectangle defRect = defRectTmp;
@@ -967,7 +967,7 @@ static void OnSize(HWND hwnd, LPARAM lp)
     // should that depend on the size of edit window?
     int scrollStartY = SCALEY(24);
     int scrollDy = dy - scrollStartY - SCALEY(2);
-    MoveWindow(g_hwndScroll, dx - GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+    MoveWindow(g_hwndScroll, dx - GetScrollBarDx() - SCALEX(2), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 }
 
 static void OnScroll(WPARAM wp)

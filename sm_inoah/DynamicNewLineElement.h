@@ -2,7 +2,7 @@
 #define _DYNAMIC_NEW_LINE_H_
 
 #include <LineBreakElement.hpp>
-#include "iNOahStyles.hpp"
+#include "iNoahStyles.hpp"
 
 class DynamicNewLineElement : public LineBreakElement  
 {
