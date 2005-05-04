@@ -18,8 +18,11 @@
 #include "sm_inoah.h"
 #include "resource.h"
 
-#include "shguim.h"
 #include "iNoahStyles.hpp"
+
+#include <shguim.h>
+#include <UIHelper.h>
+
 
 // this is not really used, it's just needed by a framework needed in sm_ipedia
 HWND g_hwndForEvents = NULL;
@@ -329,7 +332,7 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     GetClientRect(hwnd, &rect);
     rect.right -= GetScrollBarDx();
     // space between edges of the client area for the box
-    const int borderDxPadding = 10;
+    const int borderDxPadding = SCALEX(10);
 
     // calculte dx of the box
     rect.left    += borderDxPadding;
@@ -355,15 +358,15 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
 
     int fontDy = -logfnt.lfHeight;
 
-    const int yPadding = 5;
-    const int lineSpacing = 3;
+    const int yPadding = SCALEY(5);
+    const int lineSpacing = SCALEY(3);
 
-    int rectDy = 2*fontDy + lineSpacing + yPadding*2;
+    int rectDy = 2 * fontDy + lineSpacing + yPadding * 2;
 
-    int clientDy = rect.bottom-rect.top;
+    int clientDy = rect.bottom - rect.top;
 
-    rect.top     += (clientDy-rectDy)/2;
-    rect.bottom  -= (clientDy-rectDy)/2;
+    rect.top     += (clientDy - rectDy) / 2;
+    rect.bottom  -= (clientDy - rectDy) / 2;
 
     HDC hdc=GetDC(hwnd);
     HFONT prevFnt = (HFONT)SelectObject(hdc, fnt);
@@ -382,16 +385,16 @@ static void DrawProgressInfo(HWND hwnd, TCHAR* text)
     DrawFancyRectangle(hdc, &rect);
 
     SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc,RGB(255,255,255));
+    SetTextColor(hdc, RGB(255,255,255));
     //SetTextColor(hdc,RGB(255,0,0));
 
     RECT rectTxt = rect;
-    rectTxt.top += (yPadding - 2);
-    rectTxt.bottom = rectTxt.top + fontDy + 2*2;
+    rectTxt.top += (yPadding - SCALEY(2));
+    rectTxt.bottom = rectTxt.top + fontDy + SCALEY(2) * 2;
     DrawText(hdc, _T("Downloading"), -1, &rectTxt, DT_VCENTER | DT_CENTER);
 
-    rectTxt.top = rect.top + yPadding + fontDy + lineSpacing - 2;
-    rectTxt.bottom = rectTxt.top + fontDy + 2*2;
+    rectTxt.top = rect.top + yPadding + fontDy + lineSpacing - SCALEY(2);
+    rectTxt.bottom = rectTxt.top + fontDy + SCALEX(2) * 2;
     DrawText(hdc, text, -1, &rectTxt, DT_VCENTER | DT_CENTER);
 
     SelectObject(hdc,prevFnt);
@@ -407,9 +410,9 @@ static void PaintAbout(HDC hdc, RECT& rect)
     if (NULL == fnt)
         return;
 
-    rect.top += 2;
+    rect.top += SCALEY(2);
 #ifdef WIN32_PLATFORM_PSPC
-    rect.top += 6;
+    rect.top += SCALEY(6);
 #endif
 
     LOGFONT logfnt;
@@ -432,7 +435,7 @@ static void PaintAbout(HDC hdc, RECT& rect)
     logfnt.lfHeight += 2;
     HFONT fntVerySmall = (HFONT)CreateFontIndirect(&logfnt);
 
-    int lineSpace = fontDy + 5;
+    int lineSpace = fontDy + SCALEY(5);
 
     RECT tmpRect = rect;
 #ifdef WIN32_PLATFORM_PSPC
@@ -440,7 +443,7 @@ static void PaintAbout(HDC hdc, RECT& rect)
 #else
     DrawText(hdc, _T("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
 #endif
-    tmpRect.top += 36;
+    tmpRect.top += SCALEY(36);
 
 #ifdef DEBUG
     DrawText(hdc, _T("ArsLexis iNoah 1.0 (debug)"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
@@ -472,7 +475,7 @@ static void PaintAbout(HDC hdc, RECT& rect)
         SelectObject(hdc, fntVerySmall);
 
 #ifdef WIN32_PLATFORM_WFSP
-    tmpRect.top += (lineSpace+22);
+    tmpRect.top += (lineSpace + SCALEY(22));
     DrawText(hdc, _T("Downloading uses data connection"), -1, &tmpRect, DT_SINGLELINE | DT_CENTER);
 #endif
 
@@ -493,10 +496,10 @@ static void RepaintDefinition(int scrollDelta)
     ArsRectangle bounds = clientRect;
 
     RECT defRectTmp = clientRect;
-    defRectTmp.top    += 24;  // TODO: should it depend on the size of edit window?
-    defRectTmp.left   += 2;
-    defRectTmp.right  -= 2 + GetScrollBarDx();
-    defRectTmp.bottom -= 2;
+    defRectTmp.top    += SCALEY(24);
+    defRectTmp.left   += SCALEX(2);
+    defRectTmp.right  -= SCALEX(2) + GetScrollBarDx();
+    defRectTmp.bottom -= SCALEY(2);
 
     ArsRectangle defRect = defRectTmp;
     Graphics gr(g_hwndMain);
@@ -562,10 +565,10 @@ static void Paint(HWND hwnd, HDC hdc)
     GetClientRect(hwnd, &rect);
     FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-    rect.top    += 22;
-    rect.left   += 2;
-    rect.right  -= 7;
-    rect.bottom -= 2;
+    rect.top    += SCALEY(22);
+    rect.left   += SCALEX(2);
+    rect.right  -= SCALEX(7);
+    rect.bottom -= SCALEY(2);
 
     if (g_showAbout)
         PaintAbout(hdc, rect);
@@ -952,19 +955,19 @@ static void OnSize(HWND hwnd, LPARAM lp)
     int dy = HIWORD(lp);
 
 #ifdef WIN32_PLATFORM_PSPC
-    int searchButtonDX = 50;
-    int searchButtonX = dx - searchButtonDX - 2;
+    int searchButtonDX = SCALEX(50);
+    int searchButtonX = dx - searchButtonDX - SCALEX(2);
 
-    MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
-    MoveWindow(g_hwndEdit, 2, 2, searchButtonX - 6, 20, TRUE);
+    MoveWindow(g_hwndSearchButton, searchButtonX, SCALEY(2), searchButtonDX, SCALEY(20), TRUE);
+    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), searchButtonX - SCALEX(6), SCALEY(20), TRUE);
 #else
-    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
+    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), dx - SCALEX(4), SCALEY(20), TRUE);
 #endif
 
     // should that depend on the size of edit window?
-    int scrollStartY = 24;
-    int scrollDy = dy - scrollStartY - 2;
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+    int scrollStartY = SCALEY(24);
+    int scrollDy = dy - scrollStartY - SCALEY(2);
+    MoveWindow(g_hwndScroll, dx - GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 }
 
 static void OnScroll(WPARAM wp)
@@ -1174,17 +1177,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
             return FALSE; 
     }
 
-    if (!InitInstance(hInstance, CmdShow))
-        return FALSE;
-
+	HIDPI_InitScaling();
 	LoadPreferences();
 	StylePrepareStaticStyles();
-
 	g_showAbout = true;
 	g_definition = new Definition();
 
-    HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(ID_ACCEL));
-    MSG     msg;
+    MSG msg;
+	HACCEL hAccel;
+	msg.wParam = FALSE;
+
+    if (!InitInstance(hInstance, CmdShow))
+		goto Finish;
+
+    hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(ID_ACCEL));
     while (TRUE == GetMessage( &msg, NULL, 0,0 ))
     {
         if (!TranslateAccelerator(g_hwndMain, hAccel, &msg))
@@ -1197,10 +1203,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
     DeinitDataConnection();
     DeinitWinet();
 
+Finish:
 	delete g_definition;
 	g_definition = NULL;
 	StyleDisposeStaticStyles();
-
     return msg.wParam;
 }
 

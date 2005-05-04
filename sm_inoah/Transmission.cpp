@@ -50,7 +50,7 @@ void DeinitWinet()
 DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& url, String& bodyOut)
 {
     String  hostHdr = _T("Host: ");
-    DWORD   buffSize=2048;
+    DWORD   buffSize = 2048;
     BOOL    fOk;
     String  content;
     HANDLE  hConnect = NULL;
@@ -59,7 +59,7 @@ DWORD GetHttpBody(const String& host, const INTERNET_PORT port, const String& ur
     if (!InitDataConnection())
     {
 #ifdef WIN32_PLATFORM_WFSP
-        return errConnectionFailed;
+        // return errConnectionFailed;
 #else
         // just ignore on Pocket PC. I don't know how to make it work 
         // reliably across both Pocket PC and Pocket PC Phone Edition

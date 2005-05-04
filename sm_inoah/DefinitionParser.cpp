@@ -183,9 +183,8 @@ static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphE
     if (synCount>0)
     {
         AddDynamicLine(_T("Synonyms: "), styleSynonymsList, styleNameSynonymsList, parent, elements, false);
-
         String synLine;
-        for (uint_t i=0; i<synCount; i++)
+        for (uint_t i = 0; i<synCount; i++)
         {
             synLine += synsetDef.synonyms[i];
             if (i != synCount - 1)
@@ -197,10 +196,9 @@ static void FormatSynsetDef(const SynsetDef& synsetDef, int synsetNo, ParagraphE
     uint_t examplesCount = synsetDef.examples.size();
     if (examplesCount > 0)
     {
-        String exampleLine;
-        for (uint_t i=0; i < examplesCount; i++)
+        for (uint_t i = 0; i < examplesCount; i++)
         {
-            exampleLine = _T("\"");
+            String exampleLine = _T("\"");
             exampleLine += synsetDef.examples[i];
             exampleLine += _T('\"');
             AddDynamicLine(exampleLine, styleExample, styleNameExample, parent, elements, true);
