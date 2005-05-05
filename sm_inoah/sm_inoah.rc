@@ -63,7 +63,7 @@ BEGIN
     MENUITEM "Random word",             IDM_MENU_RANDOM
     MENUITEM "Recent lookups",          IDM_MENU_RECENT
     MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
-#ifdef DEBUG
+#ifndef NDEBUG
     MENUITEM "Quit",                    IDOK
 #endif
   END
@@ -111,7 +111,7 @@ BEGIN
     MENUITEM "Check updates",       IDM_MENU_UPDATES
     MENUITEM "About",               IDM_MENU_ABOUT
   END
-#ifdef DEBUG
+#ifdef NDEBUG
   MENUITEM "Quit",                IDOK
 #endif
   END

@@ -973,37 +973,39 @@ static void OnSize(HWND hwnd, LPARAM lp)
 static void OnScroll(WPARAM wp)
 {
     int code = LOWORD(wp);
+	bool track = false;
     switch (code)
     {
         case SB_TOP:
-            ScrollDefinition(0, scrollHome, false);
+            ScrollDefinition(0, scrollHome, true);
             break;
         case SB_BOTTOM:
-            ScrollDefinition(0, scrollEnd, false);
+            ScrollDefinition(0, scrollEnd, true);
             break;
         case SB_LINEUP:
-            ScrollDefinition(-1, scrollLine, false);
+            ScrollDefinition(-1, scrollLine, true);
             break;
         case SB_LINEDOWN:
-            ScrollDefinition(1, scrollLine, false);
+            ScrollDefinition(1, scrollLine, true);
             break;
         case SB_PAGEUP:
-            ScrollDefinition(-1, scrollPage, false);
+            ScrollDefinition(-1, scrollPage, true);
             break;
         case SB_PAGEDOWN:
-            ScrollDefinition(1, scrollPage, false);
+            ScrollDefinition(1, scrollPage, true);
             break;
 
+		case SB_THUMBTRACK:
+			track = true;
+		// intentional fallthrough
         case SB_THUMBPOSITION:
-        {
-            SCROLLINFO info = {0};
-            info.cbSize = sizeof(info);
-            info.fMask = SIF_TRACKPOS;
-            GetScrollInfo(g_hwndScroll, SB_CTL, &info);
-            ScrollDefinition(info.nTrackPos, scrollPosition, true);
+        {	
+			int pos = HIWORD(wp);
+            ScrollDefinition(pos, scrollPosition, !track/* SB_THUMBPOSITION == code */);
         }
      }
 }
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
