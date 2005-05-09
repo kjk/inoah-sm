@@ -6,7 +6,6 @@
 	ProjectGUID="{A1C5D298-E48D-4752-8708-C7A940DCF5F7}"
 	RootNamespace="sm_iNoah"
 	Keyword="Win32Proj"
-	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
